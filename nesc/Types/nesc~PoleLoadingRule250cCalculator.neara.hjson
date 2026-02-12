@@ -1,0 +1,58 @@
+{
+  token: "nesc~ct_PoleLoadingRule250cCalculator"
+  is_custom_class: true
+  fields: [
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("PoleLoadingModelInput")
+        '''
+    }
+    {
+      name: "output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        if(
+          processing.nesc250c_required,
+          {environment: processing.environment,
+          worst_pole: processing.max_pole,
+          worst_stay: processing.max_stay,
+          worst_xarm: processing.max_xarm,
+          no_wind_records: processing.no_wind_results,
+          },
+        )
+        '''
+    }
+    {
+      name: "processing"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record("PoleLoadingRule250cProcessing", model_input: model_input, rule_243_output: rule_243_output)
+        '''
+    }
+    {
+      name: "rule_243_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only(make_immutable_record("PoleLoadingRule243Calculator").output)
+        '''
+    }
+  ]
+}

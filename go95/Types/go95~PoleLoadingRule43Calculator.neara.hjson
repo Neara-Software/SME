@@ -1,0 +1,79 @@
+{
+  token: "go95~ct_PoleLoadingRule43Calculator"
+  is_custom_class: true
+  fields: [
+    {
+      name: "dt"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        broadcast(
+          dt: model().dt_rule43elechecktable,
+          {
+            type: dt.type,
+            upper_bound: dt.upper_bound,
+            lower_bound: dt.lower_bound,
+          }
+        )
+        '''
+    }
+    {
+      name: "get_applicable_environment"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        // TODO: PGE
+        lambda(
+          elevation: type_only(30ft), 
+            let(
+              elabel: not_null(find(dt,
+              broadcast(
+                row: dt,
+                and(
+                  first_non_null(row.upper_bound > elevation, true),
+                  first_non_null(row.lower_bound <= elevation, true),
+                )
+              )
+            ).type),
+              not_null(find(model().Environments, model().Environments[].label = elabel))
+            )
+        )
+        '''
+    }
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        type_only("PoleLoadingModelInput")
+        '''
+    }
+    {
+      name: "output"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        let(
+          proc: make_immutable_record("PoleLoadingRule43Processing", model_input: model_input),
+          {
+            applicable_environment: call(get_applicable_environment, 
+              elevation: proc.elevation,
+            )
+          }
+        )
+        '''
+    }
+  ]
+}

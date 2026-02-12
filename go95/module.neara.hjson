@@ -1,0 +1,13 @@
+{
+  id: "21ef8ef0afdf4d685d1c288b"
+  organization_module_ref: null
+  title: null
+  key: "go95"
+  description: ""
+  lock: "unlocked"
+  language_enhancement_config: {
+    language_enhancements: [
+      "nac"
+    ]
+  }
+}

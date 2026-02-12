@@ -1,0 +1,40 @@
+{
+  name: "go95~Rule43EleCheckTable"
+  fields: [
+    {
+      field_name: "upper_bound"
+      field_alias: "upper_bound"
+      data_type: {
+        type: "real"
+        real: {
+          unit: "ft"
+          decimal_places: 2
+        }
+      }
+      description: null
+    }
+    {
+      field_name: "lower_bound"
+      field_alias: "lower_bound"
+      data_type: {
+        type: "real"
+        real: {
+          unit: "ft"
+          decimal_places: 2
+        }
+      }
+      description: null
+    }
+  ]
+  source: {
+    type: "tsv_data"
+    tsv_data: {
+      value:
+        '''
+        type	upper_bound	lower_bound
+        GO95 Heavy Loading 43.1		3000
+        GO95 Light Loading 43.2	3000
+        '''
+    }
+  }
+}

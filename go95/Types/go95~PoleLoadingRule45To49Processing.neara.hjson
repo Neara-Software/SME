@@ -1,0 +1,67 @@
+{
+  token: "go95~ct_PoleLoadingRule45To49Processing"
+  is_custom_class: true
+  fields: [
+    {
+      name: "dep_rules"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        type_only({
+          rule43: make_immutable_record("PoleLoadingRule43Calculator", model_input: model_input).output,
+          rule44: make_immutable_record("PoleLoadingRule44Calculator", model_input: model_input).output
+        })
+        '''
+    }
+    {
+      name: "fea"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "simulate_structure_fea(model_input.pole, environment: rule_43_env)[0]"
+    }
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("PoleLoadingModelInput")
+        '''
+    }
+    {
+      name: "rule_43_env"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        /// Ideally this should be lambda util function
+        if(model_input.override_environment = null, dep_rules.rule43.applicable_environment, model_input.override_environment)
+        '''
+    }
+    {
+      name: "safety_factor"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "dep_rules.rule44.safety_factor"
+    }
+    {
+      name: "utilization"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "fea.worst_element.utilization"
+    }
+  ]
+}

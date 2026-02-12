@@ -1,0 +1,28 @@
+{
+  token: "nesc~ct_PoleLoadingModelInput"
+  is_custom_class: true
+  fields: [
+    {
+      name: "pole"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("~Pole")
+        '''
+    }
+    {
+      name: "span"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("~Span")
+        '''
+    }
+  ]
+}

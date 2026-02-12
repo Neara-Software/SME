@@ -1,0 +1,478 @@
+{
+  id: "e2b3cbfd296e655bfa774b4"
+  title: "nesc~Spans"
+  description: null
+  root: "Model"
+  favorite: false
+  editable_data: true
+  export_column_header_type: "field_title"
+  table: {
+    query: {
+      queries: [
+        {
+          collection: "Spans"
+          filter: {
+            conditions: []
+            bounds_filter: "none"
+            quick_search: null
+          }
+        }
+      ]
+      sort: {
+        fields: []
+      }
+      page_size: 300
+      offset: 0
+    }
+    fields: [
+      {
+        name: "self"
+        title: "Self"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 120
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+      }
+      {
+        name: "section"
+        title: "Section"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 120
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+      }
+      {
+        name: "label"
+        title: "Label"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 120
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+      }
+      {
+        name: "pole1"
+        title: "Pole1"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 120
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+      }
+      {
+        name: "pole2"
+        title: "Pole2"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 120
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+      }
+      {
+        name: "nesc~u_pla_span_checks"
+        title: "Pla Span Checks"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 120
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+      }
+      {
+        name: "nesc~u_foo"
+        title: "Foo"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 120
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+      }
+      {
+        name: "nesc~u_foo2"
+        title: "Foo2"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 120
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+      }
+      {
+        name: "stringing_temperature"
+        title: "Stringing Temperature"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 120
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+      }
+      {
+        name: "survey_temperature"
+        title: "Survey Temperature"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 120
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+      }
+      {
+        name: "min_possible_survey_temperature"
+        title: "Min Possible Survey Temperature"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 120
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+      }
+      {
+        name: "max_possible_survey_temperature"
+        title: "Max Possible Survey Temperature"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 120
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+      }
+      {
+        name: "mzcat_terrain_category"
+        title: "Mz,cat Terrain Category"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 120
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+      }
+      {
+        name: "assembly1"
+        title: "Assembly1"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 120
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+      }
+      {
+        name: "assembly2"
+        title: "Assembly2"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 120
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+      }
+      {
+        name: "length"
+        title: "Length"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 120
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+      }
+      {
+        name: "stack"
+        title: "Stack"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 120
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+      }
+      {
+        name: "scan_time"
+        title: "Scan Time"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 120
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+      }
+      {
+        name: "approximate_midpoint.x"
+        title: "Approximate Midpoint X"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 120
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+      }
+      {
+        name: "approximate_midpoint.y"
+        title: "Approximate Midpoint Y"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 120
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+      }
+      {
+        name: "approximate_midpoint.z"
+        title: "Approximate Midpoint Z"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 120
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+      }
+    ]
+  }
+  views: []
+  visibility: {
+    visibility: "external"
+    org_id: null
+  }
+  viz_config: {
+    visualizing: false
+    visualizing_quick_toggle: false
+    visualizing_pinned: false
+    color3d_objects: false
+    visualize_on_world_terrain: false
+    world_geom_source: false
+    elevation_geom_source: null
+    default_color: {
+      r: 0.25098039215686274
+      g: 0.25098039215686274
+      b: 1
+      a: 1
+    }
+    threshold: 5
+    overlay_min_zoom: 0
+    overlay_max_zoom: 23
+    interactive_terrain_visualization_mode: "default_mode"
+  }
+  local_mode: true
+  global_enabled: false
+  global_search_enabled: false
+  properties: {}
+}

@@ -1,0 +1,92 @@
+{
+  token: "go95~ct_PoleLoadingRule41Calculator"
+  is_custom_class: true
+  fields: [
+    {
+      name: "get_classification_of_circuits"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        lambda(vols: type_only(list(1kV)) ,labels: type_only(list("a", "b")),
+          map(keys: labels, values:
+          broadcast(vol: vols, 
+              /// TODO: move to DT
+              /// Class C - Communication Circuits (Current-Carrying)
+              /// Voltage between conductors ≤ 750 V
+              if(vol <= call(get_vol_check_from_dt, class: "C").upper_bound, "C",
+              /// Communication Circuits (Fiber Optic) Class C ???
+              /// Railway Signal Circuits Class CETH is out scope ???
+              
+              /// Class E — Supply Circuits 
+              /// Voltage between conductors ≥ 300,000 V
+              if(vol >= call(get_vol_check_from_dt, class: "E").lower_bound, "E", 
+                  /// Class H — Supply Circuits
+                  /// 5,000 V ≤ V(conductor-conductor) < 300,000 V
+                  if(and(call(get_vol_check_from_dt, class: "H").lower_bound <= vol, vol < call(get_vol_check_from_dt, class: "H").upper_bound), "H", 
+                  /// Class L — Supply Circuits
+                  /// Below all Class H and Class E thresholds
+                  "L")
+                  
+                  /// Class T — Trolley Circuits Not included ???
+                  /// How we identify if a circuit is supply or communication ???
+                ),
+            )
+            )
+          ),
+        )
+        '''
+    }
+    {
+      name: "get_vol_check_from_dt"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        lambda(class: type_only(""), find(model().dt_rule41volchecktable, model().dt_rule41volchecktable[].class = class))
+        '''
+    }
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        type_only("PoleLoadingModelInput")
+        '''
+    }
+    {
+      name: "output"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+         
+          {
+            classification_of_circuits: call(get_classification_of_circuits, 
+              vols: proc.circuit_voltages, labels: proc.circuit_labels
+            )
+          }
+        '''
+    }
+    {
+      name: "proc"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record("PoleLoadingRule41Processing", model_input: model_input)
+        '''
+    }
+  ]
+}

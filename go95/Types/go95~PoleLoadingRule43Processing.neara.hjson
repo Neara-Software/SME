@@ -1,0 +1,25 @@
+{
+  token: "go95~ct_PoleLoadingRule43Processing"
+  is_custom_class: true
+  fields: [
+    {
+      name: "elevation"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula: "get_terrain_height(model_input.pole.location) - origin().z"
+    }
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        type_only("PoleLoadingModelInput")
+        '''
+    }
+  ]
+}

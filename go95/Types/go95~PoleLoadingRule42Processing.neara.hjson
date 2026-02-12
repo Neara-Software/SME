@@ -1,0 +1,148 @@
+{
+  token: "go95~ct_PoleLoadingRule42Processing"
+  is_custom_class: true
+  fields: [
+    {
+      name: "cond_self_classes"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        text_join("", true, map_values(rule_41_output.classification_of_circuits))
+        '''
+    }
+    {
+      name: "crossing_cond_classes"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        text_join("", true, 
+          map_values(
+            call(
+                  make_immutable_record("PoleLoadingRule41Calculator").get_classification_of_circuits,
+                  vols: crossing_cond_vols, labels: crossing_cond_label,
+             )
+          )
+        )
+        '''
+    }
+    {
+      name: "crossing_cond_label"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        crossing_conds[].label & ""
+        '''
+    }
+    {
+      name: "crossing_cond_vols"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "crossing_conds[].voltage"
+    }
+    {
+      name: "crossing_conds"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        filter_nulls(flatten(broadcast(
+                    span: model_input.pole.spans[].section,
+                    /// DANGER
+                    /// expensive limit area?
+                    /// find nearby_span?
+                    broadcast(
+                      other_span: model().Spans[].section,
+                      if(geo_intersect(other_span.geometry, span.geometry), other_span),
+                    )
+                )))
+        '''
+    }
+    {
+      name: "is_crossing_cond"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "len(crossing_cond_classes) > 0"
+    }
+    {
+      name: "is_crossing_main_road"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        /// TODO
+        false
+        '''
+    }
+    {
+      name: "is_crossing_road"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        any(
+          broadcast(
+            road: model().dt_bay_area_roads,
+            broadcast(
+                span_geom: model_input.pole.spans[].section[].geometry,
+                road_geom: road.geometry,
+                geo_intersect(road_geom, span_geom)
+            )
+          )
+        )
+        '''
+    }
+    {
+      name: "is_joint_on_pole"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        /// more than one strain section
+        len(model_input.pole.spans[].section) > 1
+        '''
+    }
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        type_only("PoleLoadingModelInput")
+        '''
+    }
+    {
+      name: "rule_41_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only(make_immutable_record("PoleLoadingRule41Calculator", model_input: model_input).output)
+        '''
+    }
+  ]
+}

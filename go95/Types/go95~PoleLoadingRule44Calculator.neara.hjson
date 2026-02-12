@@ -1,0 +1,75 @@
+{
+  token: "go95~ct_PoleLoadingRule44Calculator"
+  is_custom_class: true
+  fields: [
+    {
+      name: "get_safety_factor"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // we only support struct as it is only used in PLA Demo
+        // xarm might be added if we implement pf resim
+        // Prestressed or posttensioned concrete not include
+        lambda(
+          struct_material: type_only(""),
+          grade: type_only(""),
+          let(
+            safe_factor: let(
+              row: find(model().dt_rule44safetyfactortable, model().dt_rule44safetyfactortable[].line_element = struct_material),
+              if(grade = "A", row.grade_a, if(grade = "B", row.grade_b, row.grade_c))
+            ),
+            sub_clause: let(
+              row: find(model().dt_rule44safetyfactorsubclause, model().dt_rule44safetyfactorsubclause[].line_element = struct_material),
+              if(grade = "A", row.grade_a, if(grade = "B", row.grade_b, row.grade_c))
+            ),
+            safe_factor * sub_clause
+          )
+        )
+        '''
+    }
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        type_only("PoleLoadingModelInput")
+        '''
+    }
+    {
+      name: "output"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        let(
+          proc: make_immutable_record("PoleLoadingRule44Processing", model_input: model_input, rule_42_output: rule_42_output),
+          {
+            safety_factor: call(get_safety_factor, 
+              grade: proc.grade,
+              struct_material: proc.struct_material,
+            )
+          }
+        )
+        '''
+    }
+    {
+      name: "rule_42_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        type_only(make_immutable_record("PoleLoadingRule42Calculator", model_input: model_input).output)
+        '''
+    }
+  ]
+}

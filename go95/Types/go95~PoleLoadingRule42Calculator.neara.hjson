@@ -1,0 +1,107 @@
+{
+  token: "go95~ct_PoleLoadingRule42Calculator"
+  is_custom_class: true
+  fields: [
+    {
+      name: "get_grade_of_construction"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        lambda(
+          is_crossing_road: type_only(false), 
+          is_crossing_cond: type_only(false), 
+          is_joint_on_pole: type_only(false),
+          is_crossing_main_road: type_only(false),
+          cond_self_classes: type_only(""),
+          crossing_cond_classes: type_only(""),
+          let(
+          all_classes: cond_self_classes & crossing_cond_classes,  
+            let(
+              contain_eh: or(contains("E", all_classes), contains("H", all_classes)),
+              contain_ehl: or(contains("E", all_classes), contains("H", all_classes), contains("L", all_classes)),
+              contain_c: contains("C", all_classes),
+              if(
+                or(is_crossing_road, is_crossing_cond,is_joint_on_pole), 
+                if(
+                  or(
+                    /// EH or EC in all involve classes
+                    and(
+                      contain_eh,
+                      contain_c,
+                    ),
+                    /// or crossing major road - TODO defined Railway always false now
+                    is_crossing_main_road
+                  ), 
+                  "A", 
+                  if(
+                    or(
+                      /// e/h/l and cross sub road
+                      and(contain_ehl, is_crossing_road),
+                      /// e/h
+                      contain_eh,
+                    ),
+                    "B", 
+                    /// all others in grade C
+                    "C",
+                  )
+                ),
+                /// if not crossing or joint
+                /// only check if cond e/h
+                if(contain_eh, "B", "C"),
+              ), 
+            )
+          )
+        )
+        '''
+    }
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        type_only("PoleLoadingModelInput")
+        '''
+    }
+    {
+      name: "output"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        let(
+          proc: make_immutable_record("PoleLoadingRule42Processing", model_input: model_input, rule_41_output: rule_41_output),  
+          {
+            grade_of_construction:
+              call(get_grade_of_construction, 
+              is_crossing_road: proc.is_crossing_road,
+              is_crossing_cond: proc.is_crossing_cond,
+              is_joint_on_pole: proc.is_joint_on_pole,
+              is_crossing_main_road: proc.is_crossing_main_road,
+              cond_self_classes: proc.cond_self_classes,
+              crossing_cond_classes: proc.crossing_cond_classes,
+            )
+          }
+        )
+        '''
+    }
+    {
+      name: "rule_41_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        type_only(make_immutable_record("PoleLoadingRule41Calculator", model_input: model_input).output)
+        '''
+    }
+  ]
+}

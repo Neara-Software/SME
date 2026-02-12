@@ -1,0 +1,223 @@
+{
+  token: "nesc~ct_PoleLoadingRule250dProcessing"
+  is_custom_class: true
+  fields: [
+    {
+      name: "environment"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        let(
+          env: find(model().Environments, model().Environments[].label = "250D C"),
+          make_environment(
+            template: env,
+            wind_pressure: 0.00256 * (nesc_250d_wind[0] ^ 2) * unit_value(1, "psf"),
+            ice_radial_thickness: nesc_250d_ice[0] * unit_value(1, "in"),
+          ),
+        )
+        '''
+    }
+    {
+      name: "max_pole"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        let(
+          p: filter(
+            simulations[].BeamReports,
+            and(simulations[].BeamReports[].is_on_pole, simulations[].BeamReports[].pole = model_input.pole),
+          ),
+          let(
+            stress_max: max_by(p, p[].worst[].normal_stress[].utilization),
+            moment_max: max_by(p, p[].worst[].moment[].utilization),
+            if(
+              stress_max.worst.normal_stress.utilization > moment_max.worst.moment.utilization,
+              {check_type: "Pole Stress",
+              beamreport: stress_max,
+              simulation: find(simulations, simulations[].solve = stress_max.solve),
+              utilisation: stress_max.worst.normal_stress.utilization,
+              },
+              {check_type: "Pole Moment",
+              beamreport: moment_max,
+              simulation: find(simulations, simulations[].solve = moment_max.solve),
+              utilisation: moment_max.worst.moment.utilization,
+              },
+            ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "max_stay"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        if(
+          //and(len(pole.Stays) > 0, calc_config.stay_tension),
+          len(model_input.pole.Stays) > 0,
+          let(
+            pmax: max_by(
+              simulations[].StayCableReports,
+              simulations[].StayCableReports[].worst[].tension[].utilization,
+            ),
+            {stay: pmax.stay,
+            //environment: environment,
+            check_type: "Stay Tension",
+            stayreport: pmax,
+            simulation: find(simulations, simulations[].solve = pmax.solve),
+            utilisation: pmax.worst.tension.utilization,
+            },
+          ),
+        )
+        '''
+    }
+    {
+      name: "max_xarm"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        let(
+          p: filter(
+            simulations[].BeamReports,
+            not(simulations[].BeamReports[].is_on_pole),
+          ),
+          let(
+            stress_max: max_by(p, p[].worst[].normal_stress[].utilization),
+            moment_max: max_by(p, p[].worst[].moment[].utilization),
+            if(
+              stress_max.worst.normal_stress.utilization > moment_max.worst.moment.utilization,
+              {check_type: "Xarm Stress",
+              beamreport: stress_max,
+              simulation: find(simulations, simulations[].solve = stress_max.solve),
+              utilisation: stress_max.worst.normal_stress.utilization,
+              },
+              {check_type: "Xarm Moment",
+              beamreport: moment_max,
+              simulation: find(simulations, simulations[].solve = moment_max.solve),
+              utilisation: moment_max.worst.moment.utilization,
+              },
+            ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("PoleLoadingModelInput")
+        '''
+    }
+    {
+      name: "nesc250d_required"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        //Only required if pole or spans is >60ft
+        //Current code is incorrect as ground clearance is lowest height above ground not max.
+        
+        
+        or(
+          model_input.pole.height > 6ft,
+          any(model_input.pole.spans[].ground_clearance > 60ft),
+        )
+        '''
+    }
+    {
+      name: "nesc_250d_ice"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+          geo_query(
+            model().dt_250d_ice,
+            model_input.pole.geometry,
+            10ft,
+          )[].ice_thickness
+        '''
+    }
+    {
+      name: "nesc_250d_wind"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        //if(
+        //  rule_243_output.grade_of_construction = "C",
+          geo_query(
+            model().dt_250d_wind,
+            model_input.pole.geometry,
+            10ft,
+          )[].wind_speed //,
+         //)
+        '''
+    }
+    {
+      name: "no_ice_results"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "len(nesc_250d_ice)"
+    }
+    {
+      name: "no_wind_results"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "len(nesc_250d_wind)"
+    }
+    {
+      name: "rule_243_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only(make_immutable_record("PoleLoadingRule243Calculator").output)
+        '''
+    }
+    {
+      name: "simulations"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        
+          simulate_structure_fea(
+            model_input.pole.primary_pole,
+            environment: environment,
+            wind_dirs: 8,
+            network_solve: false,
+          )
+        '''
+    }
+  ]
+}

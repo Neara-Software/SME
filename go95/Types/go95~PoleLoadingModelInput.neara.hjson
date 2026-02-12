@@ -1,0 +1,28 @@
+{
+  token: "go95~ct_PoleLoadingModelInput"
+  is_custom_class: true
+  fields: [
+    {
+      name: "override_environment"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        type_only("~Environment")
+        '''
+    }
+    {
+      name: "pole"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        type_only("~Pole")
+        '''
+    }
+  ]
+}

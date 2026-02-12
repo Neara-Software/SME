@@ -1,0 +1,14 @@
+{
+  token: "ConductorSpan"
+  is_custom_class: false
+  fields: [
+    {
+      name: "go95~u_vol"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: ""
+    }
+  ]
+}

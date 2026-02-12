@@ -1,0 +1,70 @@
+{
+  name: "go95~Rule44SafetyFactorTable"
+  fields: [
+    {
+      field_name: "Grade A"
+      field_alias: "grade_a"
+      data_type: {
+        type: "real"
+        real: {
+          unit: ""
+          decimal_places: 2
+        }
+      }
+      description: null
+    }
+    {
+      field_name: "Grade B"
+      field_alias: "grade_b"
+      data_type: {
+        type: "real"
+        real: {
+          unit: ""
+          decimal_places: 2
+        }
+      }
+      description: null
+    }
+    {
+      field_name: "Grade C"
+      field_alias: "grade_c"
+      data_type: {
+        type: "real"
+        real: {
+          unit: ""
+          decimal_places: 2
+        }
+      }
+      description: null
+    }
+  ]
+  source: {
+    type: "tsv_data"
+    tsv_data: {
+      value:
+        '''
+        Line Element	Grade A	Grade B	Grade C	note
+        conductor	2	2	2	
+        pin	2	2	2	
+        pole line hardware	2	2	2	
+        line insulator	3	2	2	
+        guy insulator interlocking	2	2	2	
+        guy insulator noninterlocking glass fiber	3	2	2	
+        guy	2	2	2	
+        messenger	2	2	2	
+        span wire	2	2	2	
+        foundation against uplift	1.5	1.5	1.5	
+        foundation against depression	3	2	2	
+        wood pole	4	3	2	
+        steel pole	1.5	1.25	1.25	metal
+        concrete pole	4	3	3	reinforced
+        prestressed or post-tensioned concrete pole	1.8	1.5	1.5	unsupport
+        composite pole	1.5	1.25	1.25	other engineered materials pole
+        wood crossarm	2	2	2	
+        metal crossarm	1.5	1.25	1.25	
+        prestressed concrete crossarm	1.8	1.5	1.5	
+        other engineered materials crossarm	1.5	1.25	1.25
+        '''
+    }
+  }
+}

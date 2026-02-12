@@ -1,0 +1,140 @@
+{
+  token: "nesc~ct_PoleLoadingRule242Calculator"
+  is_custom_class: true
+  fields: [
+    {
+      name: "attached_crossing"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        broadcast(
+          att: processing.attached_crossing_below,
+          att
+          
+          //Need to create a datatable lookup here
+          // index1 for upper conductor
+          // index2 for bottom conductor
+          // create lambda.
+          
+          
+        )
+        '''
+    }
+    {
+      name: "base_grade"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // Change to data table, based off NESC 242-1
+        if(
+          processing.type = "COMMS",
+          "N",
+          processing.voltage = 0V,
+          "N",
+          processing.voltage >= 750V * sqrt(3),
+          "C",
+          processing.voltage >= 22kV * sqrt(3),
+          "B",
+        )
+        '''
+    }
+    {
+      name: "get_key"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: ""
+    }
+    {
+      name: "grade_elevation"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        list(
+          if(
+            processing.is_rail_crossing,
+            {grade: "B",
+            reason: "railroad tracks crossing"},
+          ),
+          if(
+            processing.is_freeway_crossing,
+            {grade: "B",
+            reason: "limited-access highway crossing"},
+          ),
+            if(
+            processing.is_water_crossing,
+            {grade: "B",
+            reason: "navigable waterways crossing"},
+          ),
+        )
+        '''
+    }
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("PoleLoadingModelInput")
+        '''
+    }
+    {
+      name: "output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        {
+         base_grade: "C",
+         elevated_grade: "B",
+         elevated_reason: "Blah blah"
+        
+        
+        
+        
+        }
+        '''
+    }
+    {
+      name: "processing"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record("PoleLoadingRule242Processing", model_input: model_input)
+        '''
+    }
+    {
+      name: "span_below"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: ""
+    }
+    {
+      name: "unattached_crossing"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: ""
+    }
+  ]
+}

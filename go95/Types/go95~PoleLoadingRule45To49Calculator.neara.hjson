@@ -1,0 +1,71 @@
+{
+  token: "go95~ct_PoleLoadingRule45To49Calculator"
+  is_custom_class: true
+  fields: [
+    {
+      name: "dep_rules"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        type_only({
+          rule43: make_immutable_record("PoleLoadingRule43Calculator", model_input: model_input).output,
+          rule44: make_immutable_record("PoleLoadingRule44Calculator", model_input: model_input).output
+        })
+        '''
+    }
+    {
+      name: "is_safety_factor_pass"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // we can also expose the utilization if want
+        // TODO: additional condition for V resim PF
+        // addtional condition for L
+        // Current it is only checking the basic requirements via safty_factor
+        // FEA cover 45-49 in high level
+        // 48 env condition can be either customize override or depend 43
+        lambda(
+          utilization: type_only(0.1),
+          safety_factor: type_only(0.1),
+          utilization <= (1 / safety_factor)
+        )
+        '''
+    }
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        type_only("PoleLoadingModelInput")
+        '''
+    }
+    {
+      name: "output"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        let(
+          proc: make_immutable_record("PoleLoadingRule45To49Processing", model_input: model_input, dep_rules: dep_rules),
+          {
+            is_safety_factor_pass: call(is_safety_factor_pass, 
+              utilization: proc.utilization,
+              safety_factor: proc.safety_factor,
+            )
+          }
+        )
+        '''
+    }
+  ]
+}

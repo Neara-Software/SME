@@ -1,0 +1,39 @@
+{
+  token: "Pole"
+  is_custom_class: false
+  fields: [
+    {
+      name: "nesc~u_foo"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        geo_query(
+          //model().dt_250d_wind,
+          //model().dt_250c_grb_wind_speed,
+          //model().dt_250c_grc_wind_speed,
+          model().dt_250d_ice,
+          geometry,
+          50ft,
+          )[].ice_thickness
+        '''
+    }
+    {
+      name: "nesc~u_pla_check"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record(
+          "PoleLoadingCheckManager",
+          pole: self,
+        
+        )
+        '''
+    }
+  ]
+}

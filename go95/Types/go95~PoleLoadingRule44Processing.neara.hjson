@@ -1,0 +1,49 @@
+{
+  token: "go95~ct_PoleLoadingRule44Processing"
+  is_custom_class: true
+  fields: [
+    {
+      name: "grade"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "rule_42_output.grade_of_construction"
+    }
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("PoleLoadingModelInput")
+        '''
+    }
+    {
+      name: "rule_42_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only(make_immutable_record("PoleLoadingRule42Calculator", model_input: model_input).output)
+        '''
+    }
+    {
+      name: "struct_material"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // concrete pole
+        // wood pole
+        model_input.pole.type.material & " pole"
+        '''
+    }
+  ]
+}

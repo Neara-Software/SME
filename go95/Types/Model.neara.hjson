@@ -1,0 +1,81 @@
+{
+  token: "Model"
+  is_custom_class: false
+  fields: [
+    {
+      name: "go95~u_active_41"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "property"
+      kind: "boolean"
+    }
+    {
+      name: "go95~u_active_42"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "property"
+      kind: "boolean"
+    }
+    {
+      name: "go95~u_active_43"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "property"
+      kind: "boolean"
+    }
+    {
+      name: "go95~u_active_44"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "property"
+      kind: "boolean"
+    }
+    {
+      name: "go95~u_active_45to49"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "property"
+      kind: "boolean"
+    }
+    {
+      name: "go95~u_pole_loading_ui"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record("PoleLoadingCheckUi")
+        '''
+    }
+    {
+      name: "go95~u_rule_env_label"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "property"
+      kind: "text"
+    }
+    {
+      name: "go95~u_rule_pole_label"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "property"
+      kind: "text"
+    }
+    {
+      name: "go95~u_use_dt"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "property"
+      kind: "boolean"
+    }
+  ]
+}

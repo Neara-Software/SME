@@ -1,0 +1,36 @@
+{
+  token: "go95~ct_PoleLoadingRule41Processing"
+  is_custom_class: true
+  fields: [
+    {
+      name: "circuit_labels"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        model_input.pole.spans[].section[].label & ""
+        '''
+    }
+    {
+      name: "circuit_voltages"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "model_input.pole.spans[].section[].voltage"
+    }
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("PoleLoadingModelInput")
+        '''
+    }
+  ]
+}

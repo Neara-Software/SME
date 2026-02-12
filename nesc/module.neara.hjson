@@ -1,0 +1,13 @@
+{
+  id: "31d9d7378ee7c1837e784a2"
+  organization_module_ref: null
+  title: "NESC"
+  key: "nesc"
+  description: ""
+  lock: "unlocked"
+  language_enhancement_config: {
+    language_enhancements: [
+      "nac"
+    ]
+  }
+}

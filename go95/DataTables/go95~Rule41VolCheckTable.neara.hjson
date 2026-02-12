@@ -1,0 +1,42 @@
+{
+  name: "go95~Rule41VolCheckTable"
+  fields: [
+    {
+      field_name: "upper_bound"
+      field_alias: "upper_bound"
+      data_type: {
+        type: "real"
+        real: {
+          unit: "V"
+          decimal_places: 2
+        }
+      }
+      description: null
+    }
+    {
+      field_name: "lower_bound"
+      field_alias: "lower_bound"
+      data_type: {
+        type: "real"
+        real: {
+          unit: "V"
+          decimal_places: 2
+        }
+      }
+      description: null
+    }
+  ]
+  source: {
+    type: "tsv_data"
+    tsv_data: {
+      value:
+        '''
+        class	upper_bound	lower_bound
+        C	750	0
+        E		300000
+        H	300000	5000
+        L	300000	750
+        '''
+    }
+  }
+}

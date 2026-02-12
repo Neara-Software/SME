@@ -1,0 +1,121 @@
+{
+  token: "nesc~ct_PoleLoadingRule250bCalculator"
+  is_custom_class: true
+  fields: [
+    {
+      name: "environment"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        //call(
+        //  get_250b_environment,
+        //  is_heavy: processing.is_heavy,
+        //  is_medium: processing.is_medium,
+        //  is_light: processing.is_light,
+        //  grade: rule_243_output.grade_of_construction,
+        //)
+        null
+        '''
+    }
+    {
+      name: "get_250b_environment"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        lambda(
+          is_heavy: type_only(false),
+          is_medium: type_only(false),
+          is_light: type_only(false),
+          grade: type_only("AA"&""),
+          
+          if(
+            and(is_heavy, grade="B"),
+            find(model().Environments, model().Environments[].label = "250B_Hvy B"),
+            and(is_heavy, grade="C"),
+            find(model().Environments, model().Environments[].label = "250B_Hvy C"),    
+            and(is_medium, grade="B"),
+            find(model().Environments, model().Environments[].label = "250B_Med B"),
+            and(is_medium, grade="C"),
+            find(model().Environments, model().Environments[].label = "250B_Med C"),   
+            and(is_light, grade="B"),
+            find(model().Environments, model().Environments[].label = "250B_Lgt B"),
+            and(is_light, grade="C"),
+            find(model().Environments, model().Environments[].label = "250B_Lgt C"),  
+          ),
+        )
+        '''
+    }
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("PoleLoadingModelInput")
+        '''
+    }
+    {
+      name: "output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        {
+         environment: processing.environment,
+         worst_pole: processing.max_pole,
+         worst_stay: processing.max_stay,
+         worst_xarm: processing.max_xarm,
+        }
+        '''
+    }
+    {
+      name: "processing"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record("PoleLoadingRule250bProcessing", model_input: model_input, rule_243_output: rule_243_output)
+        '''
+    }
+    {
+      name: "rule_243_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only(make_immutable_record("PoleLoadingRule243Calculator").output)
+        '''
+    }
+    {
+      name: "simulation"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        //simulate_structure_fea(
+        //  model_input.pole.primary_pole,
+        //  environment: environment,
+        //  wind_dirs: 8,
+        //  network_solve: false,
+        //)
+        null
+        '''
+    }
+  ]
+}

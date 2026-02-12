@@ -1,0 +1,120 @@
+{
+  token: "nesc~ct_PoleLoadingRule242Processing"
+  is_custom_class: true
+  fields: [
+    {
+      name: "attached_crossing_below"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        broadcast(
+          sp: find_adjacent_spans_below(model_input.span),
+          {
+          span: sp,
+          voltage: sp.section.voltage,
+          type: sp.section.type.conductor_class,
+          rule242: sp.u_pla_span_checks.rule_242_output,
+          },
+        )
+        '''
+    }
+    {
+      name: "is_freeway_crossing"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "any(geo_intersect(model().dt_esri_freewaysystem[].geometry, model_input.span.geometry))"
+    }
+    {
+      name: "is_rail_crossing"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: " any(geo_intersect(model().dt_or_railroads[].geometry, model_input.span.geometry))"
+    }
+    {
+      name: "is_water_crossing"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: " any(geo_intersect(model().dt_nhd_waterbody[].geometry, model_input.span.geometry))"
+    }
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("PoleLoadingModelInput")
+        '''
+    }
+    {
+      name: "spans_below"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        broadcast(
+          sp: find_spans_below(model_input.span),
+          {
+          span: sp,
+          voltage: sp.section.voltage,
+          type: sp.section.type.conductor_class,
+          rule242: sp.u_pla_span_checks.rule_242_output,
+          },
+        )
+        '''
+    }
+    {
+      name: "type"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        let(
+          ct: model_input.span.section.type,
+          ct.conductor_class
+        )
+        '''
+    }
+    {
+      name: "unattached_crossing_below"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        broadcast(
+          sp: find_crossing_spans_below(model_input.span),
+          {
+          span: sp,
+          voltage: sp.section.voltage,
+          type: sp.section.type.conductor_class,
+          rule242: sp.u_pla_span_checks.rule_242_output,
+          },
+        )
+        '''
+    }
+    {
+      name: "voltage"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "model_input.span.section.voltage"
+    }
+  ]
+}

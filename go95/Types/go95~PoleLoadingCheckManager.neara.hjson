@@ -1,0 +1,115 @@
+{
+  token: "go95~ct_PoleLoadingCheckManager"
+  is_custom_class: true
+  fields: [
+    {
+      name: "go95_pla_model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record("go95~PoleLoadingModelInput", pole: pole, override_environment: override_env)
+        '''
+    }
+    {
+      name: "override_env"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "not_null(find(model().Environments, model().Environments[].label = model().u_rule_env_label))"
+    }
+    {
+      name: "pole"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula: "not_null(find(model().Poles, model().Poles[].label = model().u_rule_pole_label))"
+    }
+    {
+      name: "rule_41_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record("go95~PoleLoadingRule41Calculator", 
+          proc: rule_41_processing
+        ).output
+        '''
+    }
+    {
+      name: "rule_41_processing"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        if(model().u_use_dt,
+        let(
+          row: find(model().dt_testuserdata, model().dt_testuserdata[].pole = model().u_rule_pole_label),
+        make_immutable_record("go95~PoleLoadingRule41Processing", 
+            circuit_labels: text_split(row.circuit_labels, ", "),
+            circuit_voltages:  broadcast(
+              v: text_split(row.circuit_voltages, ", "),
+              parse_voltage(v),
+            ),
+          )
+        ),
+        make_immutable_record("go95~PoleLoadingRule41Processing", 
+            model_input: go95_pla_model_input
+            ), 
+        )
+        '''
+    }
+    {
+      name: "rule_42_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record("go95~PoleLoadingRule42Calculator", model_input: go95_pla_model_input, rule_41_output: rule_41_output).output
+        '''
+    }
+    {
+      name: "rule_43_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record("go95~PoleLoadingRule43Calculator", model_input: go95_pla_model_input).output
+        '''
+    }
+    {
+      name: "rule_44_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record("go95~PoleLoadingRule44Calculator", model_input: go95_pla_model_input, rule_42_output: rule_42_output).output
+        '''
+    }
+    {
+      name: "rule_45to49_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record("go95~PoleLoadingRule45To49Calculator", model_input: go95_pla_model_input, dep_rules: make_immutable_record(rule43: rule_43_output, rule44: rule_44_output)).output
+        '''
+    }
+  ]
+}

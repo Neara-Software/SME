@@ -1,0 +1,101 @@
+{
+  token: "nesc~ct_PoleLoadingCheckManager"
+  is_custom_class: true
+  fields: [
+    {
+      name: "nesc_pla_model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record("nesc~PoleLoadingModelInput", pole: pole)
+        '''
+    }
+    {
+      name: "pole"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("~Pole")
+        '''
+    }
+    {
+      name: "rule_242_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record(
+          "nesc~PoleLoadingRule242Calculator",
+          model_input: nesc_pla_model_input,
+        ).output
+        '''
+    }
+    {
+      name: "rule_243_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record(
+          "nesc~PoleLoadingRule243Calculator",
+          model_input: nesc_pla_model_input,
+        ).output
+        '''
+    }
+    {
+      name: "rule_250b_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record(
+          "nesc~PoleLoadingRule250bCalculator",
+          model_input: nesc_pla_model_input,
+          rule_243_output: rule_243_output,
+        ).output
+        '''
+    }
+    {
+      name: "rule_250c_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record(
+          "nesc~PoleLoadingRule250cCalculator",
+          model_input: nesc_pla_model_input,
+          rule_243_output: rule_243_output,
+        ).output
+        '''
+    }
+    {
+      name: "rule_250d_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record(
+          "nesc~PoleLoadingRule250dCalculator",
+          model_input: nesc_pla_model_input,
+          rule_243_output: rule_243_output,
+        ).output
+        '''
+    }
+  ]
+}

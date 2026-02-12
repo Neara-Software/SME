@@ -1,0 +1,42 @@
+{
+  token: "nesc~ct_PoleLoadingSpanCheckManager"
+  is_custom_class: true
+  fields: [
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record("nesc~PoleLoadingModelInput", span: span)
+        '''
+    }
+    {
+      name: "rule_242_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record(
+          "nesc~PoleLoadingRule242Calculator",
+          model_input: model_input,
+        ).output
+        '''
+    }
+    {
+      name: "span"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        type_only("~Span")
+        '''
+    }
+  ]
+}

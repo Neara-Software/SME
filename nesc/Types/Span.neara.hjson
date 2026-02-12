@@ -1,0 +1,50 @@
+{
+  token: "ConductorSpan"
+  is_custom_class: false
+  fields: [
+    {
+      name: "nesc~u_foo"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        list(
+          {a: 1, b: 2},
+          {a: 1, b: 3},
+          {a: 2, b: 4},
+          )
+        '''
+    }
+    {
+      name: "nesc~u_foo2"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        filter(
+          u_foo, u_foo[].a=1,
+          )[].b
+        '''
+    }
+    {
+      name: "nesc~u_pla_span_checks"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record(
+          "PoleLoadingSpanCheckManager",
+          span: self,
+        
+        
+        )
+        '''
+    }
+  ]
+}

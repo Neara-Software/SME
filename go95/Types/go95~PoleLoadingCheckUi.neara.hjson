@@ -1,0 +1,133 @@
+{
+  token: "go95~ct_PoleLoadingCheckUi"
+  is_custom_class: true
+  fields: [
+    {
+      name: "export_ui"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        ui_properties_editor(make_immutable_record("PoleLoadingCheckExporter", m: m), field_names: list("pdf_export"))
+        '''
+    }
+    {
+      name: "m"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record("PoleLoadingCheckManager")
+        '''
+    }
+    {
+      name: "rule_41_ui"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        broadcast(c: m.rule_41_processing.circuit_labels,
+          ui_properties_row(ui_mixed(c, hyperlink("https://github.com/Neara-Software/delivery/blob/kjn-pacific-mapping/Customers/PG%26E/mapping.md#rule-41-classification-of-circuits-and-grades-of-construction", "(doc)")), "Class " & map_lookup(m.rule_41_output.classification_of_circuits, c))
+        )
+        '''
+    }
+    {
+      name: "rule_42_ui"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        ui_properties_row(ui_mixed("Grade", hyperlink("https://github.com/Neara-Software/delivery/blob/kjn-pacific-mapping/Customers/PG%26E/mapping.md#rule-42-grades-of-construction", "(doc)")), m.rule_42_output.grade_of_construction)
+        '''
+    }
+    {
+      name: "rule_43_ui"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        ui_properties_row(ui_mixed("Loading", hyperlink("https://github.com/Neara-Software/delivery/blob/kjn-pacific-mapping/Customers/PG%26E/mapping.md#rule-43-temperature-and-loading", "(doc)")), m.rule_43_output.applicable_environment.label)
+        '''
+    }
+    {
+      name: "rule_44_ui"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        ui_properties_row(ui_mixed("Safety factor", hyperlink("https://github.com/Neara-Software/delivery/blob/kjn-pacific-mapping/Customers/PG%26E/mapping.md#rule-44-safety-factors", "(doc)")), m.rule_44_output.safety_factor)
+        '''
+    }
+    {
+      name: "rule_45to49_ui"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        ui_properties_row(
+          ui_mixed(
+            "Full FEA strength check",
+            hyperlink("https://github.com/Neara-Software/delivery/blob/kjn-pacific-mapping/Customers/PG%26E/mapping.md#rule-45-transverse-strength-requirements", "(doc)")
+          ),
+          if(m.rule_45to49_output.is_safety_factor_pass,"✅","❌ "),
+        )
+        '''
+    }
+    {
+      name: "ui"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        ui_properties_panel(
+          ui_mixed(
+            ui_input_switch(model(), "u_use_dt", label: "Use Data Tabel"),
+            ui_accordion_item("Check config",
+              ui_mixed(
+                if(
+                  model().u_use_dt,
+                  ui_properties_row("Pole: ", ui_input_suggest(model(), "u_rule_pole_label", model().dt_testuserdata[].pole)),
+                  ui_properties_row("Pole: ", ui_input_suggest(model(), "u_rule_pole_label", model().Poles[].label)),
+                ),
+                ui_properties_row("Override Env(Rule 48): ", ui_input_suggest(model(), "u_rule_env_label", model().Environments[].label)),
+                ui_properties_row("Rule Control: ", ui_mixed(
+                    // config on model level -- I was having flaky issue where it is keep updating if bind in manager need investigate.
+                    // also we should allow list property or at least map/list support for switchs, this is only possible I can see now
+                    ui_input_switch(model(), "u_active_41", label: "Rule 41"),
+                    ui_input_switch(model(), "u_active_42", label: "Rule 42"),
+                    ui_input_switch(model(), "u_active_43", label: "Rule 43"),
+                    ui_input_switch(model(), "u_active_44", label: "Rule 44"),
+                    ui_input_switch(model(), "u_active_45to49", label: "Rule 45–49"),
+                )),
+              )
+            ),
+        
+            if (model().u_active_41, ui_accordion_item("Rule 41", rule_41_ui)),
+            if (model().u_active_42, ui_accordion_item("Rule 42", rule_42_ui)),
+            if (model().u_active_43, ui_accordion_item("Rule 43", rule_43_ui)),
+            if (model().u_active_44, ui_accordion_item("Rule 44", rule_44_ui)),
+            if (model().u_active_45to49, ui_accordion_item("Rule 45–49", rule_45to49_ui)),
+            /// pdf should always be same? no rule should be exclude IMO
+            export_ui,
+          ),
+        )
+        '''
+    }
+  ]
+}

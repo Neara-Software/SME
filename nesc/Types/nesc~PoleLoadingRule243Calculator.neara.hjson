@@ -1,0 +1,84 @@
+{
+  token: "nesc~ct_PoleLoadingRule243Calculator"
+  is_custom_class: true
+  fields: [
+    {
+      name: "get_grade_of_construction"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        lambda(
+          is_transmission: type_only(false),
+          is_rail_crossing: type_only(false),
+          is_water_crossing: type_only(false),
+          is_freeway_crossing: type_only(false),
+          if(
+            any(
+              is_transmission,
+              is_freeway_crossing,
+              is_rail_crossing,
+              is_freeway_crossing,
+            ),
+            "B",
+            "C",
+          ),
+        )
+        '''
+    }
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("PoleLoadingModelInput")
+        '''
+    }
+    {
+      name: "output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+          {
+            grade_of_construction:
+              call(get_grade_of_construction, 
+              is_rail_crossing: processing.is_rail_crossing,
+              is_transmission: processing.is_transmission,
+              is_water_crossing: processing.is_water_crossing,
+              is_freeway_crossing: processing.is_freeway_crossing
+            )
+          }
+        '''
+    }
+    {
+      name: "processing"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record("PoleLoadingRule243Processing", model_input: model_input)
+        '''
+    }
+    {
+      name: "rule_242_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only(make_immutable_record("PoleLoadingRule242Calculator").output)
+        '''
+    }
+  ]
+}
