@@ -1,0 +1,46 @@
+{
+  token: "SpanStack"
+  is_custom_class: false
+  fields: [
+    {
+      name: "nesc~u_default_corridor_width"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "property"
+      kind: "number"
+    }
+    {
+      name: "nesc~u_ground_clearance_points"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record("nesc~GroundClearanceBayPoints",
+          bay: self,
+          default_corridor_width: u_default_corridor_width,
+          railroad_corridor_width: u_railroad_corridor_width,
+          road_corridor_width: u_road_corridor_width,
+        )
+        '''
+    }
+    {
+      name: "nesc~u_railroad_corridor_width"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "property"
+      kind: "number"
+    }
+    {
+      name: "nesc~u_road_corridor_width"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "property"
+      kind: "number"
+    }
+  ]
+}

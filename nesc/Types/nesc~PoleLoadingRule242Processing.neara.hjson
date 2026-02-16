@@ -3,7 +3,7 @@
   is_custom_class: true
   fields: [
     {
-      name: "attached_crossing_below"
+      name: "attached_crossings_below"
       prominence: "normal"
       documentation: null
       visibility: "module"
@@ -35,7 +35,10 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula: " any(geo_intersect(model().dt_or_railroads[].geometry, model_input.span.geometry))"
+      formula:
+        '''
+        any(geo_intersect(model().dt_or_railroads[].geometry, model_input.span.geometry))
+        '''
     }
     {
       name: "is_water_crossing"
@@ -90,7 +93,7 @@
         '''
     }
     {
-      name: "unattached_crossing_below"
+      name: "unattached_crossings_below"
       prominence: "normal"
       documentation: null
       visibility: "module"

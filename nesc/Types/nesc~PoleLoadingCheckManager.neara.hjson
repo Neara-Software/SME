@@ -97,5 +97,20 @@
         ).output
         '''
     }
+    {
+      name: "rule_277_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record(
+          "nesc~PoleLoadingRule277Calculator",
+          model_input: nesc_pla_model_input,
+          rule_243_output: rule_243_output,
+        ).output
+        '''
+    }
   ]
 }

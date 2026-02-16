@@ -3,6 +3,35 @@
   is_custom_class: true
   fields: [
     {
+      name: "all_grade_elevations"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        filter_nulls(
+          list(
+            if(
+              processing.is_rail_crossing,
+              {grade: "B",
+              reason: "railroad tracks crossing"},
+            ),
+            if(
+              processing.is_freeway_crossing,
+              {grade: "B",
+              reason: "limited-access highway crossing"},
+            ),
+            if(
+              processing.is_water_crossing,
+              {grade: "B",
+              reason: "navigable waterways crossing"},
+            ),
+          ) ++ attached_crossing ++ span_below ++ unattached_crossing,
+        )// Concat crossings
+        '''
+    }
+    {
       name: "attached_crossing"
       prominence: "normal"
       documentation: null
@@ -10,17 +39,10 @@
       type: "formula"
       formula:
         '''
-        broadcast(
-          att: processing.attached_crossing_below,
-          att
-          
-          //Need to create a datatable lookup here
-          // index1 for upper conductor
-          // index2 for bottom conductor
-          // create lambda.
-          
-          
-        )
+        //Todo: Confirm not_null approach here.
+        //For each crossing need to assess if lower conductor is higher grade
+        // or if a grade elevation is required.
+        call(process_crossing_spans, lower_spans: processing.attached_crossings_below, reason: "Attached Crossing Below")
         '''
     }
     {
@@ -35,12 +57,78 @@
         if(
           processing.type = "COMMS",
           "N",
-          processing.voltage = 0V,
+          processing.voltage <= 750V* sqrt(3),
           "N",
-          processing.voltage >= 750V * sqrt(3),
+          processing.voltage > 750V * sqrt(3),
           "C",
           processing.voltage >= 22kV * sqrt(3),
           "B",
+        )
+        '''
+    }
+    {
+      name: "elevated_grade"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        if(
+          //No Elevation Possible
+          base_grade = "B",
+          {grade: "B",
+          reason: "No Change"},
+          // Base Grade C may be elevated to Grade B
+          base_grade = "C",
+          let(
+            elv_to_b: filter(all_grade_elevations, all_grade_elevations[].grade = "B"),
+            if(
+              len(elv_to_b) > 0,
+              {grade: "B",
+              reason: text_join(", ", true, elv_to_b[].reason)},
+              {grade: "C",
+              reason: "No Change"},
+            ),
+          ),
+          base_grade = "N",
+          let(
+            elv_to_b: filter(all_grade_elevations, all_grade_elevations[].grade = "B"),
+            elv_to_c: filter(all_grade_elevations, all_grade_elevations[].grade = "C"),
+            if(
+              len(elv_to_b) > 0,
+              {grade: "B",
+              reason: text_join(", ", true, elv_to_b[].reason)},
+              if(
+                len(elv_to_c) > 0,
+                {grade: "C",
+                reason: text_join(", ", true, elv_to_c[].reason)},
+                {grade: "N",
+                reason: "No Change"},
+              ),
+            ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "get_crossing_grade"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        lambda(
+          upper_key: type_only(""),
+          lower_key: type_only(""),
+          find(
+            model().nesc~dt_242_1_conductor_crossing,
+            and(
+              model().nesc~dt_242_1_conductor_crossing[].upper_conductor = upper_key,
+              model().nesc~dt_242_1_conductor_crossing[].lower_conductor = lower_key,
+            ),
+          ).required_grade_upper,
         )
         '''
     }
@@ -50,31 +138,24 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula: ""
-    }
-    {
-      name: "grade_elevation"
-      prominence: "normal"
-      documentation: null
-      visibility: "module"
-      type: "formula"
       formula:
         '''
-        list(
+        //Will need coverage for closed type cables, but need to know defining conductor class for this.
+        
+        lambda(
+          voltage: type_only(1kV),
+          class: type_only(model().ConductorLibrary[].conductor_class[0]),
           if(
-            processing.is_rail_crossing,
-            {grade: "B",
-            reason: "railroad tracks crossing"},
-          ),
-          if(
-            processing.is_freeway_crossing,
-            {grade: "B",
-            reason: "limited-access highway crossing"},
-          ),
-            if(
-            processing.is_water_crossing,
-            {grade: "B",
-            reason: "navigable waterways crossing"},
+            class & "" = "COMMS",
+            "Communications",
+            voltage <= 750V * sqrt(3),
+            "LessThen750V",
+            voltage <= 2.9kV * sqrt(3),
+            "OpenLessThen2point9kV",
+            voltage <= 22kV * sqrt(3),
+            "OpenLessThen22kV",
+            voltage > 22kV * sqrt(3),
+            "OpenGreaterThen22kV",
           ),
         )
         '''
@@ -96,17 +177,57 @@
       documentation: null
       visibility: "module"
       type: "formula"
+      formula: "{base_grade: base_grade,elevated_grade: elevated_grade.grade,elevated_reason: elevated_grade.reason,}"
+    }
+    {
+      name: "process_crossing_spans"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
       formula:
         '''
-        {
-         base_grade: "C",
-         elevated_grade: "B",
-         elevated_reason: "Blah blah"
-        
-        
-        
-        
-        }
+        lambda(
+          lower_spans: type_only(processing.attached_crossings_below),
+          reason: type_only(""),
+          //Todo: Confirm not_null approach here.
+          //For each crossing need to assess if lower conductor is higher grade
+          // or if a grade elevation is required.
+          filter_nulls(
+            if(
+              //If Grade B already max
+              not(base_grade = "B"),
+              let(
+                upper_key: call(get_key, voltage: processing.voltage, class: processing.type),
+                upper_grade: base_grade,
+                broadcast(
+                  att: lower_spans,
+                  let(
+                    lower_key: call(get_key, voltage: att.voltage, class: att.type),
+                    lower_grade: att.rule242.elevated_grade,
+                    let(
+                      crossing_grade: call(get_crossing_grade, upper_key: not_null(upper_key), lower_key: not_null(lower_key)),
+                      // If crossing grade or lower grade is higher then existing grade then elevate
+                      if(
+                        upper_grade = "C",
+                        if(or(lower_grade = "B", crossing_grade = "B"), {grade: "B", reason: reason}),
+                        upper_grade = "N",
+                        if(
+                          or(lower_grade = "B", crossing_grade = "B"),
+                          {grade: "B",
+                          reason: reason},
+                          or(lower_grade = "C", crossing_grade = "C"),
+                          {grade: "C",
+                          reason: reason},
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        )
         '''
     }
     {
@@ -126,7 +247,10 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula: ""
+      formula:
+        '''
+        call(process_crossing_spans, lower_spans: processing.spans_below, reason: "Common Span Below")
+        '''
     }
     {
       name: "unattached_crossing"
@@ -134,7 +258,10 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula: ""
+      formula:
+        '''
+        call(process_crossing_spans, lower_spans: processing.unattached_crossings_below, reason: "Unattached Crossing Below")
+        '''
     }
   ]
 }

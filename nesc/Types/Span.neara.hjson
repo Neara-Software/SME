@@ -31,6 +31,54 @@
         '''
     }
     {
+      name: "nesc~u_foo3"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record(
+          "nesc~PoleLoadingRule242Calculator",
+          model_input: make_immutable_record(
+            "nesc~PoleLoadingModelInput",
+            span: self
+          ),
+        )
+        '''
+    }
+    {
+      name: "nesc~u_foo4"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        if(
+          selected,
+          viz(
+            "style",
+            "solid DeepSkyBlue width:0.5",
+            list(
+              broadcast(
+                k: find_adjacent_spans_below(self),
+                k.Environments[0].Cables[].catenary,
+              ),
+            ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "nesc~u_foo5"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula: "len(find_adjacent_spans_below(self))"
+    }
+    {
       name: "nesc~u_pla_span_checks"
       prominence: "normal"
       documentation: null

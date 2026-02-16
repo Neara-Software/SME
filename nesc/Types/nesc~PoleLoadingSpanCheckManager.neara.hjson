@@ -14,6 +14,20 @@
         '''
     }
     {
+      name: "ground_clearance_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record(
+          "nesc~GroundClearanceCalculator",
+          model_input: model_input,
+        ).output
+        '''
+    }
+    {
       name: "rule_242_output"
       prominence: "normal"
       documentation: null

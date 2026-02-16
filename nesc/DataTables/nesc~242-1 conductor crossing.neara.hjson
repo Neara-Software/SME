@@ -1,0 +1,62 @@
+{
+  name: "nesc~242-1 conductor crossing"
+  fields: []
+  source: {
+    type: "tsv_data"
+    tsv_data: {
+      value:
+        '''
+        Upper Conductor	Lower Conductor	Required Grade Upper
+        Communications	Communications	N
+        Communications	LessThen750V	N
+        Communications	CableLessThen22kV	C
+        Communications	OpenLessThen2point9kV	C
+        Communications	OpenLessThen22kV	B
+        Communications	CableGreaterThen22kV	C
+        Communications	OpenGreaterThen22kV	B
+        LessThen750V	Communications	N
+        LessThen750V	LessThen750V	N
+        LessThen750V	CableLessThen22kV	C
+        LessThen750V	OpenLessThen2point9kV	C
+        LessThen750V	OpenLessThen22kV	C
+        LessThen750V	CableGreaterThen22kV	C
+        LessThen750V	OpenGreaterThen22kV	B
+        CableLessThen22kV	Communications	C
+        CableLessThen22kV	LessThen750V	N
+        CableLessThen22kV	CableLessThen22kV	N
+        CableLessThen22kV	OpenLessThen2point9kV	C
+        CableLessThen22kV	OpenLessThen22kV	C
+        CableLessThen22kV	CableGreaterThen22kV	N
+        CableLessThen22kV	OpenGreaterThen22kV	B
+        OpenLessThen2point9kV	Communications	C
+        OpenLessThen2point9kV	LessThen750V	C
+        OpenLessThen2point9kV	CableLessThen22kV	C
+        OpenLessThen2point9kV	OpenLessThen2point9kV	C
+        OpenLessThen2point9kV	OpenLessThen22kV	C
+        OpenLessThen2point9kV	CableGreaterThen22kV	C
+        OpenLessThen2point9kV	OpenGreaterThen22kV	B
+        OpenLessThen22kV	Communications	B
+        OpenLessThen22kV	LessThen750V	C
+        OpenLessThen22kV	CableLessThen22kV	C
+        OpenLessThen22kV	OpenLessThen2point9kV	C
+        OpenLessThen22kV	OpenLessThen22kV	C
+        OpenLessThen22kV	CableGreaterThen22kV	C
+        OpenLessThen22kV	OpenGreaterThen22kV	B
+        CableGreaterThen22kV	Communications	C
+        CableGreaterThen22kV	LessThen750V	C
+        CableGreaterThen22kV	CableLessThen22kV	C
+        CableGreaterThen22kV	OpenLessThen2point9kV	C
+        CableGreaterThen22kV	OpenLessThen22kV	C
+        CableGreaterThen22kV	CableGreaterThen22kV	C
+        CableGreaterThen22kV	OpenGreaterThen22kV	B
+        OpenGreaterThen22kV	Communications	B
+        OpenGreaterThen22kV	LessThen750V	B
+        OpenGreaterThen22kV	CableLessThen22kV	B
+        OpenGreaterThen22kV	OpenLessThen2point9kV	B
+        OpenGreaterThen22kV	OpenLessThen22kV	B
+        OpenGreaterThen22kV	CableGreaterThen22kV	B
+        OpenGreaterThen22kV	OpenGreaterThen22kV	B
+        '''
+    }
+  }
+}

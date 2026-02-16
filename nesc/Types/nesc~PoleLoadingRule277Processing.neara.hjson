@@ -1,0 +1,585 @@
+{
+  token: "nesc~ct_PoleLoadingRule277Processing"
+  is_custom_class: true
+  fields: [
+    {
+      name: "allowed_pct_cable"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // Table 277-1: Cable insulators (suspension/strain) — Tension check
+        // 50% for all rules (250B, 250C, 250D)
+        lambda(
+          component_type: type_only("AA"&""),
+          0.50,
+        )
+        '''
+    }
+    {
+      name: "allowed_pct_stiff"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // Table 277-1: Stiff insulators (post/pin)
+        // Post + Moment = 40%, Post + Force = 50%, Pin + Moment = 40%, Pin + Force = 40%
+        lambda(
+          component_type: type_only("AA"&""),
+          check_type: type_only("AA"&""),
+          if(
+            and(component_type = "post", check_type = "Force"),
+            0.50,
+            0.40,
+          ),
+        )
+        '''
+    }
+    {
+      name: "cable_250b"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        call(extract_worst_cable, sims: simulations_250b, rule_name: "250B")
+        '''
+    }
+    {
+      name: "cable_250c"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        call(extract_worst_cable, sims: simulations_250c, rule_name: "250C")
+        '''
+    }
+    {
+      name: "cable_250d"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        call(extract_worst_cable, sims: simulations_250d, rule_name: "250D")
+        '''
+    }
+    {
+      name: "env_250b"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        let(
+          grade: rule_243_output.grade_of_construction,
+          if(
+            and(is_heavy, grade = "B"),
+            find(model().Environments, model().Environments[].label = "277_250B_Hvy B"),
+            and(is_heavy, grade = "C"),
+            find(model().Environments, model().Environments[].label = "277_250B_Hvy C"),
+            and(is_medium, grade = "B"),
+            find(model().Environments, model().Environments[].label = "277_250B_Med B"),
+            and(is_medium, grade = "C"),
+            find(model().Environments, model().Environments[].label = "277_250B_Med C"),
+            and(is_light, grade = "B"),
+            find(model().Environments, model().Environments[].label = "277_250B_Lgt B"),
+            and(is_light, grade = "C"),
+            find(model().Environments, model().Environments[].label = "277_250B_Lgt C"),
+          ),
+        )
+        '''
+    }
+    {
+      name: "env_250c"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        if(
+          nesc250c_required,
+          let(
+            env: find(model().Environments, model().Environments[].label = "277_250C C"),
+            if(
+              and(env != null, len(nesc250c_wind) > 0),
+              make_environment(
+                template: env,
+                wind_pressure: 0.00256 * (nesc250c_wind[0] ^ 2) * unit_value(1, "psf"),
+              ),
+            ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "env_250d"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        if(
+          nesc250d_required,
+          let(
+            env: find(model().Environments, model().Environments[].label = "277_250D C"),
+            if(
+              and(env != null, len(nesc_250d_wind) > 0, len(nesc_250d_ice) > 0),
+              make_environment(
+                template: env,
+                wind_pressure: 0.00256 * (nesc_250d_wind[0] ^ 2) * unit_value(1, "psf"),
+                ice_radial_thickness: nesc_250d_ice[0] * unit_value(1, "in"),
+              ),
+            ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "extract_worst_cable"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        lambda(
+          sims: type_only(null),
+          rule_name: type_only("AA"&""),
+          if(
+            sims != null,
+            let(
+              reports: sims[].CableInsulatorReports,
+              worst: max_by(reports, reports[].worst[].tension[].utilization),
+              if(
+                worst != null,
+                let(
+                  ratio: worst.worst.tension.utilization / 0.50,
+                  {
+                    rule: rule_name,
+                    component_type: worst.component_type,
+                    check_type: "Tension",
+                    fea_utilisation: worst.worst.tension.utilization,
+                    allowed_percentage: 0.50,
+                    rule_277_ratio: ratio,
+                    report: worst,
+                    simulation: find(sims, sims[].solve = worst.solve),
+                  },
+                ),
+              ),
+            ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "extract_worst_stiff"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        lambda(
+          sims: type_only(null),
+          rule_name: type_only("AA"&""),
+          if(
+            sims != null,
+            let(
+              reports: sims[].StiffInsulatorReports,
+              moment_worst: max_by(reports, reports[].worst[].moment[].utilization),
+              let(
+                post_reports: filter(reports, reports[].component_type = "post"),
+                pin_reports: filter(reports, reports[].component_type = "pin"),
+                let(
+                  post_force_worst: max_by(post_reports, post_reports[].worst[].force[].utilization),
+                  pin_force_worst: max_by(pin_reports, pin_reports[].worst[].force[].utilization),
+                  let(
+                    moment_ratio: if(moment_worst != null, moment_worst.worst.moment.utilization / 0.40, 0),
+                    post_force_ratio: if(post_force_worst != null, post_force_worst.worst.force.utilization / 0.50, 0),
+                    let(
+                      pin_force_ratio: if(pin_force_worst != null, pin_force_worst.worst.force.utilization / 0.40, 0),
+                      if(
+                        and(moment_ratio >= post_force_ratio, moment_ratio >= pin_force_ratio, moment_worst != null),
+                        {
+                          rule: rule_name,
+                          component_type: moment_worst.component_type,
+                          check_type: "Moment",
+                          fea_utilisation: moment_worst.worst.moment.utilization,
+                          allowed_percentage: 0.40,
+                          rule_277_ratio: moment_ratio,
+                          report: moment_worst,
+                          simulation: find(sims, sims[].solve = moment_worst.solve),
+                        },
+                        and(post_force_ratio >= moment_ratio, post_force_ratio >= pin_force_ratio, post_force_worst != null),
+                        {
+                          rule: rule_name,
+                          component_type: "post",
+                          check_type: "Force",
+                          fea_utilisation: post_force_worst.worst.force.utilization,
+                          allowed_percentage: 0.50,
+                          rule_277_ratio: post_force_ratio,
+                          report: post_force_worst,
+                          simulation: find(sims, sims[].solve = post_force_worst.solve),
+                        },
+                        if(
+                          pin_force_worst != null,
+                          {
+                            rule: rule_name,
+                            component_type: "pin",
+                            check_type: "Force",
+                            fea_utilisation: pin_force_worst.worst.force.utilization,
+                            allowed_percentage: 0.40,
+                            rule_277_ratio: pin_force_ratio,
+                            report: pin_force_worst,
+                            simulation: find(sims, sims[].solve = pin_force_worst.solve),
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "is_heavy"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        or(
+          any(strain_section_check = "Heavy Loading District"),
+          any(pole_check = "Heavy Loading District"),
+        )
+        '''
+    }
+    {
+      name: "is_light"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        and(
+          not(
+            or(is_heavy, is_medium),
+          ),
+          any(pole_check = "Light Loading District"),
+        )
+        '''
+    }
+    {
+      name: "is_medium"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        and(
+          not(is_heavy),
+          any(pole_check = "Medium Loading District"),
+        )
+        '''
+    }
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("PoleLoadingModelInput")
+        '''
+    }
+    {
+      name: "nesc250c_required"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        or(
+          model_input.pole.height > 6ft,
+          any(model_input.pole.spans[].ground_clearance > 60ft),
+        )
+        '''
+    }
+    {
+      name: "nesc250c_wind"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        if(
+          rule_243_output.grade_of_construction = "C",
+          geo_query(
+            model().dt_250c_grc_wind_speed,
+            model_input.pole.geometry,
+            10ft,
+          )[].wind_speed,
+          geo_query(
+            model().dt_250c_grb_wind_speed,
+            model_input.pole.geometry,
+            10ft,
+          )[].wind_speed,
+        )
+        '''
+    }
+    {
+      name: "nesc250d_required"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        or(
+          model_input.pole.height > 6ft,
+          any(model_input.pole.spans[].ground_clearance > 60ft),
+        )
+        '''
+    }
+    {
+      name: "nesc_250d_ice"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        geo_query(
+          model().dt_250d_ice,
+          model_input.pole.geometry,
+          10ft,
+        )[].ice_thickness
+        '''
+    }
+    {
+      name: "nesc_250d_wind"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        geo_query(
+          model().dt_250d_wind,
+          model_input.pole.geometry,
+          10ft,
+        )[].wind_speed
+        '''
+    }
+    {
+      name: "pole_check"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        geo_query(model().dt_nesc_loading_zones, model_input.pole.geometry, 0ft)[].zonename
+        '''
+    }
+    {
+      name: "rule_243_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only(make_immutable_record("PoleLoadingRule243Calculator").output)
+        '''
+    }
+    {
+      name: "simulations_250b"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        if(
+          env_250b != null,
+          simulate_structure_fea(
+            model_input.pole.primary_pole,
+            environment: env_250b,
+            wind_dirs: 8,
+            network_solve: false,
+          ),
+        )
+        '''
+    }
+    {
+      name: "simulations_250c"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        if(
+          env_250c != null,
+          simulate_structure_fea(
+            model_input.pole.primary_pole,
+            environment: env_250c,
+            wind_dirs: 8,
+            network_solve: false,
+          ),
+        )
+        '''
+    }
+    {
+      name: "simulations_250d"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        if(
+          env_250d != null,
+          simulate_structure_fea(
+            model_input.pole.primary_pole,
+            environment: env_250d,
+            wind_dirs: 8,
+            network_solve: false,
+          ),
+        )
+        '''
+    }
+    {
+      name: "stiff_250b"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        call(extract_worst_stiff, sims: simulations_250b, rule_name: "250B")
+        '''
+    }
+    {
+      name: "stiff_250c"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        call(extract_worst_stiff, sims: simulations_250c, rule_name: "250C")
+        '''
+    }
+    {
+      name: "stiff_250d"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        call(extract_worst_stiff, sims: simulations_250d, rule_name: "250D")
+        '''
+    }
+    {
+      name: "strain_section_check"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "geo_query(model().dt_nesc_loading_zones, model_input.pole.spans[].section[].geometry, 0ft)[].zonename"
+    }
+    {
+      name: "worst_cable_insulator"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        let(
+          cb: cable_250b,
+          cc: cable_250c,
+          cd: cable_250d,
+          let(
+            cb_ratio: if(cb != null, cb.rule_277_ratio, 0),
+            cc_ratio: if(cc != null, cc.rule_277_ratio, 0),
+            cd_ratio: if(cd != null, cd.rule_277_ratio, 0),
+            if(
+              and(cb_ratio >= cc_ratio, cb_ratio >= cd_ratio, cb != null),
+              cb,
+              and(cc_ratio >= cb_ratio, cc_ratio >= cd_ratio, cc != null),
+              cc,
+              cd,
+            ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "worst_ratio"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        let(
+          stiff_ratio: if(worst_stiff_insulator != null, worst_stiff_insulator.rule_277_ratio, 0),
+          cable_ratio: if(worst_cable_insulator != null, worst_cable_insulator.rule_277_ratio, 0),
+          if(stiff_ratio >= cable_ratio, stiff_ratio, cable_ratio),
+        )
+        '''
+    }
+    {
+      name: "worst_stiff_insulator"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        let(
+          sb: stiff_250b,
+          sc: stiff_250c,
+          sd: stiff_250d,
+          let(
+            sb_ratio: if(sb != null, sb.rule_277_ratio, 0),
+            sc_ratio: if(sc != null, sc.rule_277_ratio, 0),
+            sd_ratio: if(sd != null, sd.rule_277_ratio, 0),
+            if(
+              and(sb_ratio >= sc_ratio, sb_ratio >= sd_ratio, sb != null),
+              sb,
+              and(sc_ratio >= sb_ratio, sc_ratio >= sd_ratio, sc != null),
+              sc,
+              sd,
+            ),
+          ),
+        )
+        '''
+    }
+  ]
+}

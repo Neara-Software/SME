@@ -1,0 +1,332 @@
+{
+  token: "nesc~ct_GroundClearanceProcessing"
+  is_custom_class: true
+  fields: [
+    {
+      name: "distance"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        broadcast(
+          pp: points,
+          broadcast(
+            env: environments,
+            let(
+              span_report: index(span_reports, index_of(environments, env)),
+              not_null(measure_distance(span_report[].CableReports[].catenary, pp.points)),
+            ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "env_230b"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        if(
+          is_heavy,
+          make_environment(
+            temperature: unit_value(0, "fahrenheit"),
+            ice_radial_thickness: unit_value(0.5, "in"),
+            ice_density: unit_value(56, "lb/ft^3"),
+          ),
+          is_medium,
+          make_environment(
+            temperature: unit_value(15, "fahrenheit"),
+            ice_radial_thickness: unit_value(0.25, "in"),
+            ice_density: unit_value(56, "lb/ft^3"),
+          ),
+        )
+        '''
+    }
+    {
+      name: "env_max_temp"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        if(
+          model_input.span.section.max_operating_temperature > unit_value(120, "fahrenheit"),
+          make_environment(
+            temperature: model_input.span.section.max_operating_temperature,
+          ),
+          make_environment(
+            temperature: unit_value(120, "fahrenheit"),
+          ),
+        )
+        '''
+    }
+    {
+      name: "environments"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        filter_nulls(list(env_max_temp, env_230b))
+        '''
+    }
+    {
+      name: "is_heavy"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        or(
+          any(strain_section_check = "Heavy Loading District"),
+          any(pole_check = "Heavy Loading District"),
+        )
+        '''
+    }
+    {
+      name: "is_light"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        and(
+          not(
+            or(is_heavy, is_medium),
+          ),
+          any(pole_check = "Light Loading District"),
+        )
+        '''
+    }
+    {
+      name: "is_medium"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        and(
+          not(is_heavy),
+          any(pole_check = "Medium Loading District"),
+        )
+        '''
+    }
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("PoleLoadingModelInput")
+        '''
+    }
+    {
+      name: "points"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        model_input.span.stack.u_ground_clearance_points.points
+        '''
+    }
+    {
+      name: "pole_check"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        geo_query(model().dt_nesc_loading_zones, model_input.span.pole1.geometry, 0ft)[].zonename
+        '''
+    }
+    {
+      name: "required_distance"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        filter_nulls(
+          broadcast(
+            terrain: terrain_category,
+            let(
+              p_clear: find(
+                model().nesc~dt_232_1_ground_clearance,
+                model().nesc~dt_232_1_ground_clearance[].description = terrain,
+              ),
+              if(
+                voltage_group = "COMMS",
+                p_clear.col1,
+                voltage_group = "Neutral_Msgr",
+                p_clear.col1,
+                voltage_group = "Supply_0_750V",
+                p_clear.col3,
+                voltage_group = "Distribution",
+                p_clear.col4,
+                voltage_group = "57kV",
+                p_clear.col4,
+                voltage_group = "115kV",
+                p_clear.col4,
+                voltage_group = "230kV",
+                p_clear.col4,
+              ),
+            ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "results"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        broadcast(
+          terrain: terrain_category,
+          let(
+            ii: not_null(index_of(terrain_category, terrain)),
+            let(
+              dist: distance[ii],
+              required: required_distance[ii],
+              let(
+                min_clearance: min_by(dist, dist[].vertical_distance - required),
+                let(
+                  jj: not_null(index_of(dist, min_clearance)),
+                  {terrain_category: terrain,
+                  environment: environments[jj],
+                  vertical_distance: min_clearance.vertical_distance,
+                  required_distance: required,
+                  margin: min_clearance.vertical_distance - required,
+                  },
+                ),
+              ),
+            ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "simulations"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        broadcast(
+          env: environments,
+          simulate_strain_section_fea(
+            model_input.span.section,
+            environment: env,
+            network_solve: false,
+          ),
+        )
+        '''
+    }
+    {
+      name: "span_reports"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        broadcast(
+          env: environments,
+          let(
+            sim: index(simulations, index_of(environments, env)),
+            filter(
+              sim[].SpanReports,
+              sim[].SpanReports[].span = model_input.span,
+            ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "strain_section_check"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        geo_query(model().dt_nesc_loading_zones, model_input.span.section.geometry, 0ft)[].zonename
+        '''
+    }
+    {
+      name: "terrain_category"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "points[].category"
+    }
+    {
+      name: "voltage_group"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        let(
+          voltage: model_input.span.section.voltage,
+          conductor_class: model_input.span.section.type.conductor_class,
+          if(
+            conductor_class & "" = "COMMS",
+            "COMMS",
+            voltage >= 229.5kV,
+            "230kV",
+            voltage >= 115kV,
+            "115kV",
+            voltage >= 57kV,
+            "57kV",
+            voltage > 750 * unit("V"),
+            "Distribution",
+            voltage > 0kV,
+            "Supply_0_750V",
+            voltage = 0kV,
+            "Neutral_Msgr",
+          ),
+        )
+        '''
+    }
+    {
+      name: "worst_margin"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        if(worst_result != null, worst_result.margin, 0ft)
+        '''
+    }
+    {
+      name: "worst_result"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "min_by(results, results[].margin)"
+    }
+  ]
+}

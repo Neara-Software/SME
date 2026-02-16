@@ -1,0 +1,23 @@
+{
+  name: "nesc~232-1 ground clearance"
+  fields: []
+  source: {
+    type: "tsv_data"
+    tsv_data: {
+      value:
+        '''
+        description	col1	col2	col3	col4
+        Track of railroad	23.5	24.0	24.5	26.5
+        Roads and other areas subject to truck traffic	15.5	16.0	16.5	18.5
+        Driveways, parking areas, and alleys	15.5	16.0	16.5	18.5
+        Other areas traversed by vehicles	15.5	16.0	16.5	18.5
+        Spaces and ways subject to pedestrians only	9.5	12.0	12.5	14.5
+        Water areas not suitable for sailboating	14.0	14.5	15.0	17.0
+        Water areas suitable for sailboating less than 20 acres	17.5	18.0	18.5	20.5
+        Water areas suitable for sailboating 20 to 200 acres	25.5	26.0	26.5	28.5
+        Water areas suitable for sailboating 200 to 2000 acres	31.5	32.0	32.5	34.5
+        Water areas suitable for sailboating over 2000 acres	37.5	38.0	38.5	40.5
+        '''
+    }
+  }
+}

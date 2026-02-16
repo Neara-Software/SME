@@ -1,0 +1,118 @@
+{
+  id: "eccd6650b8af9e448d3b7195"
+  title: "nesc~242-1 conductor crossing"
+  description: null
+  root: "Model"
+  favorite: false
+  editable_data: true
+  export_column_header_type: "field_title"
+  table: {
+    query: {
+      queries: [
+        {
+          collection: "nesc~dt_242_1_conductor_crossing"
+          filter: {
+            conditions: []
+            bounds_filter: "none"
+            quick_search: null
+          }
+        }
+      ]
+      sort: {
+        fields: []
+      }
+      page_size: 300
+      offset: 0
+    }
+    fields: [
+      {
+        name: "upper_conductor"
+        title: "Upper Conductor"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 466
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+      }
+      {
+        name: "lower_conductor"
+        title: "Lower Conductor"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 466
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+      }
+      {
+        name: "required_grade_upper"
+        title: "Required Grade Upper"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 466
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+      }
+    ]
+  }
+  views: []
+  visibility: {
+    visibility: "external"
+    org_id: null
+  }
+  viz_config: {
+    visualizing: false
+    visualizing_quick_toggle: false
+    visualizing_pinned: false
+    color3d_objects: false
+    visualize_on_world_terrain: false
+    world_geom_source: false
+    elevation_geom_source: null
+    default_color: {
+      r: 0.25098039215686274
+      g: 0.25098039215686274
+      b: 1
+      a: 1
+    }
+    threshold: 5
+    overlay_min_zoom: 0
+    overlay_max_zoom: 23
+    interactive_terrain_visualization_mode: "default_mode"
+  }
+  local_mode: true
+  global_enabled: false
+  global_search_enabled: false
+  properties: {}
+}

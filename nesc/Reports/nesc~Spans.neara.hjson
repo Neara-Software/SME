@@ -126,13 +126,93 @@
         }
       }
       {
-        name: "nesc~u_pla_span_checks"
-        title: "Pla Span Checks"
+        name: "nesc~u_foo5"
+        title: "Foo5"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
         width_px: 120
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+      }
+      {
+        name: "nesc~u_foo4"
+        title: "Foo4"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 98
+        quicksearch: false
+        search_option: "none"
+        show_spatial: true
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+      }
+      {
+        name: "nesc~u_foo3.elevated_grade.reason"
+        title: "Foo3 Elevated Grade Reason"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 397
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+      }
+      {
+        name: "nesc~u_pla_span_checks.rule_242_output.elevated_grade"
+        title: "Pla Span Checks Rule 242 Output Elevated Grade"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 120
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+      }
+      {
+        name: "nesc~u_pla_span_checks.rule_242_output.elevated_reason"
+        title: "Pla Span Checks Rule 242 Output Elevated Reason"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 312
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -454,7 +534,7 @@
   }
   viz_config: {
     visualizing: false
-    visualizing_quick_toggle: false
+    visualizing_quick_toggle: true
     visualizing_pinned: false
     color3d_objects: false
     visualize_on_world_terrain: false

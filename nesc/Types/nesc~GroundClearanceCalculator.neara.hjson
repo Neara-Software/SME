@@ -1,0 +1,42 @@
+{
+  token: "nesc~ct_GroundClearanceCalculator"
+  is_custom_class: true
+  fields: [
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("PoleLoadingModelInput")
+        '''
+    }
+    {
+      name: "output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        {pass: processing.worst_margin >= 0ft,
+        worst_result: processing.worst_result,
+        worst_margin: processing.worst_margin,
+        }
+        '''
+    }
+    {
+      name: "processing"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record("nesc~GroundClearanceProcessing", model_input: model_input)
+        '''
+    }
+  ]
+}

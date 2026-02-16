@@ -1,0 +1,55 @@
+{
+  token: "nesc~ct_PoleLoadingRule277Calculator"
+  is_custom_class: true
+  fields: [
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("PoleLoadingModelInput")
+        '''
+    }
+    {
+      name: "output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        {
+          worst_stiff_insulator: processing.worst_stiff_insulator,
+          worst_cable_insulator: processing.worst_cable_insulator,
+          worst_ratio: processing.worst_ratio,
+          pass: processing.worst_ratio <= 1.0,
+        }
+        '''
+    }
+    {
+      name: "processing"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record("PoleLoadingRule277Processing", model_input: model_input, rule_243_output: rule_243_output)
+        '''
+    }
+    {
+      name: "rule_243_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only(make_immutable_record("PoleLoadingRule243Calculator").output)
+        '''
+    }
+  ]
+}
