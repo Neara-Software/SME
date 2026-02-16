@@ -1,0 +1,52 @@
+{
+  name: "portland_nesc~extreme_ice_loading"
+  fields: [
+    {
+      field_name: "temperature_f"
+      field_alias: "temperature_f"
+      data_type: {
+        type: "real"
+        real: {
+          unit: "degF"
+          decimal_places: 0
+        }
+      }
+      description: null
+    }
+    {
+      field_name: "ice_thickness_in"
+      field_alias: "ice_thickness_in"
+      data_type: {
+        type: "real"
+        real: {
+          unit: "in"
+          decimal_places: 2
+        }
+      }
+      description: null
+    }
+    {
+      field_name: "wind_pressure_psf"
+      field_alias: "wind_pressure_psf"
+      data_type: {
+        type: "real"
+        real: {
+          unit: "psf"
+          decimal_places: 1
+        }
+      }
+      description: null
+    }
+  ]
+  source: {
+    type: "tsv_data"
+    tsv_data: {
+      value:
+        '''
+        loading_district	temperature_f	ice_thickness_in	wind_pressure_psf
+        Medium	32	0.5	0
+        Heavy	32	1.0	0
+        '''
+    }
+  }
+}

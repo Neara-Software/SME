@@ -1,0 +1,75 @@
+{
+  token: "portland_nesc~ct_PoleLoadingRule243Processing"
+  is_custom_class: true
+  fields: [
+    {
+      name: "is_freeway_crossing"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        any(geo_intersect(model().dt_esri_freewaysystem[].geometry, model_input.pole.geometry))
+        '''
+    }
+    {
+      name: "is_major_highway"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // PGE LD20055: 4-lane highway with speed limit >= 55 mph → Grade B.
+        // TODO: Replace with dedicated dt_pge_major_highways when available.
+        // Using dt_esri_freewaysystem as proxy — covers limited-access highways.
+        any(geo_intersect(model().dt_esri_freewaysystem[].geometry, model_input.pole.geometry))
+        '''
+    }
+    {
+      name: "is_rail_crossing"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        any(geo_intersect(model().dt_or_railroads[].geometry, model_input.pole.geometry))
+        '''
+    }
+    {
+      name: "is_transmission"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        max(model_input.pole.spans[].section[].voltage) >= 57kV
+        '''
+    }
+    {
+      name: "is_water_crossing"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        any(geo_intersect(model().dt_nhd_waterbody[].geometry, model_input.pole.geometry))
+        '''
+    }
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("PoleLoadingModelInput")
+        '''
+    }
+  ]
+}

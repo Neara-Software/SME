@@ -1,0 +1,52 @@
+{
+  name: "portland_nesc~fire_wind_speed"
+  fields: [
+    {
+      field_name: "voltage_lower_kv"
+      field_alias: "voltage_lower_kv"
+      data_type: {
+        type: "real"
+        real: {
+          unit: "kV"
+          decimal_places: 0
+        }
+      }
+      description: null
+    }
+    {
+      field_name: "wind_speed_mph"
+      field_alias: "wind_speed_mph"
+      data_type: {
+        type: "real"
+        real: {
+          unit: "mph"
+          decimal_places: 0
+        }
+      }
+      description: null
+    }
+    {
+      field_name: "wind_pressure_psf"
+      field_alias: "wind_pressure_psf"
+      data_type: {
+        type: "real"
+        real: {
+          unit: "psf"
+          decimal_places: 1
+        }
+      }
+      description: null
+    }
+  ]
+  source: {
+    type: "tsv_data"
+    tsv_data: {
+      value:
+        '''
+        voltage_class	voltage_lower_kv	wind_speed_mph	wind_pressure_psf
+        Distribution	0	85	18.5
+        Transmission	57	110	31.0
+        '''
+    }
+  }
+}

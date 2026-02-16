@@ -1,0 +1,197 @@
+{
+  token: "portland_nesc~ct_PoleLoadingFireWindProcessing"
+  is_custom_class: true
+  fields: [
+    {
+      name: "environment"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // PGE LD20055 Table 4: Fire wind — select template by pole material.
+        let(
+          env: if(
+            is_steel_pole,
+            find(model().Environments, model().Environments[].label = "PGE_FireWind_Steel"),
+            find(model().Environments, model().Environments[].label = "PGE_FireWind_Wood"),
+          ),
+          make_environment(
+            template: env,
+            wind_pressure: fire_wind_pressure,
+          ),
+        )
+        '''
+    }
+    {
+      name: "fire_wind_pressure"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // PGE LD20020: Distribution (<57kV) = 85 mph → 18.5 psf, Transmission (>=57kV) = 110 mph → 31.0 psf.
+        if(
+          is_transmission,
+          0.00256 * (110 ^ 2) * unit_value(1, "psf"),
+          0.00256 * (85 ^ 2) * unit_value(1, "psf"),
+        )
+        '''
+    }
+    {
+      name: "fire_wind_required"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // PGE LD20020: Fire wind applies to all poles in High Fire Risk Zones (HFRZs).
+        // Requires dt_pge_hfrz geospatial data table to be loaded.
+        any(geo_query(model().dt_pge_hfrz, model_input.pole.geometry, 0ft))
+        '''
+    }
+    {
+      name: "is_steel_pole"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        model_input.pole.type.material = "steel"
+        '''
+    }
+    {
+      name: "is_transmission"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        max(model_input.pole.spans[].section[].voltage) >= 57kV
+        '''
+    }
+    {
+      name: "max_pole"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        let(
+          p: filter(
+            simulations[].BeamReports,
+            and(simulations[].BeamReports[].is_on_pole, simulations[].BeamReports[].pole = model_input.pole),
+          ),
+          let(
+            stress_max: max_by(p, p[].worst[].normal_stress[].utilization),
+            moment_max: max_by(p, p[].worst[].moment[].utilization),
+            if(
+              stress_max.worst.normal_stress.utilization > moment_max.worst.moment.utilization,
+              {check_type: "Pole Stress",
+              beamreport: stress_max,
+              simulation: find(simulations, simulations[].solve = stress_max.solve),
+              utilisation: stress_max.worst.normal_stress.utilization,
+              },
+              {check_type: "Pole Moment",
+              beamreport: moment_max,
+              simulation: find(simulations, simulations[].solve = moment_max.solve),
+              utilisation: moment_max.worst.moment.utilization,
+              },
+            ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "max_stay"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        if(
+          len(model_input.pole.Stays) > 0,
+          let(
+            pmax: max_by(
+              simulations[].StayCableReports,
+              simulations[].StayCableReports[].worst[].tension[].utilization,
+            ),
+            {stay: pmax.stay,
+            check_type: "Stay Tension",
+            stayreport: pmax,
+            simulation: find(simulations, simulations[].solve = pmax.solve),
+            utilisation: pmax.worst.tension.utilization,
+            },
+          ),
+        )
+        '''
+    }
+    {
+      name: "max_xarm"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        let(
+          p: filter(
+            simulations[].BeamReports,
+            not(simulations[].BeamReports[].is_on_pole),
+          ),
+          let(
+            stress_max: max_by(p, p[].worst[].normal_stress[].utilization),
+            moment_max: max_by(p, p[].worst[].moment[].utilization),
+            if(
+              stress_max.worst.normal_stress.utilization > moment_max.worst.moment.utilization,
+              {check_type: "Xarm Stress",
+              beamreport: stress_max,
+              simulation: find(simulations, simulations[].solve = stress_max.solve),
+              utilisation: stress_max.worst.normal_stress.utilization,
+              },
+              {check_type: "Xarm Moment",
+              beamreport: moment_max,
+              simulation: find(simulations, simulations[].solve = moment_max.solve),
+              utilisation: moment_max.worst.moment.utilization,
+              },
+            ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("PoleLoadingModelInput")
+        '''
+    }
+    {
+      name: "simulations"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        simulate_structure_fea(
+          model_input.pole.primary_pole,
+          environment: environment,
+          wind_dirs: 8,
+          network_solve: false,
+        )
+        '''
+    }
+  ]
+}

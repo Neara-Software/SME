@@ -1,0 +1,270 @@
+{
+  token: "portland_nesc~ct_PoleLoadingRule250bProcessing"
+  is_custom_class: true
+  fields: [
+    {
+      name: "environment"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        let(
+          grade: rule_243_output.grade_of_construction,
+          if(
+            and(is_heavy, grade = "B"),
+            find(model().Environments, model().Environments[].label = "250B_Hvy B"),
+            and(is_heavy, grade = "C"),
+            find(model().Environments, model().Environments[].label = "250B_Hvy C"),
+            and(is_medium, grade = "B"),
+            find(model().Environments, model().Environments[].label = "250B_Med B"),
+            and(is_medium, grade = "C"),
+            find(model().Environments, model().Environments[].label = "250B_Med C"),
+            and(is_light, grade = "B"),
+            find(model().Environments, model().Environments[].label = "250B_Lgt B"),
+            and(is_light, grade = "C"),
+            find(model().Environments, model().Environments[].label = "250B_Lgt C"),
+          ),
+        )
+        '''
+    }
+    {
+      name: "environment_grade_b"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // PGE LD20055 Table 5: Guys/anchors always Grade B regardless of structure grade.
+        // This environment is used for guy/stay checks when the pole is Grade C.
+        if(
+          is_heavy,
+          find(model().Environments, model().Environments[].label = "250B_Hvy B"),
+          is_medium,
+          find(model().Environments, model().Environments[].label = "250B_Med B"),
+          is_light,
+          find(model().Environments, model().Environments[].label = "250B_Lgt B"),
+        )
+        '''
+    }
+    {
+      name: "is_heavy"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        or(
+          any(strain_section_check = "Heavy Loading District"),
+          any(pole_check = "Heavy Loading District"),
+        )
+        '''
+    }
+    {
+      name: "is_light"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        and(
+          not(
+            or(is_heavy, is_medium),
+          ),
+          any(pole_check = "Light Loading District"),
+        )
+        '''
+    }
+    {
+      name: "is_medium"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        and(
+          not(is_heavy),
+          any(pole_check = "Medium Loading District"),
+        )
+        '''
+    }
+    {
+      name: "max_pole"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        let(
+          p: filter(
+            simulations[].BeamReports,
+            and(simulations[].BeamReports[].is_on_pole, simulations[].BeamReports[].pole = model_input.pole),
+          ),
+          let(
+            stress_max: max_by(p, p[].worst[].normal_stress[].utilization),
+            moment_max: max_by(p, p[].worst[].moment[].utilization),
+            if(
+              stress_max.worst.normal_stress.utilization > moment_max.worst.moment.utilization,
+              {check_type: "Pole Stress",
+              beamreport: stress_max,
+              simulation: find(simulations, simulations[].solve = stress_max.solve),
+              utilisation: stress_max.worst.normal_stress.utilization,
+              },
+              {check_type: "Pole Moment",
+              beamreport: moment_max,
+              simulation: find(simulations, simulations[].solve = moment_max.solve),
+              utilisation: moment_max.worst.moment.utilization,
+              },
+            ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "max_stay"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // PGE LD20055 Table 5: Guys/anchors always use Grade B simulation.
+        // When grade = C, use the Grade B simulation for stay checks.
+        if(
+          len(model_input.pole.Stays) > 0,
+          let(
+            stay_sims: if(simulations_grade_b != null, simulations_grade_b, simulations),
+            let(
+              pmax: max_by(
+                stay_sims[].StayCableReports,
+                stay_sims[].StayCableReports[].worst[].tension[].utilization,
+              ),
+              {stay: pmax.stay,
+              check_type: "Stay Tension",
+              stayreport: pmax,
+              simulation: find(stay_sims, stay_sims[].solve = pmax.solve),
+              utilisation: pmax.worst.tension.utilization,
+              },
+            ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "max_xarm"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        let(
+          p: filter(
+            simulations[].BeamReports,
+            not(simulations[].BeamReports[].is_on_pole),
+          ),
+          let(
+            stress_max: max_by(p, p[].worst[].normal_stress[].utilization),
+            moment_max: max_by(p, p[].worst[].moment[].utilization),
+            if(
+              stress_max.worst.normal_stress.utilization > moment_max.worst.moment.utilization,
+              {check_type: "Xarm Stress",
+              beamreport: stress_max,
+              simulation: find(simulations, simulations[].solve = stress_max.solve),
+              utilisation: stress_max.worst.normal_stress.utilization,
+              },
+              {check_type: "Xarm Moment",
+              beamreport: moment_max,
+              simulation: find(simulations, simulations[].solve = moment_max.solve),
+              utilisation: moment_max.worst.moment.utilization,
+              },
+            ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("PoleLoadingModelInput")
+        '''
+    }
+    {
+      name: "pole_check"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        geo_query(model().dt_nesc_loading_zones, model_input.pole.geometry, 0ft)[].zonename
+        '''
+    }
+    {
+      name: "rule_243_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only(make_immutable_record("PoleLoadingRule243Calculator").output)
+        '''
+    }
+    {
+      name: "simulations"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        simulate_structure_fea(
+          model_input.pole.primary_pole,
+          environment: environment,
+          wind_dirs: 8,
+          network_solve: false,
+        )
+        '''
+    }
+    {
+      name: "simulations_grade_b"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // PGE LD20055 Table 5: Run Grade B simulation for guy checks when pole is Grade C.
+        if(
+          rule_243_output.grade_of_construction = "C",
+          simulate_structure_fea(
+            model_input.pole.primary_pole,
+            environment: environment_grade_b,
+            wind_dirs: 8,
+            network_solve: false,
+          ),
+        )
+        '''
+    }
+    {
+      name: "strain_section_check"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "geo_query(model().dt_nesc_loading_zones, model_input.pole.spans[].section[].geometry, 0ft)[].zonename"
+    }
+  ]
+}

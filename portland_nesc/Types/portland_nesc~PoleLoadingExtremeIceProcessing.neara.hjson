@@ -1,0 +1,246 @@
+{
+  token: "portland_nesc~ct_PoleLoadingExtremeIceProcessing"
+  is_custom_class: true
+  fields: [
+    {
+      name: "environment"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // PGE LD20055 Table 4: Extreme ice (no wind).
+        // Select environment template by pole material and loading district.
+        let(
+          template_label: if(
+            and(is_steel_pole, is_heavy),
+            "PGE_ExtremeIce_Steel_Hvy",
+            and(is_steel_pole, is_medium),
+            "PGE_ExtremeIce_Steel_Med",
+            is_heavy,
+            "PGE_ExtremeIce_Wood_Hvy",
+            "PGE_ExtremeIce_Wood_Med",
+          ),
+          let(
+            env: find(model().Environments, model().Environments[].label = template_label),
+            make_environment(
+              template: env,
+              ice_radial_thickness: ice_params[0].ice_thickness_in * unit_value(1, "in"),
+            ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "extreme_ice_required"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // PGE extreme ice applies to all poles within a loading district.
+        or(is_heavy, is_medium)
+        '''
+    }
+    {
+      name: "ice_params"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // Look up ice parameters from data table by loading district.
+        if(
+          is_heavy,
+          filter(
+            model().portland_nesc~dt_extreme_ice_loading,
+            model().portland_nesc~dt_extreme_ice_loading[].loading_district = "Heavy",
+          ),
+          filter(
+            model().portland_nesc~dt_extreme_ice_loading,
+            model().portland_nesc~dt_extreme_ice_loading[].loading_district = "Medium",
+          ),
+        )
+        '''
+    }
+    {
+      name: "is_heavy"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        or(
+          any(strain_section_check = "Heavy Loading District"),
+          any(pole_check = "Heavy Loading District"),
+        )
+        '''
+    }
+    {
+      name: "is_medium"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        and(
+          not(is_heavy),
+          any(pole_check = "Medium Loading District"),
+        )
+        '''
+    }
+    {
+      name: "is_steel_pole"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        model_input.pole.type.material = "steel"
+        '''
+    }
+    {
+      name: "max_pole"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        let(
+          p: filter(
+            simulations[].BeamReports,
+            and(simulations[].BeamReports[].is_on_pole, simulations[].BeamReports[].pole = model_input.pole),
+          ),
+          let(
+            stress_max: max_by(p, p[].worst[].normal_stress[].utilization),
+            moment_max: max_by(p, p[].worst[].moment[].utilization),
+            if(
+              stress_max.worst.normal_stress.utilization > moment_max.worst.moment.utilization,
+              {check_type: "Pole Stress",
+              beamreport: stress_max,
+              simulation: find(simulations, simulations[].solve = stress_max.solve),
+              utilisation: stress_max.worst.normal_stress.utilization,
+              },
+              {check_type: "Pole Moment",
+              beamreport: moment_max,
+              simulation: find(simulations, simulations[].solve = moment_max.solve),
+              utilisation: moment_max.worst.moment.utilization,
+              },
+            ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "max_stay"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        if(
+          len(model_input.pole.Stays) > 0,
+          let(
+            pmax: max_by(
+              simulations[].StayCableReports,
+              simulations[].StayCableReports[].worst[].tension[].utilization,
+            ),
+            {stay: pmax.stay,
+            check_type: "Stay Tension",
+            stayreport: pmax,
+            simulation: find(simulations, simulations[].solve = pmax.solve),
+            utilisation: pmax.worst.tension.utilization,
+            },
+          ),
+        )
+        '''
+    }
+    {
+      name: "max_xarm"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        let(
+          p: filter(
+            simulations[].BeamReports,
+            not(simulations[].BeamReports[].is_on_pole),
+          ),
+          let(
+            stress_max: max_by(p, p[].worst[].normal_stress[].utilization),
+            moment_max: max_by(p, p[].worst[].moment[].utilization),
+            if(
+              stress_max.worst.normal_stress.utilization > moment_max.worst.moment.utilization,
+              {check_type: "Xarm Stress",
+              beamreport: stress_max,
+              simulation: find(simulations, simulations[].solve = stress_max.solve),
+              utilisation: stress_max.worst.normal_stress.utilization,
+              },
+              {check_type: "Xarm Moment",
+              beamreport: moment_max,
+              simulation: find(simulations, simulations[].solve = moment_max.solve),
+              utilisation: moment_max.worst.moment.utilization,
+              },
+            ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("PoleLoadingModelInput")
+        '''
+    }
+    {
+      name: "pole_check"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        geo_query(model().dt_nesc_loading_zones, model_input.pole.geometry, 0ft)[].zonename
+        '''
+    }
+    {
+      name: "simulations"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        simulate_structure_fea(
+          model_input.pole.primary_pole,
+          environment: environment,
+          wind_dirs: 8,
+          network_solve: false,
+        )
+        '''
+    }
+    {
+      name: "strain_section_check"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "geo_query(model().dt_nesc_loading_zones, model_input.pole.spans[].section[].geometry, 0ft)[].zonename"
+    }
+  ]
+}

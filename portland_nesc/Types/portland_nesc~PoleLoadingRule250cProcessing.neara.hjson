@@ -1,0 +1,204 @@
+{
+  token: "portland_nesc~ct_PoleLoadingRule250cProcessing"
+  is_custom_class: true
+  fields: [
+    {
+      name: "environment"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // PGE LD20055 Table 2: Steel vs wood/FRP have different load/strength factors.
+        let(
+          env: if(
+            is_steel_pole,
+            find(model().Environments, model().Environments[].label = "PGE_250C_Steel"),
+            find(model().Environments, model().Environments[].label = "PGE_250C_Wood"),
+          ),
+          make_environment(
+            template: env,
+            wind_pressure: 0.00256 * (nesc250c_wind[0] ^ 2) * unit_value(1, "psf"),
+          ),
+        )
+        '''
+    }
+    {
+      name: "is_steel_pole"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        model_input.pole.type.material = "steel"
+        '''
+    }
+    {
+      name: "max_pole"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        let(
+          p: filter(
+            simulations[].BeamReports,
+            and(simulations[].BeamReports[].is_on_pole, simulations[].BeamReports[].pole = model_input.pole),
+          ),
+          let(
+            stress_max: max_by(p, p[].worst[].normal_stress[].utilization),
+            moment_max: max_by(p, p[].worst[].moment[].utilization),
+            if(
+              stress_max.worst.normal_stress.utilization > moment_max.worst.moment.utilization,
+              {check_type: "Pole Stress",
+              beamreport: stress_max,
+              simulation: find(simulations, simulations[].solve = stress_max.solve),
+              utilisation: stress_max.worst.normal_stress.utilization,
+              },
+              {check_type: "Pole Moment",
+              beamreport: moment_max,
+              simulation: find(simulations, simulations[].solve = moment_max.solve),
+              utilisation: moment_max.worst.moment.utilization,
+              },
+            ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "max_stay"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        if(
+          len(model_input.pole.Stays) > 0,
+          let(
+            pmax: max_by(
+              simulations[].StayCableReports,
+              simulations[].StayCableReports[].worst[].tension[].utilization,
+            ),
+            {stay: pmax.stay,
+            check_type: "Stay Tension",
+            stayreport: pmax,
+            simulation: find(simulations, simulations[].solve = pmax.solve),
+            utilisation: pmax.worst.tension.utilization,
+            },
+          ),
+        )
+        '''
+    }
+    {
+      name: "max_xarm"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        let(
+          p: filter(
+            simulations[].BeamReports,
+            not(simulations[].BeamReports[].is_on_pole),
+          ),
+          let(
+            stress_max: max_by(p, p[].worst[].normal_stress[].utilization),
+            moment_max: max_by(p, p[].worst[].moment[].utilization),
+            if(
+              stress_max.worst.normal_stress.utilization > moment_max.worst.moment.utilization,
+              {check_type: "Xarm Stress",
+              beamreport: stress_max,
+              simulation: find(simulations, simulations[].solve = stress_max.solve),
+              utilisation: stress_max.worst.normal_stress.utilization,
+              },
+              {check_type: "Xarm Moment",
+              beamreport: moment_max,
+              simulation: find(simulations, simulations[].solve = moment_max.solve),
+              utilisation: moment_max.worst.moment.utilization,
+              },
+            ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("PoleLoadingModelInput")
+        '''
+    }
+    {
+      name: "nesc250c_required"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // PGE LD20055: 250C applies to ALL structure heights (no 60ft threshold).
+        true
+        '''
+    }
+    {
+      name: "nesc250c_wind"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // PGE LD20020: Always use Grade B wind speed (85 mph) regardless of actual grade.
+        geo_query(
+          model().dt_250c_grb_wind_speed,
+          model_input.pole.geometry,
+          10ft,
+        )[].wind_speed
+        '''
+    }
+    {
+      name: "no_wind_results"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "len(nesc250c_wind)"
+    }
+    {
+      name: "rule_243_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only(make_immutable_record("PoleLoadingRule243Calculator").output)
+        '''
+    }
+    {
+      name: "simulations"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        simulate_structure_fea(
+          model_input.pole.primary_pole,
+          environment: environment,
+          wind_dirs: 8,
+          network_solve: false,
+        )
+        '''
+    }
+  ]
+}

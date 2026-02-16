@@ -1,0 +1,46 @@
+{
+  token: "portland_nesc~ct_PoleLoadingFireWindCalculator"
+  is_custom_class: true
+  fields: [
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("PoleLoadingModelInput")
+        '''
+    }
+    {
+      name: "output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        if(
+          processing.fire_wind_required,
+          {environment: processing.environment,
+          worst_pole: processing.max_pole,
+          worst_stay: processing.max_stay,
+          worst_xarm: processing.max_xarm,
+          },
+        )
+        '''
+    }
+    {
+      name: "processing"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record("portland_nesc~PoleLoadingFireWindProcessing", model_input: model_input)
+        '''
+    }
+  ]
+}
