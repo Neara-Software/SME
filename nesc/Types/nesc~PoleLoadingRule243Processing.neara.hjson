@@ -3,50 +3,48 @@
   is_custom_class: true
   fields: [
     {
-      name: "is_freeway_crossing"
+      name: "conflict_grades"
       prominence: "normal"
       documentation: null
       visibility: "module"
       type: "formula"
       formula:
         '''
-         any(geo_intersect(model().dt_esri_freewaysystem[].geometry, model_input.pole.geometry))
+        conflict_spans[].u_pla_span_checks.rule_242_output.elevated_grade
         '''
     }
     {
-      name: "is_rail_crossing"
+      name: "conflict_spans"
       prominence: "normal"
       documentation: null
       visibility: "module"
       type: "formula"
       formula:
         '''
-        
-         any(geo_intersect(model().dt_or_railroads[].geometry, model_input.pole.geometry))
+        let(
+          nearby: find_nearby_spans(model_input.pole, search_radius),
+          other_lines: filter_nulls(
+            broadcast(
+              ns: nearby,
+              if(len(filter(model_input.pole.spans, model_input.pole.spans[] = ns)) = 0, ns),
+            )
+          ),
+          filter(
+            other_lines,
+            measure_distance(pole_base, other_lines[]).distance < search_radius,
+          ),
+        )
         '''
     }
     {
-      name: "is_transmission"
+      name: "is_structure_conflict"
       prominence: "normal"
       documentation: null
       visibility: "module"
       type: "formula"
       formula:
         '''
-        
-        max(model_input.pole.spans[].section[].voltage) >= 57kV
-        '''
-    }
-    {
-      name: "is_water_crossing"
-      prominence: "normal"
-      documentation: null
-      visibility: "module"
-      type: "formula"
-      formula:
-        '''
-        
-         any(geo_intersect(model().dt_nhd_waterbody[].geometry, model_input.pole.geometry))
+        len(conflict_spans) > 0
         '''
     }
     {
@@ -58,6 +56,57 @@
       formula:
         '''
         type_only("PoleLoadingModelInput")
+        '''
+    }
+    {
+      name: "pole_base"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        vec3(model_input.pole.location, model_input.pole.ground_z)
+        '''
+    }
+    {
+      name: "search_radius"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        model_input.pole.height
+        '''
+    }
+    {
+      name: "span_grades"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        model_input.pole.spans[].u_pla_span_checks.rule_242_output.elevated_grade
+        '''
+    }
+    {
+      name: "worst_grade"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        let(
+          all_grades: span_grades ++ conflict_grades,
+          if(
+            len(filter(all_grades, all_grades[] = "B")) > 0, "B",
+            len(filter(all_grades, all_grades[] = "C")) > 0, "C",
+            "N",
+          ),
+        )
         '''
     }
   ]
