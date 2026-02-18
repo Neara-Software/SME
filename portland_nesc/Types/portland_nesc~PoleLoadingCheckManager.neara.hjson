@@ -76,9 +76,8 @@
       type: "formula"
       formula:
         '''
-        // PGE LD20055: Uses PGE Rule 243 (adds major highway criteria).
         make_immutable_record(
-          "portland_nesc~PoleLoadingRule243Calculator",
+          "nesc~PoleLoadingRule243Calculator",
           model_input: nesc_pla_model_input,
         ).output
         '''

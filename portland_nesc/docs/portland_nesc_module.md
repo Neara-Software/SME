@@ -13,7 +13,6 @@ PGE rules always apply — there is no toggle. The module follows the same custo
 
 | Area | Base NESC | PGE Override |
 |---|---|---|
-| Rule 243 — Grade B criteria | Transmission, railroad, freeway, waterway | Adds: 4-lane highway >= 55 mph |
 | Rule 250C — Applicability | Structures/spans > 60 ft only | **All structures** regardless of height |
 | Rule 250C — Wind speed | Grade-dependent (B or C) | Always uses **Grade B** (85 mph) |
 | Rule 250C/D — Load factors | Single set of factors | **Steel vs wood/FRP split** (different load + strength factors) |
@@ -31,10 +30,7 @@ PGE rules always apply — there is no toggle. The module follows the same custo
 portland_nesc~PoleLoadingCheckManager
     |
     |-- rule_242_output        (base nesc — unchanged)
-    |-- rule_243_output        (portland_nesc~PoleLoadingRule243Calculator)
-    |       |
-    |       +-- portland_nesc~PoleLoadingRule243Processing
-    |               (adds is_major_highway)
+    |-- rule_243_output        (base nesc~PoleLoadingRule243Calculator — unchanged)
     |
     |-- rule_250b_output       (base nesc calculator, PGE processing injected via DI)
     |       |
@@ -67,9 +63,7 @@ The module uses two override patterns:
 
 1. **Dependency Injection (DI):** For 250B and 250C, the PGE Processing type is instantiated and injected into the base NESC Calculator via the `processing` parameter of `make_immutable_record`. The base Calculator's `output` formula reads from `processing.max_pole`, `processing.max_stay`, etc., so the PGE Processing seamlessly replaces the base Processing without duplicating the Calculator.
 
-2. **Full replacement:** For Rule 243, the PGE Calculator replaces the base Calculator entirely because the `get_grade_of_construction` lambda has additional parameters (`is_major_highway`).
-
-3. **New types:** Extreme ice and fire wind are PGE-only checks with their own Calculator/Processing pairs, following the same structural pattern as base NESC rules.
+2. **New types:** Extreme ice and fire wind are PGE-only checks with their own Calculator/Processing pairs, following the same structural pattern as base NESC rules.
 
 ---
 
@@ -84,8 +78,6 @@ portland_nesc/
 │   └── LD20020_general_loading_requirements.md
 ├── Types/
 │   ├── portland_nesc~PoleLoadingCheckManager.neara.hjson
-│   ├── portland_nesc~PoleLoadingRule243Calculator.neara.hjson
-│   ├── portland_nesc~PoleLoadingRule243Processing.neara.hjson
 │   ├── portland_nesc~PoleLoadingRule250bProcessing.neara.hjson
 │   ├── portland_nesc~PoleLoadingRule250cProcessing.neara.hjson
 │   ├── portland_nesc~PoleLoadingExtremeIceCalculator.neara.hjson
@@ -110,7 +102,7 @@ Orchestrates all PGE checks. Takes a `pole` input (type_only `~Pole`) and produc
 | `pole` | `type_only("~Pole")` | Injected pole |
 | `nesc_pla_model_input` | `make_immutable_record("nesc~PoleLoadingModelInput", pole: pole)` | Shared model input for all rules |
 | `rule_242_output` | Base `nesc~PoleLoadingRule242Calculator` | Grade of construction per conductor crossings — unchanged |
-| `rule_243_output` | **PGE** `portland_nesc~PoleLoadingRule243Calculator` | Grade of construction per pole — adds major highway |
+| `rule_243_output` | Base `nesc~PoleLoadingRule243Calculator` | Grade of construction per pole + structure conflict — unchanged |
 | `rule_250b_output` | Base calculator + **PGE** `portland_nesc~PoleLoadingRule250bProcessing` injected | Combined ice+wind — guys always Grade B |
 | `rule_250c_output` | Base calculator + **PGE** `portland_nesc~PoleLoadingRule250cProcessing` injected | Extreme wind — all heights, Grade B wind, steel/wood |
 | `rule_250d_output` | Base `nesc~PoleLoadingRule250dCalculator` | Extreme ice+wind — unchanged (PGE factors in env templates) |
@@ -120,45 +112,16 @@ Orchestrates all PGE checks. Takes a `pole` input (type_only `~Pole`) and produc
 
 ---
 
-## Rule 243 — Grade of Construction Override
+## Rule 243 — Grade of Construction (Base NESC)
 
-### Calculator — `portland_nesc~PoleLoadingRule243Calculator`
-
-Token: `portland_nesc~ct_PoleLoadingRule243Calculator`
-
-Extends base NESC Rule 243 by adding PGE-specific Grade B criteria.
-
-**`get_grade_of_construction` lambda:**
-
-```
-lambda(
-  is_freeway_crossing, is_major_highway, is_rail_crossing,
-  is_transmission, is_water_crossing,
-  → if any are true: "B", else: "C"
-)
-```
-
-| Parameter | Source | Description |
-|---|---|---|
-| `is_freeway_crossing` | `geo_intersect` vs `dt_esri_freewaysystem` | Base NESC — limited-access highway |
-| `is_major_highway` | `geo_intersect` vs `dt_esri_freewaysystem` (proxy) | **PGE LD20055** — 4-lane highway >= 55 mph |
-| `is_rail_crossing` | `geo_intersect` vs `dt_or_railroads` | Base NESC — railroad |
-| `is_transmission` | `max(voltage) >= 57kV` | Base NESC — transmission line |
-| `is_water_crossing` | `geo_intersect` vs `dt_nhd_waterbody` | Base NESC — navigable waterway |
-
-**Note:** `is_major_highway` currently uses `dt_esri_freewaysystem` as a proxy. When a dedicated PGE major highway data table becomes available, update `portland_nesc~PoleLoadingRule243Processing.is_major_highway` to reference the new table.
-
-### Processing — `portland_nesc~PoleLoadingRule243Processing`
-
-Token: `portland_nesc~ct_PoleLoadingRule243Processing`
-
-Duplicates the base processing fields and adds `is_major_highway`.
+Portland uses the base `nesc~PoleLoadingRule243Calculator` directly — no PGE override needed. Base NESC Rule 243 provides span-grade aggregation (worst grade across all spans) and structure conflict detection, which covers all PGE requirements. The freeway crossing check on spans covers the major highway criterion.
 
 ### Output Structure
 
 ```
 {
-  grade_of_construction: "B" | "C"
+  grade_of_construction: "B" | "C",
+  is_structure_conflict: true | false,
 }
 ```
 
@@ -392,8 +355,7 @@ The higher of stress and moment utilization is reported for poles and crossarms.
 
 ## Future Enhancements
 
-1. **Major highway data table** — Replace `dt_esri_freewaysystem` proxy in `is_major_highway` with a dedicated PGE data table that identifies 4-lane highways with speed >= 55 mph.
-2. **250D steel/wood split** — Create PGE-specific 250D Processing to select `PGE_250D_Wood` / `PGE_250D_Steel` templates based on pole material (currently uses base NESC 250D with a single template).
+1. **250D steel/wood split** — Create PGE-specific 250D Processing to select `PGE_250D_Wood` / `PGE_250D_Steel` templates based on pole material (currently uses base NESC 250D with a single template).
 3. **FITNES "At Replacement" criteria** — Per LD20055, implement deterioration-based analysis using LD40600 parameters.
 4. **Special loading conditions** — Unbalanced longitudinal load, broken conductor, buckle analysis per LD20055 Table 4.
 5. **PGE Report** — Add a portland_nesc-specific PLA report type that includes extreme ice and fire wind results.
