@@ -139,7 +139,7 @@
         if(
           len(model_input.pole.Stays) > 0,
           let(
-            stay_sims: if(simulations_grade_b != null, simulations_grade_b, simulations),
+            stay_sims: if(simulations_grade_b <> null, simulations_grade_b, simulations),
             let(
               pmax: max_by(
                 stay_sims[].StayCableReports,
