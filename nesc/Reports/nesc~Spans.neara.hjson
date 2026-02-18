@@ -44,6 +44,7 @@
             list: []
           }
         }
+        timestamp_display_format: null
       }
       {
         name: "section"
@@ -64,6 +65,7 @@
             list: []
           }
         }
+        timestamp_display_format: null
       }
       {
         name: "label"
@@ -84,6 +86,7 @@
             list: []
           }
         }
+        timestamp_display_format: null
       }
       {
         name: "pole1"
@@ -104,6 +107,7 @@
             list: []
           }
         }
+        timestamp_display_format: null
       }
       {
         name: "pole2"
@@ -124,6 +128,7 @@
             list: []
           }
         }
+        timestamp_display_format: null
       }
       {
         name: "nesc~u_foo5"
@@ -144,6 +149,7 @@
             list: []
           }
         }
+        timestamp_display_format: null
       }
       {
         name: "nesc~u_foo4"
@@ -164,6 +170,7 @@
             list: []
           }
         }
+        timestamp_display_format: null
       }
       {
         name: "nesc~u_foo3.elevated_grade.reason"
@@ -184,6 +191,7 @@
             list: []
           }
         }
+        timestamp_display_format: null
       }
       {
         name: "nesc~u_pla_span_checks.rule_242_output.elevated_grade"
@@ -204,6 +212,7 @@
             list: []
           }
         }
+        timestamp_display_format: null
       }
       {
         name: "nesc~u_pla_span_checks.rule_242_output.elevated_reason"
@@ -224,6 +233,7 @@
             list: []
           }
         }
+        timestamp_display_format: null
       }
       {
         name: "nesc~u_foo"
@@ -244,6 +254,7 @@
             list: []
           }
         }
+        timestamp_display_format: null
       }
       {
         name: "nesc~u_foo2"
@@ -264,6 +275,7 @@
             list: []
           }
         }
+        timestamp_display_format: null
       }
       {
         name: "stringing_temperature"
@@ -284,6 +296,7 @@
             list: []
           }
         }
+        timestamp_display_format: null
       }
       {
         name: "survey_temperature"
@@ -304,6 +317,7 @@
             list: []
           }
         }
+        timestamp_display_format: null
       }
       {
         name: "min_possible_survey_temperature"
@@ -324,6 +338,7 @@
             list: []
           }
         }
+        timestamp_display_format: null
       }
       {
         name: "max_possible_survey_temperature"
@@ -344,6 +359,7 @@
             list: []
           }
         }
+        timestamp_display_format: null
       }
       {
         name: "mzcat_terrain_category"
@@ -364,6 +380,7 @@
             list: []
           }
         }
+        timestamp_display_format: null
       }
       {
         name: "assembly1"
@@ -384,6 +401,7 @@
             list: []
           }
         }
+        timestamp_display_format: null
       }
       {
         name: "assembly2"
@@ -404,6 +422,7 @@
             list: []
           }
         }
+        timestamp_display_format: null
       }
       {
         name: "length"
@@ -424,6 +443,7 @@
             list: []
           }
         }
+        timestamp_display_format: null
       }
       {
         name: "stack"
@@ -444,6 +464,7 @@
             list: []
           }
         }
+        timestamp_display_format: null
       }
       {
         name: "scan_time"
@@ -464,6 +485,7 @@
             list: []
           }
         }
+        timestamp_display_format: null
       }
       {
         name: "approximate_midpoint.x"
@@ -484,6 +506,7 @@
             list: []
           }
         }
+        timestamp_display_format: null
       }
       {
         name: "approximate_midpoint.y"
@@ -504,6 +527,7 @@
             list: []
           }
         }
+        timestamp_display_format: null
       }
       {
         name: "approximate_midpoint.z"
@@ -524,6 +548,7 @@
             list: []
           }
         }
+        timestamp_display_format: null
       }
     ]
   }

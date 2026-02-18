@@ -72,6 +72,7 @@
         '''
         {
          environment: processing.environment,
+         loading_district: if(processing.is_heavy, "Heavy", if(processing.is_medium, "Medium", "Light")),
          worst_pole: processing.max_pole,
          worst_stay: processing.max_stay,
          worst_xarm: processing.max_xarm,

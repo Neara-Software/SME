@@ -1,0 +1,49 @@
+{
+  name: "nesc~277-1 allowed percentage"
+  fields: [
+    {
+      field_name: "Insulator Type"
+      field_alias: "insulator_type"
+      data_type: {
+        type: "text"
+        text: {}
+      }
+      description: null
+    }
+    {
+      field_name: "Check Type"
+      field_alias: "check_type"
+      data_type: {
+        type: "text"
+        text: {}
+      }
+      description: null
+    }
+    {
+      field_name: "Allowed Percentage"
+      field_alias: "allowed_percentage"
+      data_type: {
+        type: "real"
+        real: {
+          unit: ""
+          decimal_places: 2
+        }
+      }
+      description: null
+    }
+  ]
+  source: {
+    type: "tsv_data"
+    tsv_data: {
+      value:
+        '''
+        Insulator Type	Check Type	Allowed Percentage
+        post	Moment	0.40
+        post	Force	0.50
+        pin	Moment	0.40
+        pin	Force	0.40
+        cable	Tension	0.50
+        '''
+    }
+  }
+}

@@ -19,10 +19,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula:
-        '''
-        if(default_corridor_width != null, default_corridor_width * 1m, 1m)
-        '''
+      formula: "if(default_corridor_width != null, default_corridor_width * 1m, 1m)"
     }
     {
       name: "default_corridor_width"
@@ -30,10 +27,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula:
-        '''
-        type_only(1)
-        '''
+      formula: "type_only(1)"
     }
     {
       name: "default_points"
@@ -56,10 +50,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula:
-        '''
-        any(geo_intersect(model().dt_or_railroads[].geometry, bay.geometry))
-        '''
+      formula: "any(geo_intersect(model().dt_or_railroads[].geometry, bay.geometry))"
     }
     {
       name: "is_road"
@@ -67,10 +58,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula:
-        '''
-        any(geo_query(model().dt_oregon_public_roads, bay.geometry, 5m))
-        '''
+      formula: "any(geo_query(model().dt_oregon_public_roads, bay.geometry, 5m))"
     }
     {
       name: "points"
@@ -104,10 +92,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula:
-        '''
-        if(railroad_corridor_width != null, railroad_corridor_width * 1m, 1m)
-        '''
+      formula: "if(railroad_corridor_width != null, railroad_corridor_width * 1m, 1m)"
     }
     {
       name: "railroad_corridor_width"
@@ -115,10 +100,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula:
-        '''
-        type_only(1)
-        '''
+      formula: "type_only(1)"
     }
     {
       name: "railroad_points"
@@ -151,10 +133,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula:
-        '''
-        if(road_corridor_width != null, road_corridor_width * 1m, 1m)
-        '''
+      formula: "if(road_corridor_width != null, road_corridor_width * 1m, 1m)"
     }
     {
       name: "road_corridor_width"
@@ -162,10 +141,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula:
-        '''
-        type_only(1)
-        '''
+      formula: "type_only(1)"
     }
     {
       name: "road_points"

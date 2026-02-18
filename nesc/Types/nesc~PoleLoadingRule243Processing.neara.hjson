@@ -8,10 +8,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula:
-        '''
-        conflict_spans[].u_pla_span_checks.rule_242_output.elevated_grade
-        '''
+      formula: "conflict_spans[].u_pla_span_checks[].rule_242_output[].elevated_grade"
     }
     {
       name: "conflict_spans"
@@ -23,15 +20,17 @@
         '''
         let(
           nearby: find_nearby_spans(model_input.pole, search_radius),
-          other_lines: filter_nulls(
-            broadcast(
-              ns: nearby,
-              if(len(filter(model_input.pole.spans, model_input.pole.spans[] = ns)) = 0, ns),
-            )
-          ),
-          filter(
-            other_lines,
-            measure_distance(pole_base, other_lines[]).distance < search_radius,
+          let(
+            other_lines: filter_nulls(
+              broadcast(
+                ns: nearby,
+                if(len(filter(model_input.pole.spans, model_input.pole.spans = ns)) = 0, ns),
+              ),
+            ),
+            filter(
+              other_lines,
+              measure_distance(pole_base, other_lines).distance < search_radius,
+            ),
           ),
         )
         '''
@@ -42,10 +41,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula:
-        '''
-        len(conflict_spans) > 0
-        '''
+      formula: "len(conflict_spans) > 0"
     }
     {
       name: "model_input"
@@ -64,10 +60,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula:
-        '''
-        vec3(model_input.pole.location, model_input.pole.ground_z)
-        '''
+      formula: "vec3(model_input.pole.location, model_input.pole.ground_z)"
     }
     {
       name: "search_radius"
@@ -75,10 +68,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula:
-        '''
-        model_input.pole.height
-        '''
+      formula: "model_input.pole.height"
     }
     {
       name: "span_grades"
@@ -86,10 +76,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula:
-        '''
-        model_input.pole.spans[].u_pla_span_checks.rule_242_output.elevated_grade
-        '''
+      formula: "model_input.pole.spans[].u_pla_span_checks[].rule_242_output[].elevated_grade"
     }
     {
       name: "worst_grade"
@@ -102,8 +89,8 @@
         let(
           all_grades: span_grades ++ conflict_grades,
           if(
-            len(filter(all_grades, all_grades[] = "B")) > 0, "B",
-            len(filter(all_grades, all_grades[] = "C")) > 0, "C",
+            len(filter(all_grades, all_grades = "B")) > 0, "B",
+            len(filter(all_grades, all_grades = "C")) > 0, "C",
             "N",
           ),
         )

@@ -109,6 +109,9 @@
           "nesc~PoleLoadingRule277Calculator",
           model_input: nesc_pla_model_input,
           rule_243_output: rule_243_output,
+          rule_250b_output: rule_250b_output,
+          rule_250c_output: rule_250c_output,
+          rule_250d_output: rule_250d_output,
         ).output
         '''
     }

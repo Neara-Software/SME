@@ -71,10 +71,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula:
-        '''
-        filter_nulls(list(env_max_temp, env_230b))
-        '''
+      formula: "filter_nulls(list(env_max_temp, env_230b))"
     }
     {
       name: "is_heavy"
@@ -137,10 +134,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula:
-        '''
-        model_input.span.stack.u_ground_clearance_points.points
-        '''
+      formula: "model_input.span.stack.u_ground_clearance_points.points"
     }
     {
       name: "pole_check"
@@ -148,10 +142,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula:
-        '''
-        geo_query(model().dt_nesc_loading_zones, model_input.span.pole1.geometry, 0ft)[].zonename
-        '''
+      formula: "geo_query(model().dt_nesc_loading_zones, model_input.span.pole1.geometry, 0ft)[].zonename"
     }
     {
       name: "required_distance"
@@ -266,10 +257,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula:
-        '''
-        geo_query(model().dt_nesc_loading_zones, model_input.span.section.geometry, 0ft)[].zonename
-        '''
+      formula: "geo_query(model().dt_nesc_loading_zones, model_input.span.section.geometry, 0ft)[].zonename"
     }
     {
       name: "terrain_category"
@@ -315,10 +303,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula:
-        '''
-        if(worst_result != null, worst_result.margin, 0ft)
-        '''
+      formula: "if(worst_result != null, worst_result.margin, 0ft)"
     }
     {
       name: "worst_result"

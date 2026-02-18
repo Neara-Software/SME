@@ -24,12 +24,13 @@
         if(
           processing.nesc250d_required,
           {environment: processing.environment,
+          ice_thickness: processing.nesc_250d_ice[0],
+          wind_speed: processing.nesc_250d_wind[0],
           worst_pole: processing.max_pole,
           worst_stay: processing.max_stay,
           worst_xarm: processing.max_xarm,
           no_wind_records: processing.no_wind_results,
           no_ice_records: processing.no_ice_results,
-          
           },
         )
         '''

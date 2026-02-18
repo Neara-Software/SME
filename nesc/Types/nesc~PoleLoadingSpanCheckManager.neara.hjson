@@ -3,17 +3,6 @@
   is_custom_class: true
   fields: [
     {
-      name: "model_input"
-      prominence: "normal"
-      documentation: null
-      visibility: "module"
-      type: "formula"
-      formula:
-        '''
-        make_immutable_record("nesc~PoleLoadingModelInput", span: span)
-        '''
-    }
-    {
       name: "ground_clearance_output"
       prominence: "normal"
       documentation: null
@@ -25,6 +14,17 @@
           "nesc~GroundClearanceCalculator",
           model_input: model_input,
         ).output
+        '''
+    }
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record("nesc~PoleLoadingModelInput", span: span)
         '''
     }
     {

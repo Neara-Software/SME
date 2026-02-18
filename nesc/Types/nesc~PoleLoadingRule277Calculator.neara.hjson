@@ -3,6 +3,30 @@
   is_custom_class: true
   fields: [
     {
+      name: "get_allowed_percentage"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        lambda(
+          insulator_type: type_only("AA"&""),
+          check_type: type_only("AA"&""),
+          let(
+            row: find(
+              model().dt_277_1_allowed_percentage,
+              and(
+                model().dt_277_1_allowed_percentage[].insulator_type = insulator_type,
+                model().dt_277_1_allowed_percentage[].check_type = check_type,
+              ),
+            ),
+            row.allowed_percentage,
+          ),
+        )
+        '''
+    }
+    {
       name: "model_input"
       prominence: "normal"
       documentation: null
@@ -37,7 +61,17 @@
       type: "formula"
       formula:
         '''
-        make_immutable_record("PoleLoadingRule277Processing", model_input: model_input, rule_243_output: rule_243_output)
+        make_immutable_record("PoleLoadingRule277Processing",
+          model_input: model_input,
+          rule_243_output: rule_243_output,
+          rule_250b_output: rule_250b_output,
+          rule_250c_output: rule_250c_output,
+          rule_250d_output: rule_250d_output,
+          pct_cable_tension: not_null(call(get_allowed_percentage, insulator_type: "cable", check_type: "Tension")),
+          pct_stiff_moment: not_null(call(get_allowed_percentage, insulator_type: "post", check_type: "Moment")),
+          pct_stiff_post_force: not_null(call(get_allowed_percentage, insulator_type: "post", check_type: "Force")),
+          pct_stiff_pin_force: not_null(call(get_allowed_percentage, insulator_type: "pin", check_type: "Force")),
+        )
         '''
     }
     {
@@ -49,6 +83,39 @@
       formula:
         '''
         type_only(make_immutable_record("PoleLoadingRule243Calculator").output)
+        '''
+    }
+    {
+      name: "rule_250b_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only(make_immutable_record("nesc~PoleLoadingRule250bCalculator").output)
+        '''
+    }
+    {
+      name: "rule_250c_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only(make_immutable_record("nesc~PoleLoadingRule250cCalculator").output)
+        '''
+    }
+    {
+      name: "rule_250d_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only(make_immutable_record("nesc~PoleLoadingRule250dCalculator").output)
         '''
     }
   ]
