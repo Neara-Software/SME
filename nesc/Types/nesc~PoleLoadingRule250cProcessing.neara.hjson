@@ -150,17 +150,18 @@
       formula:
         '''
         if(
-          rule_243_output.grade_of_construction = "C",
-          geo_query(
-            model().dt_250c_grc_wind_speed,
-            model_input.pole.geometry,
-            10ft,
-          )[].wind_speed,
+          rule_243_output.grade_of_construction = "B",
           geo_query(
             model().dt_250c_grb_wind_speed,
             model_input.pole.geometry,
             10ft,
           )[].wind_speed,
+          geo_query(
+            model().dt_250c_grc_wind_speed,
+            model_input.pole.geometry,
+            10ft,
+          )[].wind_speed,
+        
         )
         '''
     }

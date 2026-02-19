@@ -173,8 +173,71 @@
         timestamp_display_format: null
       }
       {
-        name: "nesc~u_foo3.elevated_grade.reason"
-        title: "Foo3 Elevated Grade Reason"
+        name: "nesc~u_rec_test3"
+        title: "Rec Test3"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 120
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+        timestamp_display_format: null
+      }
+      {
+        name: "nesc~u_rec_test2"
+        title: "Rec Test2"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 492
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+        timestamp_display_format: null
+      }
+      {
+        name: "nesc~u_recursion_test"
+        title: "Recursion Test"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 514
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+        timestamp_display_format: null
+      }
+      {
+        name: "nesc~u_foo3.elevated_grade.grade"
+        title: "Foo3 Elevated Grade Grade"
         unit: null
         decimal_places: 2
         null_value: ""

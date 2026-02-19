@@ -89,13 +89,13 @@
         timestamp_display_format: null
       }
       {
-        name: "nesc~u_pla_check"
-        title: "Pla Check"
+        name: "nesc~u_pla_check.rule_243_output.grade_of_construction"
+        title: "Pla Check Rule 243 Output Grade Of Construction"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 222
+        width_px: 435
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -810,6 +810,27 @@
         null_value: ""
         cell_title: null
         width_px: 120
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+        timestamp_display_format: null
+      }
+      {
+        name: "nesc~u_foo4"
+        title: "Foo4"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 151
         quicksearch: false
         search_option: "none"
         show_spatial: false

@@ -62,7 +62,7 @@
             "solid DeepSkyBlue width:0.5",
             list(
               broadcast(
-                k: find_adjacent_spans_below(self),
+                k: find_spans_below(self),
                 k.Environments[0].Cables[].catenary,
               ),
             ),
@@ -93,6 +93,37 @@
         
         )
         '''
+    }
+    {
+      name: "nesc~u_rec_test2"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula: "find_spans_below(self)"
+    }
+    {
+      name: "nesc~u_rec_test3"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        broadcast(
+          r: u_rec_test2,
+        
+            any(r.u_recursion_test = self),
+          )
+        '''
+    }
+    {
+      name: "nesc~u_recursion_test"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula: "find_spans_below(self)"
     }
   ]
 }

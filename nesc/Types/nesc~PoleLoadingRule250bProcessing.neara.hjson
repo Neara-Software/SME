@@ -15,19 +15,27 @@
           if(
             and(is_heavy, grade = "B"),
             find(model().Environments, model().Environments[].label = "250B_Hvy B"),
-            and(is_heavy, grade = "C"),
+            and(is_heavy, or(grade = "C",grade = "N")),
             find(model().Environments, model().Environments[].label = "250B_Hvy C"),
             and(is_medium, grade = "B"),
             find(model().Environments, model().Environments[].label = "250B_Med B"),
-            and(is_medium, grade = "C"),
+            and(is_medium, or(grade = "C",grade = "N")),
             find(model().Environments, model().Environments[].label = "250B_Med C"),
             and(is_light, grade = "B"),
             find(model().Environments, model().Environments[].label = "250B_Lgt B"),
-            and(is_light, grade = "C"),
+            and(is_light, or(grade = "C",grade = "N")),
             find(model().Environments, model().Environments[].label = "250B_Lgt C"),
           ),
         )
         '''
+    }
+    {
+      name: "grade"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "rule_243_output.grade_of_construction"
     }
     {
       name: "is_heavy"
@@ -194,7 +202,8 @@
       type: "formula"
       formula:
         '''
-        type_only(make_immutable_record("PoleLoadingRule243Calculator").output)
+        {grade_of_construction:type_only(""),is_structure_conflict:type_only(false)}
+        //type_only(make_immutable_record("PoleLoadingRule243Calculator").output)
         '''
     }
     {

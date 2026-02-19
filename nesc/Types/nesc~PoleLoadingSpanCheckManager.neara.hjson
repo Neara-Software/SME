@@ -10,10 +10,11 @@
       type: "formula"
       formula:
         '''
-        make_immutable_record(
-          "nesc~GroundClearanceCalculator",
-          model_input: model_input,
-        ).output
+        null
+        //make_immutable_record(
+        //  "nesc~GroundClearanceCalculator",
+        //  model_input: model_input,
+        //).output
         '''
     }
     {

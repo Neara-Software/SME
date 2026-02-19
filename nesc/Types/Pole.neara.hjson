@@ -21,6 +21,14 @@
         '''
     }
     {
+      name: "nesc~u_foo4"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula: "Assemblies[].SectionAttachments[].CableAttachments[].local_offset"
+    }
+    {
       name: "nesc~u_pla_check"
       prominence: "normal"
       documentation: null

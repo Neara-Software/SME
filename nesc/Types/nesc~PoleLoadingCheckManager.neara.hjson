@@ -25,24 +25,10 @@
         '''
     }
     {
-      name: "rule_242_output"
-      prominence: "normal"
-      documentation: null
-      visibility: "module"
-      type: "formula"
-      formula:
-        '''
-        make_immutable_record(
-          "nesc~PoleLoadingRule242Calculator",
-          model_input: nesc_pla_model_input,
-        ).output
-        '''
-    }
-    {
       name: "rule_243_output"
       prominence: "normal"
       documentation: null
-      visibility: "module"
+      visibility: "public"
       type: "formula"
       formula:
         '''
@@ -56,7 +42,7 @@
       name: "rule_250b_output"
       prominence: "normal"
       documentation: null
-      visibility: "module"
+      visibility: "public"
       type: "formula"
       formula:
         '''
@@ -64,14 +50,30 @@
           "nesc~PoleLoadingRule250bCalculator",
           model_input: nesc_pla_model_input,
           rule_243_output: rule_243_output,
+          processing: rule_250b_processing,
         ).output
+        '''
+    }
+    {
+      name: "rule_250b_processing"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record(
+            "nesc~PoleLoadingRule250bProcessing",
+            model_input: nesc_pla_model_input,
+            rule_243_output: rule_243_output,
+          )
         '''
     }
     {
       name: "rule_250c_output"
       prominence: "normal"
       documentation: null
-      visibility: "module"
+      visibility: "public"
       type: "formula"
       formula:
         '''
@@ -86,7 +88,7 @@
       name: "rule_250d_output"
       prominence: "normal"
       documentation: null
-      visibility: "module"
+      visibility: "public"
       type: "formula"
       formula:
         '''
@@ -101,18 +103,57 @@
       name: "rule_277_output"
       prominence: "normal"
       documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        null
+        //make_immutable_record(
+        //  "nesc~PoleLoadingRule277Calculator",
+        //  model_input: nesc_pla_model_input,
+        //  rule_243_output: rule_243_output,
+        //  rule_250b_output: rule_250b_output,
+        //  rule_250c_output: rule_250c_output,
+        //  rule_250d_output: rule_250d_output,
+        //).output
+        '''
+    }
+    {
+      name: "rule_277_processing"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        null
+        //make_immutable_record("PoleLoadingRule277Processing",
+        //  model_input: nesc_pla_model_input,
+        //  rule_243_output: rule_243_output,
+        //  rule_250b_output: rule_250b_output,
+        //  rule_250c_output: rule_250c_output,
+        //  rule_250d_output: rule_250d_output,
+        ////  pct_cable_tension: not_null(call(get_allowed_percentage, insulator_type: "cable", check_type: "Tension")),
+        ////  pct_stiff_moment: not_null(call(get_allowed_percentage, insulator_type: "post", check_type: "Moment")),
+        ////  pct_stiff_post_force: not_null(call(get_allowed_percentage, insulator_type: "post", check_type: "Force")),
+        ////  pct_stiff_pin_force: not_null(call(get_allowed_percentage, insulator_type: "pin", check_type: "Force")),
+        //)
+        '''
+    }
+    {
+      name: "temptestingclass"
+      prominence: "normal"
+      documentation: null
       visibility: "module"
       type: "formula"
       formula:
         '''
         make_immutable_record(
-          "nesc~PoleLoadingRule277Calculator",
-          model_input: nesc_pla_model_input,
-          rule_243_output: rule_243_output,
-          rule_250b_output: rule_250b_output,
-          rule_250c_output: rule_250c_output,
-          rule_250d_output: rule_250d_output,
-        ).output
+          "TempTestingClass",
+          rule_243_output: rule_243_output
+        
+        
+        )
         '''
     }
   ]

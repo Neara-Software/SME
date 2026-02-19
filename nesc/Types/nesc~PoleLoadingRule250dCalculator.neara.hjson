@@ -6,7 +6,7 @@
       name: "model_input"
       prominence: "normal"
       documentation: null
-      visibility: "module"
+      visibility: "public"
       type: "formula"
       formula:
         '''
@@ -17,7 +17,7 @@
       name: "output"
       prominence: "normal"
       documentation: null
-      visibility: "module"
+      visibility: "public"
       type: "formula"
       formula:
         '''
@@ -31,7 +31,9 @@
           worst_xarm: processing.max_xarm,
           no_wind_records: processing.no_wind_results,
           no_ice_records: processing.no_ice_results,
+          //required: processing.nesc250d_required,
           },
+          
         )
         '''
     }
@@ -50,7 +52,7 @@
       name: "rule_243_output"
       prominence: "normal"
       documentation: null
-      visibility: "module"
+      visibility: "public"
       type: "formula"
       formula:
         '''

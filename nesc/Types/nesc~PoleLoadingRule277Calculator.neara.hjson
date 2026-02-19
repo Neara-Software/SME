@@ -30,7 +30,7 @@
       name: "model_input"
       prominence: "normal"
       documentation: null
-      visibility: "module"
+      visibility: "public"
       type: "formula"
       formula:
         '''
@@ -41,7 +41,7 @@
       name: "output"
       prominence: "normal"
       documentation: null
-      visibility: "module"
+      visibility: "public"
       type: "formula"
       formula:
         '''
@@ -78,7 +78,7 @@
       name: "rule_243_output"
       prominence: "normal"
       documentation: null
-      visibility: "module"
+      visibility: "public"
       type: "formula"
       formula:
         '''
@@ -89,7 +89,7 @@
       name: "rule_250b_output"
       prominence: "normal"
       documentation: null
-      visibility: "module"
+      visibility: "public"
       type: "formula"
       formula:
         '''
@@ -100,7 +100,7 @@
       name: "rule_250c_output"
       prominence: "normal"
       documentation: null
-      visibility: "module"
+      visibility: "public"
       type: "formula"
       formula:
         '''
@@ -111,7 +111,7 @@
       name: "rule_250d_output"
       prominence: "normal"
       documentation: null
-      visibility: "module"
+      visibility: "public"
       type: "formula"
       formula:
         '''

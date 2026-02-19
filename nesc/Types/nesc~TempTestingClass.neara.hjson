@@ -1,0 +1,25 @@
+{
+  token: "nesc~ct_TempTestingClass"
+  is_custom_class: true
+  fields: [
+    {
+      name: "grade"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "rule_243_output.grade_of_construction"
+    }
+    {
+      name: "rule_243_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only(make_immutable_record("PoleLoadingRule243Calculator").output)
+        '''
+    }
+  ]
+}

@@ -67,6 +67,30 @@
         '''
     }
     {
+      name: "get_base_grade"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        lambda(
+          voltage: type_only(1kV),
+          class: type_only(model().ConductorLibrary[].conductor_class[0]),
+          if(
+            class & "" = "COMMS",
+            "N",
+            voltage <= 750V * sqrt(3),
+            "N",
+            voltage > 750V * sqrt(3),
+            "C",
+            voltage >= 22kV * sqrt(3),
+            "B",
+          ),
+        )
+        '''
+    }
+    {
       name: "elevated_grade"
       prominence: "normal"
       documentation: null
@@ -164,7 +188,7 @@
       name: "model_input"
       prominence: "normal"
       documentation: null
-      visibility: "module"
+      visibility: "public"
       type: "formula"
       formula:
         '''
@@ -175,9 +199,9 @@
       name: "output"
       prominence: "normal"
       documentation: null
-      visibility: "module"
+      visibility: "public"
       type: "formula"
-      formula: "{base_grade: base_grade,elevated_grade: elevated_grade.grade,elevated_reason: elevated_grade.reason,}"
+      formula: "{base_grade: base_grade,elevated_grade: elevated_grade.grade,elevated_reason: elevated_grade.reason,processing: processing,}"
     }
     {
       name: "process_crossing_spans"
@@ -204,7 +228,7 @@
                   att: lower_spans,
                   let(
                     lower_key: call(get_key, voltage: att.voltage, class: att.type),
-                    lower_grade: att.rule242.elevated_grade,
+                    lower_grade: if(att.elevated_grade <> null, att.elevated_grade, call(get_base_grade, voltage: att.voltage, class: att.type)),
                     let(
                       crossing_grade: call(get_crossing_grade, upper_key: not_null(upper_key), lower_key: not_null(lower_key)),
                       // If crossing grade or lower grade is higher then existing grade then elevate
