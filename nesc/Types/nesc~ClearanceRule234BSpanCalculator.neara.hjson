@@ -1,0 +1,44 @@
+{
+  token: "nesc~ct_ClearanceRule234BSpanCalculator"
+  is_custom_class: true
+  fields: [
+    {
+      name: "output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        {
+          pass: passes,
+          debug: proc.minimum_clearance,
+        }
+        '''
+    }
+    {
+      name: "passes"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        [
+          if(proc.has_streetlights_in_violation, text_join(", ", true, "❌ " & proc.streetlights_in_violation[0].label) & " too close", "✅")
+        ]
+        '''
+    }
+    {
+      name: "proc"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("ClearanceRule234BSpanProcessing").output
+        '''
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  name: "nesc~Rule234BMinimumClearancesTable"
+  fields: [
+    {
+      field_name: "Case"
+      field_alias: "case"
+      data_type: {
+        type: "integer"
+        integer: {}
+      }
+      description: null
+    }
+    {
+      field_name: "Clearance"
+      field_alias: "clearance"
+      data_type: {
+        type: "real"
+        real: {
+          unit: "ft"
+          decimal_places: 2
+        }
+      }
+      description: null
+    }
+  ]
+  source: {
+    type: "tsv_data"
+    tsv_data: {
+      value:
+        '''
+        Case	Clearance
+        1	2
+        '''
+    }
+  }
+}

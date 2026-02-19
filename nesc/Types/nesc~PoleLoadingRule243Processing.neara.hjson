@@ -8,10 +8,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula:
-        '''
-         any(geo_intersect(model().dt_esri_freewaysystem[].geometry, model_input.pole.geometry))
-        '''
+      formula: " any(geo_intersect(model().dt_esri_freewaysystem[].geometry, model_input.pole.geometry))"
     }
     {
       name: "is_rail_crossing"

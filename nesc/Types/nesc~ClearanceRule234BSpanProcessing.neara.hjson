@@ -1,0 +1,81 @@
+{
+  token: "nesc~ct_ClearanceRule234BSpanProcessing"
+  is_custom_class: true
+  fields: [
+    {
+      name: "minimum_clearance"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "call(util.get_minimum_clearance_from_dt_rule_234b)"
+    }
+    {
+      name: "output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        {
+          has_streetlights_in_violation: len(streetlights_in_violation) > 0,
+          minimum_clearance: minimum_clearance,
+          streetlights_in_violation: streetlights_in_violation,
+        }
+        '''
+    }
+    {
+      name: "span"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("~Span")
+        '''
+    }
+    {
+      name: "streetlights"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "flatten(list(filter(span.pole1.Assemblies, span.pole1.Assemblies[].type[].u_is_streetlight), filter(span.pole2.Assemblies, span.pole2.Assemblies[].type[].u_is_streetlight)))"
+    }
+    {
+      name: "streetlights_in_violation"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // TODO(connor): The vertical distances should be changed to the metric types
+        filter_nulls(
+          broadcast(st: streetlights,
+            if(
+              and(
+                span.section.voltage <= 300 * unit("V"),
+                measure_distance(st, span.Environments[].Cables).vertical_distance < minimum_clearance
+              ),
+              st
+            )
+          )
+        )
+        '''
+    }
+    {
+      name: "util"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record("DTUtil")
+        '''
+    }
+  ]
+}

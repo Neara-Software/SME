@@ -1,0 +1,21 @@
+{
+  token: "nesc~ct_DTUtil"
+  is_custom_class: true
+  fields: [
+    {
+      name: "get_minimum_clearance_from_dt_rule_234b"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        lambda(
+          find(model().dt_rule234bminimumclearancestable,
+            model().dt_rule234bminimumclearancestable[].case = 1
+            ).clearance
+          )
+        '''
+    }
+  ]
+}
