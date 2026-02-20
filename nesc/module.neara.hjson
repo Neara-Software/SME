@@ -8,7 +8,6 @@
   language_enhancement_config: {
     language_enhancements: [
       "nac"
-      "eval-err"
     ]
   }
 }

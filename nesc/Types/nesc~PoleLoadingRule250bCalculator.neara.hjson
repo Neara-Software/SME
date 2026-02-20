@@ -54,8 +54,8 @@
       type: "formula"
       formula:
         '''
-        {grade_of_construction:type_only(""),is_structure_conflict:type_only(false)}
-        //type_only(make_immutable_record("PoleLoadingRule243Calculator").output)
+        //{grade_of_construction:type_only(""),is_structure_conflict:type_only(false)}
+        type_only(make_immutable_record("PoleLoadingRule243Calculator").output)
         '''
     }
   ]

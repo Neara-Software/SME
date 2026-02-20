@@ -27,7 +27,7 @@
               {grade: "B",
               reason: "navigable waterways crossing"},
             ),
-          ) ++ attached_crossing ++ span_below ++ unattached_crossing,
+          ), //++ attached_crossing ++ span_below ++ unattached_crossing,
         )// Concat crossings
         '''
     }
@@ -63,30 +63,6 @@
           "C",
           processing.voltage >= 22kV * sqrt(3),
           "B",
-        )
-        '''
-    }
-    {
-      name: "get_base_grade"
-      prominence: "normal"
-      documentation: null
-      visibility: "module"
-      type: "formula"
-      formula:
-        '''
-        lambda(
-          voltage: type_only(1kV),
-          class: type_only(model().ConductorLibrary[].conductor_class[0]),
-          if(
-            class & "" = "COMMS",
-            "N",
-            voltage <= 750V * sqrt(3),
-            "N",
-            voltage > 750V * sqrt(3),
-            "C",
-            voltage >= 22kV * sqrt(3),
-            "B",
-          ),
         )
         '''
     }
@@ -131,6 +107,30 @@
                 reason: "No Change"},
               ),
             ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "get_base_grade"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        lambda(
+          voltage: type_only(1kV),
+          class: type_only(model().ConductorLibrary[].conductor_class[0]),
+          if(
+            class & "" = "COMMS",
+            "N",
+            voltage <= 750V * sqrt(3),
+            "N",
+            voltage > 750V * sqrt(3),
+            "C",
+            voltage >= 22kV * sqrt(3),
+            "B",
           ),
         )
         '''
@@ -228,7 +228,9 @@
                   att: lower_spans,
                   let(
                     lower_key: call(get_key, voltage: att.voltage, class: att.type),
-                    lower_grade: if(att.elevated_grade <> null, att.elevated_grade, call(get_base_grade, voltage: att.voltage, class: att.type)),
+                    lower_grade: //if(att.elevated_grade <> null, att.elevated_grade, att.base_grade),
+                    //If circular reference problemns persist would have to drop to base_grade only.
+                    att.base_grade,
                     let(
                       crossing_grade: call(get_crossing_grade, upper_key: not_null(upper_key), lower_key: not_null(lower_key)),
                       // If crossing grade or lower grade is higher then existing grade then elevate

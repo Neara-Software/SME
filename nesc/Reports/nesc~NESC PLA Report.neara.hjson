@@ -89,13 +89,13 @@
         timestamp_display_format: null
       }
       {
-        name: "nesc~u_pla_check.rule_243_output.grade_of_construction"
-        title: "Pla Check Rule 243 Output Grade Of Construction"
+        name: "nesc~u_pla_check.rule_250b_output.worst_pole.simulation"
+        title: "Pla Check Rule 250b Output Worst Pole Simulation"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 435
+        width_px: 772
         quicksearch: false
         search_option: "none"
         show_spatial: false

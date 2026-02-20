@@ -16,16 +16,19 @@
             sp: found_adjacent_below,
             let(
               sp_proc: sp.u_pla_span_checks.rule_242_output.processing,
-              is_mutual: or(
-                any(sp_proc.found_spans_below = model_input.span),
-                any(sp_proc.found_adjacent_below = model_input.span),
-                any(sp_proc.found_crossing_below = model_input.span),
+              let(
+                is_mutual: or(
+                  any(sp_proc.found_spans_below = model_input.span),
+                  any(sp_proc.found_adjacent_below = model_input.span),
+                  any(sp_proc.found_crossing_below = model_input.span),
+                ),
+                {span: sp,
+                voltage: sp.section.voltage,
+                type: sp.section.type.conductor_class,
+                base_grade: sp.u_pla_span_checks.rule_242_output.base_grade,
+                elevated_grade: if(is_mutual, null, sp.u_pla_span_checks.rule_242_output.elevated_grade),
+                },
               ),
-              {span: sp,
-              voltage: sp.section.voltage,
-              type: sp.section.type.conductor_class,
-              elevated_grade: if(is_mutual, null, sp.u_pla_span_checks.rule_242_output.elevated_grade),
-              },
             ),
           ),
         )
@@ -104,16 +107,19 @@
             sp: found_spans_below,
             let(
               sp_proc: sp.u_pla_span_checks.rule_242_output.processing,
-              is_mutual: or(
-                any(sp_proc.found_spans_below = model_input.span),
-                any(sp_proc.found_adjacent_below = model_input.span),
-                any(sp_proc.found_crossing_below = model_input.span),
+              let(
+                is_mutual: or(
+                  any(sp_proc.found_spans_below = model_input.span),
+                  any(sp_proc.found_adjacent_below = model_input.span),
+                  any(sp_proc.found_crossing_below = model_input.span),
+                ),
+                {span: sp,
+                voltage: sp.section.voltage,
+                type: sp.section.type.conductor_class,
+                base_grade: sp.u_pla_span_checks.rule_242_output.base_grade,
+                elevated_grade: if(is_mutual, null, sp.u_pla_span_checks.rule_242_output.elevated_grade),
+                },
               ),
-              {span: sp,
-              voltage: sp.section.voltage,
-              type: sp.section.type.conductor_class,
-              elevated_grade: if(is_mutual, null, sp.u_pla_span_checks.rule_242_output.elevated_grade),
-              },
             ),
           ),
         )
@@ -147,16 +153,19 @@
             sp: found_crossing_below,
             let(
               sp_proc: sp.u_pla_span_checks.rule_242_output.processing,
-              is_mutual: or(
-                any(sp_proc.found_spans_below = model_input.span),
-                any(sp_proc.found_adjacent_below = model_input.span),
-                any(sp_proc.found_crossing_below = model_input.span),
+              let(
+                is_mutual: or(
+                  any(sp_proc.found_spans_below = model_input.span),
+                  any(sp_proc.found_adjacent_below = model_input.span),
+                  any(sp_proc.found_crossing_below = model_input.span),
+                ),
+                {span: sp,
+                voltage: sp.section.voltage,
+                type: sp.section.type.conductor_class,
+                base_grade: sp.u_pla_span_checks.rule_242_output.base_grade,
+                elevated_grade: if(is_mutual, null, sp.u_pla_span_checks.rule_242_output.elevated_grade),
+                },
               ),
-              {span: sp,
-              voltage: sp.section.voltage,
-              type: sp.section.type.conductor_class,
-              elevated_grade: if(is_mutual, null, sp.u_pla_span_checks.rule_242_output.elevated_grade),
-              },
             ),
           ),
         )
