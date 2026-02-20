@@ -1,5 +1,5 @@
 {
-  token: "nesc~ct_GroundClearanceProcessing"
+  token: "nesc~ct_GroundClearanceRule232Processing"
   is_custom_class: true
   fields: [
     {
@@ -195,17 +195,19 @@
             ii: not_null(index_of(terrain_category, terrain)),
             let(
               dist: distance[ii],
-              required: required_distance[ii],
               let(
-                min_clearance: min_by(dist, dist[].vertical_distance - required),
+                required: required_distance[ii],
                 let(
-                  jj: not_null(index_of(dist, min_clearance)),
-                  {terrain_category: terrain,
-                  environment: environments[jj],
-                  vertical_distance: min_clearance.vertical_distance,
-                  required_distance: required,
-                  margin: min_clearance.vertical_distance - required,
-                  },
+                  min_clearance: min_by(dist, dist[].vertical_distance - required),
+                  let(
+                    jj: not_null(index_of(dist, min_clearance)),
+                    {terrain_category: terrain,
+                    environment: environments[jj],
+                    vertical_distance: min_clearance.vertical_distance,
+                    required_distance: required,
+                    margin: min_clearance.vertical_distance - required,
+                    },
+                  ),
                 ),
               ),
             ),
@@ -277,22 +279,24 @@
         '''
         let(
           voltage: model_input.span.section.voltage,
-          conductor_class: model_input.span.section.type.conductor_class,
-          if(
-            conductor_class & "" = "COMMS",
-            "COMMS",
-            voltage >= 229.5kV,
-            "230kV",
-            voltage >= 115kV,
-            "115kV",
-            voltage >= 57kV,
-            "57kV",
-            voltage > 750 * unit("V"),
-            "Distribution",
-            voltage > 0kV,
-            "Supply_0_750V",
-            voltage = 0kV,
-            "Neutral_Msgr",
+          let(
+            conductor_class: model_input.span.section.type.conductor_class,
+            if(
+              conductor_class & "" = "COMMS",
+              "COMMS",
+              voltage >= 229.5kV,
+              "230kV",
+              voltage >= 115kV,
+              "115kV",
+              voltage >= 57kV,
+              "57kV",
+              voltage > 750 * unit("V"),
+              "Distribution",
+              voltage > 0kV,
+              "Supply_0_750V",
+              voltage = 0kV,
+              "Neutral_Msgr",
+            ),
           ),
         )
         '''
@@ -303,7 +307,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula: "if(worst_result != null, worst_result.margin, 0ft)"
+      formula: "if(worst_result <> null, worst_result.margin, 0ft)"
     }
     {
       name: "worst_result"

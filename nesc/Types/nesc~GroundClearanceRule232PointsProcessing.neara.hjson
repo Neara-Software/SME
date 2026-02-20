@@ -1,5 +1,5 @@
 {
-  token: "nesc~ct_GroundClearanceBayPoints"
+  token: "nesc~ct_GroundClearanceRule232PointsProcessing"
   is_custom_class: true
   fields: [
     {
@@ -19,7 +19,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula: "if(default_corridor_width != null, default_corridor_width * 1m, 1m)"
+      formula: "if(default_corridor_width <> null, default_corridor_width * 1m, 1m)"
     }
     {
       name: "default_corridor_width"
@@ -27,7 +27,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula: "type_only(1)"
+      formula: "type_only(1.01)"
     }
     {
       name: "default_points"
@@ -92,7 +92,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula: "if(railroad_corridor_width != null, railroad_corridor_width * 1m, 1m)"
+      formula: "if(railroad_corridor_width <> null, railroad_corridor_width * 1m, 1m)"
     }
     {
       name: "railroad_corridor_width"
@@ -100,7 +100,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula: "type_only(1)"
+      formula: "type_only(1.01)"
     }
     {
       name: "railroad_points"
@@ -133,7 +133,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula: "if(road_corridor_width != null, road_corridor_width * 1m, 1m)"
+      formula: "if(road_corridor_width <> null, road_corridor_width * 1m, 1m)"
     }
     {
       name: "road_corridor_width"
@@ -141,7 +141,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula: "type_only(1)"
+      formula: "type_only(1.01)"
     }
     {
       name: "road_points"

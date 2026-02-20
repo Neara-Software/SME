@@ -1,6 +1,55 @@
 {
   name: "nesc~232-1 ground clearance"
-  fields: []
+  fields: [
+    {
+      field_name: "col1"
+      field_alias: "col1"
+      data_type: {
+        type: "real"
+        real: {
+          unit: "ft"
+          decimal_places: 2
+        }
+      }
+      description: null
+    }
+    {
+      field_name: "col2"
+      field_alias: "col2"
+      data_type: {
+        type: "real"
+        real: {
+          unit: "ft"
+          decimal_places: 2
+        }
+      }
+      description: null
+    }
+    {
+      field_name: "col3"
+      field_alias: "col3"
+      data_type: {
+        type: "real"
+        real: {
+          unit: "ft"
+          decimal_places: 2
+        }
+      }
+      description: null
+    }
+    {
+      field_name: "col4"
+      field_alias: "col4"
+      data_type: {
+        type: "real"
+        real: {
+          unit: "ft"
+          decimal_places: 2
+        }
+      }
+      description: null
+    }
+  ]
   source: {
     type: "tsv_data"
     tsv_data: {
