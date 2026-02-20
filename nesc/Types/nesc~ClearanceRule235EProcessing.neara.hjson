@@ -80,6 +80,20 @@
         '''
     }
     {
+      name: "cat4_violations"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // TODO: Category 4 (structure surface) requires measure_distance to pole shaft only.
+        // Currently no way to measure to shaft without including assemblies, which overlaps with cat3.
+        // Stubbed as empty — always passes until platform supports shaft-only measurement.
+        []
+        '''
+    }
+    {
       name: "output"
       prominence: "normal"
       documentation: null
@@ -123,7 +137,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula: "cat3_violations"
+      formula: "flatten(list(cat3_violations, cat4_violations))"
     }
   ]
 }
