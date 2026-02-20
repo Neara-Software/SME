@@ -69,8 +69,83 @@
                   category: "3",
                   description: "Support arms clearance",
                   span: span.label,
-                  assembly: a.label,
+                  component: a.label,
                   required: cat3_required_clearance,
+                  actual: dist,
+                },
+              )
+            )
+          )
+        )
+        '''
+    }
+    {
+      name: "cat2_conductor_class"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "span.section.type.conductor_class"
+    }
+    {
+      name: "cat2_required_clearance"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // Table 235-6, Category 2: Guys, span wires, messengers
+        let(
+          row: find(model().dt_table235_6,
+            and(
+              model().dt_table235_6[].nesccategory = 2,
+              model().dt_table235_6[].minvoltagekv <= cat2_span_voltage,
+              model().dt_table235_6[].maxvoltagekv > cat2_span_voltage,
+            )
+          ),
+          row.baseclearancein + row.adderperkvin * max(0, (cat2_span_voltage - row.adderthresholdkv) / unit_value(1, "kV")),
+        )
+        '''
+    }
+    {
+      name: "cat2_span_voltage"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        if(
+          cat2_conductor_class = "Comms",
+          -3kV,
+          span.section.voltage,
+        )
+        '''
+    }
+    {
+      name: "cat2_violations"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // Table 235-6, Category 2: Guys, span wires, messengers
+        // For each stay at the pole, check clearance from conductor to stay
+        filter_nulls(
+          broadcast(st: pole.Stays,
+            let(
+              dist: measure_distance(st, span.Environments[].Cables).distance,
+              if(
+                dist < cat2_required_clearance,
+                {
+                  rule: "235E1",
+                  category: "2",
+                  description: "Guy/stay clearance",
+                  span: span.label,
+                  component: st.label,
+                  required: cat2_required_clearance,
                   actual: dist,
                 },
               )
@@ -137,7 +212,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula: "flatten(list(cat3_violations, cat4_violations))"
+      formula: "flatten(list(cat2_violations, cat3_violations, cat4_violations))"
     }
   ]
 }
