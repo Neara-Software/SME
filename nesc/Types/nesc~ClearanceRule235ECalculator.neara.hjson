@@ -1,0 +1,60 @@
+{
+  token: "nesc~ct_ClearanceRule235ECalculator"
+  is_custom_class: true
+  fields: [
+    {
+      name: "output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        {
+          pass: passes,
+          debug: {
+            cat3_required_clearance: proc.cat3_required_clearance,
+            violations: proc.violations,
+          },
+        }
+        '''
+    }
+    {
+      name: "passes"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        [
+          if(proc.has_violations,
+            "❌ " & proc.num_violations & " clearance violation(s)",
+            "✅")
+        ]
+        '''
+    }
+    {
+      name: "pole"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("~Pole")
+        '''
+    }
+    {
+      name: "proc"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("ClearanceRule235EProcessing").output
+        '''
+    }
+  ]
+}

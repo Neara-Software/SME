@@ -35,5 +35,44 @@
         )
         '''
     }
+    {
+      name: "nesc~u_rule235e_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record("ClearanceRule235ECalculator", pole: self, proc: u_rule235e_processing).output.pass
+        '''
+    }
+    {
+      name: "nesc~u_rule235e_processing"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        let(
+          all_violations: flatten(
+            broadcast(s: spans,
+              make_immutable_record("ClearanceRule235EProcessing", pole: self, span: s).output.violations
+            )
+          ),
+          max_required: max(
+            broadcast(s: spans,
+              make_immutable_record("ClearanceRule235EProcessing", pole: self, span: s).output.cat3_required_clearance
+            )
+          ),
+          {
+            cat3_required_clearance: max_required,
+            has_violations: len(all_violations) > 0,
+            num_violations: len(all_violations),
+            violations: all_violations,
+          }
+        )
+        '''
+    }
   ]
 }

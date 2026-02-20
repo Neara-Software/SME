@@ -1,0 +1,129 @@
+{
+  token: "nesc~ct_ClearanceRule235EProcessing"
+  is_custom_class: true
+  fields: [
+    {
+      name: "cat3_conductor_class"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "span.section.type.conductor_class"
+    }
+    {
+      name: "cat3_required_clearance"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // Table 235-6, Category 3: Support arms, braces
+        let(
+          row: find(model().dt_table235_6,
+            and(
+              model().dt_table235_6[].nesccategory = 3,
+              model().dt_table235_6[].minvoltagekv <= cat3_span_voltage,
+              model().dt_table235_6[].maxvoltagekv > cat3_span_voltage,
+            )
+          ),
+          row.baseclearancein + row.adderperkvin * max(0, (cat3_span_voltage - row.adderthresholdkv) / unit_value(1, "kV")),
+        )
+        '''
+    }
+    {
+      name: "cat3_span_voltage"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // Comms cables have voltage=0 but need sentinel lookup
+        // -3kV = comm general, -2kV = comm joint (TODO: joint-use distinction)
+        if(
+          cat3_conductor_class = "Comms",
+          -3kV,
+          span.section.voltage,
+        )
+        '''
+    }
+    {
+      name: "cat3_violations"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // Table 235-6, Category 3: Support arms, braces
+        // For each assembly at the pole, check clearance from conductor to assembly
+        filter_nulls(
+          broadcast(a: pole.Assemblies,
+            let(
+              dist: measure_distance(a, span.Environments[].Cables).distance,
+              if(
+                dist < cat3_required_clearance,
+                {
+                  rule: "235E1",
+                  category: "3",
+                  description: "Support arms clearance",
+                  span: span.label,
+                  assembly: a.label,
+                  required: cat3_required_clearance,
+                  actual: dist,
+                },
+              )
+            )
+          )
+        )
+        '''
+    }
+    {
+      name: "output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        {
+          cat3_required_clearance: cat3_required_clearance,
+          has_violations: len(violations) > 0,
+          num_violations: len(violations),
+          violations: violations,
+        }
+        '''
+    }
+    {
+      name: "pole"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("~Pole")
+        '''
+    }
+    {
+      name: "span"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("~Span")
+        '''
+    }
+    {
+      name: "violations"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "cat3_violations"
+    }
+  ]
+}

@@ -3,6 +3,30 @@
   is_custom_class: true
   fields: [
     {
+      name: "get_clearance_from_dt_rule_235e6"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        lambda(
+          nesc_category: type_only(0),
+          voltage_kv: type_only(0),
+          let(
+            row: find(model().dt_table235_6,
+              and(
+                model().dt_table235_6[].nesccategory = nesc_category,
+                model().dt_table235_6[].minvoltagekv <= voltage_kv,
+                model().dt_table235_6[].maxvoltagekv > voltage_kv,
+              )
+            ),
+            row.baseclearancein + row.adderperkvin * max(0, (voltage_kv - row.adderthresholdkv) / unit_value(1, "kV")),
+          ),
+        )
+        '''
+    }
+    {
       name: "get_minimum_clearance_from_dt_rule_234b"
       prominence: "normal"
       documentation: null

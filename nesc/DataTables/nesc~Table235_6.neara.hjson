@@ -1,0 +1,213 @@
+{
+  name: "nesc~Table235_6"
+  fields: [
+    {
+      field_name: "NescCategory"
+      field_alias: "nesc_category"
+      data_type: {
+        type: "integer"
+        integer: {}
+      }
+      description: null
+    }
+    {
+      field_name: "NescCategory"
+      field_alias: "nesccategory"
+      data_type: {
+        type: "integer"
+        integer: {}
+      }
+      description: null
+    }
+    {
+      field_name: "SubCategory"
+      field_alias: "sub_category"
+      data_type: {
+        type: "text"
+        text: {}
+      }
+      description: null
+    }
+    {
+      field_name: "SubCategory"
+      field_alias: "subcategory"
+      data_type: {
+        type: "text"
+        text: {}
+      }
+      description: null
+    }
+    {
+      field_name: "MinVoltageKv"
+      field_alias: "min_voltage_kv"
+      data_type: {
+        type: "real"
+        real: {
+          unit: "kV"
+          decimal_places: 1
+        }
+      }
+      description: null
+    }
+    {
+      field_name: "MinVoltageKv"
+      field_alias: "minvoltagekv"
+      data_type: {
+        type: "real"
+        real: {
+          unit: "kV"
+          decimal_places: 2
+        }
+      }
+      description: null
+    }
+    {
+      field_name: "MaxVoltageKv"
+      field_alias: "max_voltage_kv"
+      data_type: {
+        type: "real"
+        real: {
+          unit: "kV"
+          decimal_places: 1
+        }
+      }
+      description: null
+    }
+    {
+      field_name: "MaxVoltageKv"
+      field_alias: "maxvoltagekv"
+      data_type: {
+        type: "real"
+        real: {
+          unit: "kV"
+          decimal_places: 2
+        }
+      }
+      description: null
+    }
+    {
+      field_name: "BaseClearanceIn"
+      field_alias: "base_clearance_in"
+      data_type: {
+        type: "real"
+        real: {
+          unit: "in"
+          decimal_places: 2
+        }
+      }
+      description: null
+    }
+    {
+      field_name: "BaseClearanceIn"
+      field_alias: "baseclearancein"
+      data_type: {
+        type: "real"
+        real: {
+          unit: "in"
+          decimal_places: 2
+        }
+      }
+      description: null
+    }
+    {
+      field_name: "AdderPerKvIn"
+      field_alias: "adder_per_kv_in"
+      data_type: {
+        type: "real"
+        real: {
+          unit: "in"
+          decimal_places: 2
+        }
+      }
+      description: null
+    }
+    {
+      field_name: "AdderPerKvIn"
+      field_alias: "adderperkvin"
+      data_type: {
+        type: "real"
+        real: {
+          unit: "in"
+          decimal_places: 2
+        }
+      }
+      description: null
+    }
+    {
+      field_name: "AdderThresholdKv"
+      field_alias: "adder_threshold_kv"
+      data_type: {
+        type: "real"
+        real: {
+          unit: "kV"
+          decimal_places: 1
+        }
+      }
+      description: null
+    }
+    {
+      field_name: "AdderThresholdKv"
+      field_alias: "adderthresholdkv"
+      data_type: {
+        type: "real"
+        real: {
+          unit: "kV"
+          decimal_places: 2
+        }
+      }
+      description: null
+    }
+  ]
+  source: {
+    type: "tsv_data"
+    tsv_data: {
+      value:
+        '''
+        NescCategory	SubCategory	MinVoltageKv	MaxVoltageKv	BaseClearanceIn	AdderPerKvIn	AdderThresholdKv
+        1	a	-3	-2	3	0	0
+        1	a	-2	-1	3	0	0
+        1	a	-1	0	3	0	0
+        1	a	0	8.7	3	0	0
+        1	a	8.7	50	3	0.25	8.7
+        1	b	-3	-2	3	0	0
+        1	b	-2	-1	3	0	0
+        1	b	-1	0	3	0	0
+        1	b	0	8.7	6	0	0
+        1	b	8.7	50	6	0.4	8.7
+        1	b	50	814	23	0.4	50
+        2		-3	-2	3	0	0
+        2		-2	-1	6	0	0
+        2		-1	0	6	0	0
+        2		0	8.7	6	0	0
+        2		8.7	50	6	0.25	8.7
+        2		50	814	16	0.25	50
+        3		-3	-2	3	0	0
+        3		-2	-1	3	0	0
+        3		-1	0	3	0	0
+        3		0	8.7	3	0	0
+        3		8.7	50	3	0.2	8.7
+        3		50	814	11	0.2	50
+        4	a	-2	-1	5	0	0
+        4	a	-1	0	5	0	0
+        4	a	0	8.7	5	0	0
+        4	a	8.7	50	5	0.2	8.7
+        4	a	50	814	13	0.2	50
+        4	b	-3	-2	3	0	0
+        4	b	0	8.7	3	0	0
+        4	b	8.7	50	3	0.2	8.7
+        4	b	50	814	11	0.2	50
+        5	a	-3	-2	12	0	0
+        5	a	-2	-1	12	0	0
+        5	a	-1	0	30	0	0
+        5	a	0	8.7	30	0	0
+        5	a	8.7	50	30	0.4	8.7
+        5	a	50	814	47	0.4	50
+        5	b	-2	-1	30	0	0
+        5	b	-1	0	12	0	0
+        5	b	0	8.7	12	0	0
+        5	b	8.7	50	12	0.4	8.7
+        5	b	50	814	29	0.4	50
+        '''
+    }
+  }
+}

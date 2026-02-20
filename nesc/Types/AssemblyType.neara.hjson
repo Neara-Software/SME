@@ -3,6 +3,14 @@
   is_custom_class: false
   fields: [
     {
+      name: "nesc~u_is_grounded"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "property"
+      kind: "boolean"
+    }
+    {
       name: "nesc~u_is_streetlight"
       prominence: "normal"
       documentation: null
