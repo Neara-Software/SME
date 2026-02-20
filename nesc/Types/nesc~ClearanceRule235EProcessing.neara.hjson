@@ -169,6 +169,20 @@
         '''
     }
     {
+      name: "cat5_violations"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // TODO: Category 5 (buildings, signs, billboards) requires building geometry in the platform.
+        // No building/structure objects currently available to measure against.
+        // Stubbed as empty — always passes until platform models nearby buildings.
+        []
+        '''
+    }
+    {
       name: "output"
       prominence: "normal"
       documentation: null
@@ -212,7 +226,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula: "flatten(list(cat2_violations, cat3_violations, cat4_violations))"
+      formula: "flatten(list(cat2_violations, cat3_violations, cat4_violations, cat5_violations))"
     }
   ]
 }

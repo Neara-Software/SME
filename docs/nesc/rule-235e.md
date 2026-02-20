@@ -27,7 +27,7 @@ Reference: NESC Table 235-6, which defines required clearances by category and v
 | 3 — Support arms, braces | Implemented |
 | 4 — Structure surface | Stubbed (blocked on shaft-only measurement) |
 | 1a/1b — Same/different circuit conductors | Not started |
-| 5a/5b — Buildings, signs | Not started |
+| 5a/5b — Buildings, signs | Stubbed (no building geometry in platform) |
 
 ## Architecture
 
@@ -44,7 +44,8 @@ ClearanceRule235EProcessing  (per-span)
   cat2_*                   ← Category 2 fields (guys/stays)
   cat3_*                   ← Category 3 fields (support arms)
   cat4_*                   ← Category 4 fields (structure surface — stubbed)
-  violations               ← flatten(list(cat2, cat3, cat4))
+  cat5_*                   ← Category 5 fields (buildings — stubbed)
+  violations               ← flatten(list(cat2, cat3, cat4, cat5))
   output                   ← {cat3_required_clearance, has_violations, num_violations, violations}
 
 ClearanceRule235ECalculator
@@ -134,6 +135,23 @@ Need a way to measure distance to the pole shaft only (e.g., `pole.Shaft` or a s
 - Use subcategory filter: `nesccategory = 4` with `subcategory = "a"` (ungrounded) or `"b"` (grounded)
 - Requires `AssemblyType.u_is_grounded` (already exists) or a pole-level grounded flag to distinguish 4a vs 4b
 - Expected clearances: 4a = 5in base, 4b = 3in base (0–8.7kV)
+
+## Category 5 — Buildings, Signs, Billboards (Stubbed)
+
+**Horizontal (5a) and vertical (5b) clearances to buildings and similar structures.**
+
+This category checks clearance from conductors to nearby buildings, signs, and billboards. It is **not yet implemented** because the platform does not currently model building geometry.
+
+### Blocker
+
+Need building/structure objects in the platform that can be passed to `measure_distance`. Until then, `cat5_violations` returns `[]` (always passes).
+
+### When Unblocked
+
+- Add `cat5_span_voltage`, `cat5_required_clearance` (same pattern as cat2/cat3)
+- Use subcategory filter: `nesccategory = 5` with `subcategory = "a"` (horizontal) or `"b"` (vertical)
+- 5a may use `.distance`, 5b may need `.vertical_distance` from `measure_distance`
+- Expected clearances: 5a = 30in base (0–8.7kV), 5b = 12in base (0–8.7kV)
 
 ## Known Limitations
 
