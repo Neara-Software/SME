@@ -3,6 +3,84 @@
   is_custom_class: true
   fields: [
     {
+      name: "cat1_circuit_name"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "span.section.circuit_name"
+    }
+    {
+      name: "cat1_conductor_class"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "span.section.type.conductor_class"
+    }
+    {
+      name: "cat1_span_voltage"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        if(
+          cat1_conductor_class = "Comms",
+          -3kV,
+          span.section.voltage,
+        )
+        '''
+    }
+    {
+      name: "cat1_violations"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // Table 235-6, Category 1: Conductor-to-conductor clearances
+        // 1a = same circuit, 1b = different circuits (determined by section.circuit_name)
+        // NOTE: Each pair is checked from both spans' perspectives — duplicates are expected
+        // NOTE: Uses this span's voltage for lookup. The higher-voltage span of a pair will
+        //       catch violations even if the lower-voltage span does not.
+        filter_nulls(
+          broadcast(other: pole.spans,
+            if(not(other.label = span.label),
+              let(
+                is_same_circuit: other.section.circuit_name = cat1_circuit_name,
+                sub: if(is_same_circuit, "a", "b"),
+                row: find(model().dt_table235_6,
+                  and(
+                    model().dt_table235_6[].nesccategory = 1,
+                    model().dt_table235_6[].subcategory = sub,
+                    model().dt_table235_6[].minvoltagekv <= cat1_span_voltage,
+                    model().dt_table235_6[].maxvoltagekv > cat1_span_voltage,
+                  )
+                ),
+                required: row.baseclearancein + row.adderperkvin * max(0, (cat1_span_voltage - row.adderthresholdkv) / unit_value(1, "kV")),
+                dist: measure_distance(other.Environments[].Cables, span.Environments[].Cables).distance,
+                if(
+                  dist < required,
+                  {
+                    rule: "235E1",
+                    category: if(is_same_circuit, "1a", "1b"),
+                    description: if(is_same_circuit, "Same circuit clearance", "Different circuit clearance"),
+                    span: span.label,
+                    component: other.label,
+                    required: required,
+                    actual: dist,
+                  },
+                ),
+              ),
+            )
+          )
+        )
+        '''
+    }
+    {
       name: "cat3_conductor_class"
       prominence: "normal"
       documentation: null
@@ -226,7 +304,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula: "flatten(list(cat2_violations, cat3_violations, cat4_violations, cat5_violations))"
+      formula: "flatten(list(cat1_violations, cat2_violations, cat3_violations, cat4_violations, cat5_violations))"
     }
   ]
 }

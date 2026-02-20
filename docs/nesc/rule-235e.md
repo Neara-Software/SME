@@ -2,7 +2,7 @@
 
 ## What This Rule Checks
 
-NESC Rule 235E1 specifies minimum clearances between conductors and structural parts of their supports (crossarms, braces, pole surface). This is a **conductor-to-structure** check, not conductor-to-conductor.
+NESC Rule 235E1 specifies minimum clearances at fixed supports — between conductors and structural parts (crossarms, braces, pole surface), between conductors and guys/stays, and between conductors of the same or different circuits.
 
 Reference: NESC Table 235-6, which defines required clearances by category and voltage.
 
@@ -23,10 +23,10 @@ Reference: NESC Table 235-6, which defines required clearances by category and v
 
 | Category | Status |
 |---|---|
+| 1a/1b — Same/different circuit conductors | Implemented |
 | 2 — Guys, span wires, messengers | Implemented |
 | 3 — Support arms, braces | Implemented |
 | 4 — Structure surface | Stubbed (blocked on shaft-only measurement) |
-| 1a/1b — Same/different circuit conductors | Not started |
 | 5a/5b — Buildings, signs | Stubbed (no building geometry in platform) |
 
 ## Architecture
@@ -41,11 +41,12 @@ Pole
   u_rule235e_output        ← instantiates Calculator, returns pass/fail
 
 ClearanceRule235EProcessing  (per-span)
+  cat1_*                   ← Category 1 fields (conductor-to-conductor)
   cat2_*                   ← Category 2 fields (guys/stays)
   cat3_*                   ← Category 3 fields (support arms)
   cat4_*                   ← Category 4 fields (structure surface — stubbed)
   cat5_*                   ← Category 5 fields (buildings — stubbed)
-  violations               ← flatten(list(cat2, cat3, cat4, cat5))
+  violations               ← flatten(list(cat1, cat2, cat3, cat4, cat5))
   output                   ← {cat3_required_clearance, has_violations, num_violations, violations}
 
 ClearanceRule235ECalculator
@@ -62,6 +63,32 @@ ClearanceRule235ECalculator
 | `nesc/Types/Pole.neara.hjson` | Pole extension. `u_rule235e_processing` broadcasts over spans. `u_rule235e_output` is the final result. |
 | `nesc/DataTables/nesc~Table235_6.neara.hjson` | Encodes NESC Table 235-6 as a DataTable with all 5 categories. |
 | `nesc/Reports/nesc~NESC 235E.neara.hjson` | Report showing `u_rule235e_output` per pole. |
+
+## Category 1 Implementation Detail
+
+**Conductor-to-conductor clearances. 1a = same circuit, 1b = different circuits.**
+
+Checks clearance between each conductor and every other conductor at the pole. Circuit identity is determined by `section.circuit_name`.
+
+### Fields
+
+- `cat1_circuit_name` — `span.section.circuit_name` (extracted to avoid module-prefix in let)
+- `cat1_conductor_class` — `span.section.type.conductor_class`
+- `cat1_span_voltage` — maps Comms to `-3kV` sentinel, otherwise `span.section.voltage`
+- `cat1_violations` — broadcasts over `pole.spans`, skips self (`not(other.label = span.label)`), determines subcategory from circuit match, looks up clearance per-pair, measures `measure_distance(other.Environments[].Cables, span.Environments[].Cables).distance`
+
+### Violation Record
+
+```
+{ rule, category: "1a" or "1b", description, span, component, required, actual }
+```
+
+### Notes
+
+- **Required clearance varies per pair** — unlike cat2/cat3 which have a single `required_clearance` per span, cat1 computes the required clearance inside the broadcast because the subcategory (a vs b) depends on which other span is being compared
+- **Duplicate pair checking** — each pair is checked from both spans' perspectives (A→B and B→A). Both generate violation records if clearance is insufficient. This is expected and not deduplicated.
+- **Voltage for lookup** — uses the current span's voltage. For a mixed-voltage pair (e.g., 12kV vs 0kV), the higher-voltage span's check will use stricter clearance requirements and catch the violation even if the lower-voltage span's check does not.
+- **Circuit identification** — uses `section.circuit_name`. If this field is null or empty for both spans, they will be treated as same circuit (1a).
 
 ## Category 2 Implementation Detail
 
@@ -159,20 +186,18 @@ Need building/structure objects in the platform that can be passed to `measure_d
 - **Self-attachment**: No filtering for a conductor's own crossarm — a conductor attached to a crossarm will be checked against that same crossarm.
 - **Joint-use comm distinction**: Comm cables use sentinel `-3kV` (general). Joint-use comm (`-2kV`) is not yet distinguished.
 - **Assembly filtering**: All assemblies are checked. Non-structural components that shouldn't be checked are not yet excluded.
+- **Cat1 duplicate violations**: Each conductor pair is checked from both perspectives. A single clearance issue produces two violation records.
+- **Cat1 circuit_name nulls**: If `section.circuit_name` is null/empty for both spans, they are treated as same circuit (1a).
 
 ## Adding New Categories
 
-To add a new NESC 235-6 category (e.g., Category 1 — conductor-to-conductor):
+All 5 NESC Table 235-6 categories now have entries (cat1–cat3 implemented, cat4–cat5 stubbed). To unstub a category or add new violation logic:
 
-1. Add `cat1_` prefixed fields to `ClearanceRule235EProcessing`:
-   - `cat1_span_voltage` — voltage lookup
-   - `cat1_required_clearance` — DataTable lookup with `nesccategory = 1` and subcategory filter
-   - `cat1_violations` — measurement + comparison logic
-2. **Violation record must match existing shape**: `{ rule, category, description, span, component, required, actual }` — use `component` for the measured-against element (not `assembly`, `stay`, etc.) so `list()` type-checking passes
-3. Add `cat1_violations` to the `violations` formula: `flatten(list(cat1_violations, cat2_violations, ...))`
-4. Add debug fields to `output` if needed
-5. Update Pole extension aggregation to include new output fields
-6. The DataTable already contains all category rows — no data changes needed
+1. **Violation record must match existing shape**: `{ rule, category, description, span, component, required, actual }` — use `component` for the measured-against element (not `assembly`, `stay`, etc.) so `list()` type-checking passes
+2. Replace the `[]` stub with real logic following the cat2/cat3 pattern
+3. Add debug fields to `output` if needed
+4. Update Pole extension aggregation to include new output fields
+5. The DataTable already contains all category rows — no data changes needed
 
 ## dim Language Gotchas Encountered
 
