@@ -129,6 +129,19 @@
         '''
     }
     {
+      name: "output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        {worst_margin: worst_margin,
+        worst_result: worst_result,
+        }
+        '''
+    }
+    {
       name: "points"
       prominence: "normal"
       documentation: null

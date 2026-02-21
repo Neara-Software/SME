@@ -94,6 +94,28 @@
         '''
     }
     {
+      name: "output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        {attached_crossings_below: attached_crossings_below,
+        found_adjacent_below: found_adjacent_below,
+        found_crossing_below: found_crossing_below,
+        found_spans_below: found_spans_below,
+        is_freeway_crossing: is_freeway_crossing,
+        is_rail_crossing: is_rail_crossing,
+        is_water_crossing: is_water_crossing,
+        spans_below: spans_below,
+        type: type,
+        unattached_crossings_below: unattached_crossings_below,
+        voltage: voltage,
+        }
+        '''
+    }
+    {
       name: "spans_below"
       prominence: "normal"
       documentation: null

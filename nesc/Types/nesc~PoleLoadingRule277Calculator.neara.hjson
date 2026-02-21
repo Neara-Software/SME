@@ -71,7 +71,7 @@
           pct_stiff_moment: not_null(call(get_allowed_percentage, insulator_type: "post", check_type: "Moment")),
           pct_stiff_post_force: not_null(call(get_allowed_percentage, insulator_type: "post", check_type: "Force")),
           pct_stiff_pin_force: not_null(call(get_allowed_percentage, insulator_type: "pin", check_type: "Force")),
-        )
+        ).output
         '''
     }
     {

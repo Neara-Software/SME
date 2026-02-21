@@ -37,11 +37,11 @@
       name: "processing"
       prominence: "normal"
       documentation: null
-      visibility: "module"
+      visibility: "public"
       type: "formula"
       formula:
         '''
-        make_immutable_record("PoleLoadingRule250cProcessing", model_input: model_input, rule_243_output: rule_243_output)
+        make_immutable_record("PoleLoadingRule250cProcessing", model_input: model_input, rule_243_output: rule_243_output).output
         '''
     }
     {

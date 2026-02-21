@@ -10,7 +10,7 @@
       type: "formula"
       formula:
         '''
-        type_only("PoleLoadingModelInput")
+        type_only("nesc~PoleLoadingModelInput")
         '''
     }
     {
@@ -39,7 +39,7 @@
       type: "formula"
       formula:
         '''
-        make_immutable_record("portland_nesc~PoleLoadingExtremeIceProcessing", model_input: model_input)
+        make_immutable_record("portland_nesc~PoleLoadingExtremeIceProcessing", model_input: model_input).output
         '''
     }
   ]

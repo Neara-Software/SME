@@ -192,6 +192,26 @@
       formula: "len(nesc_250d_wind)"
     }
     {
+      name: "output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        {environment: environment,
+        max_pole: max_pole,
+        max_stay: max_stay,
+        max_xarm: max_xarm,
+        nesc250d_required: nesc250d_required,
+        nesc_250d_ice: nesc_250d_ice,
+        nesc_250d_wind: nesc_250d_wind,
+        no_ice_results: no_ice_results,
+        no_wind_results: no_wind_results,
+        }
+        '''
+    }
+    {
       name: "rule_243_output"
       prominence: "normal"
       documentation: null

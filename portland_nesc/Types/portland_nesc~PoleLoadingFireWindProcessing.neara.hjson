@@ -50,7 +50,7 @@
         '''
         // PGE LD20020: Fire wind applies to all poles in High Fire Risk Zones (HFRZs).
         // Requires dt_pge_hfrz geospatial data table to be loaded.
-        any(geo_query(model().dt_pge_hfrz, model_input.pole.geometry, 0ft))
+        any(geo_query(model().dt_wildfireriskarea, model_input.pole.geometry, 10ft))
         '''
     }
     {
@@ -61,7 +61,7 @@
       type: "formula"
       formula:
         '''
-        model_input.pole.type.material = "steel"
+        model_input.pole.type.material&"" = "steel"
         '''
     }
     {
@@ -70,10 +70,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula:
-        '''
-        max(model_input.pole.spans[].section[].voltage) >= 57kV
-        '''
+      formula: "max(model_input.pole.spans[].section[].voltage) >= 57kV"
     }
     {
       name: "max_pole"
@@ -174,7 +171,23 @@
       type: "formula"
       formula:
         '''
-        type_only("PoleLoadingModelInput")
+        type_only("nesc~PoleLoadingModelInput")
+        '''
+    }
+    {
+      name: "output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        {environment: environment,
+        fire_wind_required: fire_wind_required,
+        max_pole: max_pole,
+        max_stay: max_stay,
+        max_xarm: max_xarm,
+        }
         '''
     }
     {

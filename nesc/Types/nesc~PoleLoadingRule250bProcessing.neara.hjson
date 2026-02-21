@@ -187,6 +187,23 @@
         '''
     }
     {
+      name: "output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        {environment: environment,
+        is_heavy: is_heavy,
+        is_medium: is_medium,
+        max_pole: max_pole,
+        max_stay: max_stay,
+        max_xarm: max_xarm,
+        }
+        '''
+    }
+    {
       name: "pole_check"
       prominence: "normal"
       documentation: null

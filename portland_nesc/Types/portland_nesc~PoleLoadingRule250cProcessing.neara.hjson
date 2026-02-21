@@ -32,7 +32,7 @@
       type: "formula"
       formula:
         '''
-        model_input.pole.type.material = "steel"
+        model_input.pole.type.material&"" = "steel"
         '''
     }
     {
@@ -134,7 +134,7 @@
       type: "formula"
       formula:
         '''
-        type_only("PoleLoadingModelInput")
+        type_only("nesc~PoleLoadingModelInput")
         '''
     }
     {
@@ -174,6 +174,24 @@
       formula: "len(nesc250c_wind)"
     }
     {
+      name: "output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        {environment: environment,
+        max_pole: max_pole,
+        max_stay: max_stay,
+        max_xarm: max_xarm,
+        nesc250c_required: nesc250c_required,
+        nesc250c_wind: nesc250c_wind,
+        no_wind_results: no_wind_results,
+        }
+        '''
+    }
+    {
       name: "rule_243_output"
       prominence: "normal"
       documentation: null
@@ -181,7 +199,7 @@
       type: "formula"
       formula:
         '''
-        type_only(make_immutable_record("PoleLoadingRule243Calculator").output)
+        type_only(make_immutable_record("nesc~PoleLoadingRule243Calculator").output)
         '''
     }
     {

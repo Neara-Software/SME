@@ -33,7 +33,7 @@
           no_ice_records: processing.no_ice_results,
           //required: processing.nesc250d_required,
           },
-          
+        
         )
         '''
     }
@@ -45,7 +45,7 @@
       type: "formula"
       formula:
         '''
-        make_immutable_record("PoleLoadingRule250dProcessing", model_input: model_input, rule_243_output: rule_243_output)
+        make_immutable_record("PoleLoadingRule250dProcessing", model_input: model_input, rule_243_output: rule_243_output).output
         '''
     }
     {

@@ -34,16 +34,16 @@
       name: "processing"
       prominence: "normal"
       documentation: null
-      visibility: "module"
+      visibility: "public"
       type: "formula"
       formula:
         '''
-        type_only("nesc~PoleLoadingRule250bProcessing")
+        type_only("nesc~PoleLoadingRule250bProcessing").output
         //make_immutable_record(
         //  "nesc~PoleLoadingRule250bProcessing",
         //  model_input: model_input,
         //  rule_243_output: rule_243_output,
-        //)
+        //).output
         '''
     }
     {

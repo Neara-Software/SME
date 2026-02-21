@@ -55,6 +55,19 @@
         '''
     }
     {
+      name: "output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        {is_structure_conflict: is_structure_conflict,
+        worst_grade: worst_grade,
+        }
+        '''
+    }
+    {
       name: "pole_base"
       prominence: "normal"
       documentation: null

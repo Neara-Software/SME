@@ -241,6 +241,20 @@
         '''
     }
     {
+      name: "output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        {worst_cable_insulator: worst_cable_insulator,
+        worst_ratio: worst_ratio,
+        worst_stiff_insulator: worst_stiff_insulator,
+        }
+        '''
+    }
+    {
       name: "pct_cable_tension"
       prominence: "normal"
       documentation: null

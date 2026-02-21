@@ -26,7 +26,7 @@
             env: find(model().Environments, model().Environments[].label = template_label),
             make_environment(
               template: env,
-              ice_radial_thickness: ice_params[0].ice_thickness_in * unit_value(1, "in"),
+              ice_radial_thickness: ice_params[0].ice_thickness_in// * unit_value(1, "in"),
             ),
           ),
         )
@@ -102,7 +102,7 @@
       type: "formula"
       formula:
         '''
-        model_input.pole.type.material = "steel"
+        model_input.pole.type.material&"" = "steel"
         '''
     }
     {
@@ -204,7 +204,23 @@
       type: "formula"
       formula:
         '''
-        type_only("PoleLoadingModelInput")
+        type_only("nesc~PoleLoadingModelInput")
+        '''
+    }
+    {
+      name: "output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        {environment: environment,
+        extreme_ice_required: extreme_ice_required,
+        max_pole: max_pole,
+        max_stay: max_stay,
+        max_xarm: max_xarm,
+        }
         '''
     }
     {
@@ -213,10 +229,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula:
-        '''
-        geo_query(model().dt_nesc_loading_zones, model_input.pole.geometry, 0ft)[].zonename
-        '''
+      formula: "geo_query(model().dt_nesc_loading_zones, model_input.pole.geometry, 0ft)[].zonename"
     }
     {
       name: "simulations"

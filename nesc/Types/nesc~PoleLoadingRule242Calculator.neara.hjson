@@ -264,7 +264,7 @@
       type: "formula"
       formula:
         '''
-        make_immutable_record("PoleLoadingRule242Processing", model_input: model_input)
+        make_immutable_record("PoleLoadingRule242Processing", model_input: model_input).output
         '''
     }
     {

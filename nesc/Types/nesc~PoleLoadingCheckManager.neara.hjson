@@ -74,7 +74,7 @@
             "nesc~PoleLoadingRule250bProcessing",
             model_input: nesc_pla_model_input,
             rule_243_output: rule_243_output,
-          )
+          ).output
         '''
     }
     {
