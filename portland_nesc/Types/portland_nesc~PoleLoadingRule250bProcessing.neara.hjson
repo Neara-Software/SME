@@ -15,15 +15,15 @@
           if(
             and(is_heavy, grade = "B"),
             find(model().Environments, model().Environments[].label = "250B_Hvy B"),
-            and(is_heavy, grade = "C"),
+            and(is_heavy, or(grade = "C", grade = "N")),
             find(model().Environments, model().Environments[].label = "250B_Hvy C"),
             and(is_medium, grade = "B"),
             find(model().Environments, model().Environments[].label = "250B_Med B"),
-            and(is_medium, grade = "C"),
+            and(is_medium, or(grade = "C", grade = "N")),
             find(model().Environments, model().Environments[].label = "250B_Med C"),
             and(is_light, grade = "B"),
             find(model().Environments, model().Environments[].label = "250B_Lgt B"),
-            and(is_light, grade = "C"),
+            and(is_light, or(grade = "C", grade = "N")),
             find(model().Environments, model().Environments[].label = "250B_Lgt C"),
           ),
         )
@@ -260,9 +260,9 @@
       type: "formula"
       formula:
         '''
-        // PGE LD20055 Table 5: Run Grade B simulation for guy checks when pole is Grade C.
+        // PGE LD20055 Table 5: Run Grade B simulation for guy checks when grade is not B.
         if(
-          rule_243_output.grade_of_construction = "C",
+          and(rule_243_output.grade_of_construction <> "B",len(model_input.pole.Stays) > 0),
           simulate_structure_fea(
             model_input.pole.primary_pole,
             environment: environment_grade_b,

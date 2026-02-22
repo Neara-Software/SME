@@ -1,5 +1,5 @@
 {
-  token: "nesc~ct_PoleLoadingRule250cProcessing"
+  token: "portland_nesc~ct_PoleLoadingRule250dProcessing"
   is_custom_class: true
   fields: [
     {
@@ -10,13 +10,74 @@
       type: "formula"
       formula:
         '''
+        // PGE LD20055 Table 3: Steel vs wood/FRP have different load/strength factors.
         let(
-          env: find(model().Environments, model().Environments[].label = "250C"),
+          env: if(
+            is_steel_pole,
+            find(model().Environments, model().Environments[].label = "PGE_250D_Steel"),
+            find(model().Environments, model().Environments[].label = "PGE_250D_Wood"),
+          ),
           make_environment(
             template: env,
-            wind_pressure: 0.00256 * (nesc250c_wind[0] ^ 2) * unit_value(1, "psf"),
+            wind_pressure: 0.00256 * (max(nesc_250d_wind) ^ 2) * unit_value(1, "psf"),
+            ice_radial_thickness: ice_thickness,
           ),
         )
+        '''
+    }
+    {
+      name: "environment_grade_b"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // PGE LD20055 Table 5: Guys/anchors always Grade B regardless of structure grade.
+        // Uses full geodata ice (no 0.8 factor) for Grade B guy environment.
+        // Only needed when grade is not B (i.e. C or N).
+        if(
+          rule_243_output.grade_of_construction <> "B",
+          let(
+            env: if(
+              is_steel_pole,
+              find(model().Environments, model().Environments[].label = "PGE_250D_Steel"),
+              find(model().Environments, model().Environments[].label = "PGE_250D_Wood"),
+            ),
+            make_environment(
+              template: env,
+              wind_pressure: 0.00256 * (max(nesc_250d_wind) ^ 2) * unit_value(1, "psf"),
+              ice_radial_thickness: max(nesc_250d_ice) * unit_value(1, "in"),
+            ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "ice_thickness"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // Grade B uses full geodata ice; all other grades (C, N) use 80% per NESC 250D.
+        if(
+          rule_243_output.grade_of_construction = "B",
+          max(nesc_250d_ice) * unit_value(1, "in"),
+          max(nesc_250d_ice) * 0.8 * unit_value(1, "in"),
+        )
+        '''
+    }
+    {
+      name: "is_steel_pole"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        model_input.pole.type.material&"" = "steel"
         '''
     }
     {
@@ -60,21 +121,24 @@
       type: "formula"
       formula:
         '''
+        // PGE LD20055 Table 5: Guys/anchors always use Grade B simulation.
+        // When grade = C, use the Grade B simulation for stay checks.
         if(
-          //and(len(pole.Stays) > 0, calc_config.stay_tension),
           len(model_input.pole.Stays) > 0,
           let(
-            pmax: max_by(
-              simulations[].StayCableReports,
-              simulations[].StayCableReports[].worst[].tension[].utilization,
+            stay_sims: if(simulations_grade_b <> null, simulations_grade_b, simulations),
+            let(
+              pmax: max_by(
+                stay_sims[].StayCableReports,
+                stay_sims[].StayCableReports[].worst[].tension[].utilization,
+              ),
+              {stay: pmax.stay,
+              check_type: "Stay Tension",
+              stayreport: pmax,
+              simulation: find(stay_sims, stay_sims[].solve = pmax.solve),
+              utilisation: pmax.worst.tension.utilization,
+              },
             ),
-            {stay: pmax.stay,
-            //environment: environment,
-            check_type: "Stay Tension",
-            stayreport: pmax,
-            simulation: find(simulations, simulations[].solve = pmax.solve),
-            utilisation: pmax.worst.tension.utilization,
-            },
           ),
         )
         '''
@@ -120,50 +184,61 @@
       type: "formula"
       formula:
         '''
-        type_only("PoleLoadingModelInput")
+        type_only("nesc~PoleLoadingModelInput")
         '''
     }
     {
-      name: "nesc250c_required"
+      name: "nesc250d_required"
       prominence: "normal"
       documentation: null
       visibility: "module"
       type: "formula"
       formula:
         '''
-        //Only required if pole or spans is >60ft
-        //Current code is incorrect as ground clearance is lowest height above ground not max.
-        
-        
+        // PGE LD20055 Table 3: 250D applies to poles exceeding 60ft.
         or(
-          model_input.pole.height > 6ft,
+          model_input.pole.height > 60ft,
           any(model_input.pole.spans[].ground_clearance > 60ft),
         )
         '''
     }
     {
-      name: "nesc250c_wind"
+      name: "nesc_250d_ice"
       prominence: "normal"
       documentation: null
       visibility: "module"
       type: "formula"
       formula:
         '''
-        if(
-          rule_243_output.grade_of_construction = "B",
-          geo_query(
-            model().dt_250c_grb_wind_speed,
-            model_input.pole.geometry,
-            10ft,
-          )[].wind_speed,
-          geo_query(
-            model().dt_250c_grc_wind_speed,
-            model_input.pole.geometry,
-            10ft,
-          )[].wind_speed,
-        
-        )
+        geo_query(
+          model().dt_250d_ice,
+          model_input.pole.geometry,
+          10ft,
+        )[].ice_thickness
         '''
+    }
+    {
+      name: "nesc_250d_wind"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        geo_query(
+          model().dt_250d_wind,
+          model_input.pole.geometry,
+          10ft,
+        )[].wind_speed
+        '''
+    }
+    {
+      name: "no_ice_results"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "len(nesc_250d_ice)"
     }
     {
       name: "no_wind_results"
@@ -171,7 +246,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula: "len(nesc250c_wind)"
+      formula: "len(nesc_250d_wind)"
     }
     {
       name: "output"
@@ -185,8 +260,10 @@
         max_pole: max_pole,
         max_stay: max_stay,
         max_xarm: max_xarm,
-        nesc250c_required: nesc250c_required,
-        nesc250c_wind: nesc250c_wind,
+        nesc250d_required: nesc250d_required,
+        nesc_250d_ice: nesc_250d_ice,
+        nesc_250d_wind: nesc_250d_wind,
+        no_ice_results: no_ice_results,
         no_wind_results: no_wind_results,
         }
         '''
@@ -199,7 +276,7 @@
       type: "formula"
       formula:
         '''
-        type_only(make_immutable_record("PoleLoadingRule243Calculator").output)
+        type_only(make_immutable_record("nesc~PoleLoadingRule243Calculator").output)
         '''
     }
     {
@@ -211,7 +288,7 @@
       formula:
         '''
         if(
-          nesc250c_required,
+          nesc250d_required,
           simulate_structure_fea(
             model_input.pole.primary_pole,
             environment: environment,
@@ -222,18 +299,21 @@
         '''
     }
     {
-      name: "temp"
+      name: "simulations_grade_b"
       prominence: "normal"
       documentation: null
       visibility: "module"
       type: "formula"
       formula:
         '''
-        let(
-          top_spans: model_input.pole.span_stacks[].top_span,
-          let(
-            catenaries: filter(top_spans[].Environments, top_spans[].Environments[].label="survey"),
-            catenaries,
+        // PGE LD20055 Table 5: Run Grade B simulation for guy checks when grade is not B.
+        if(
+          and(rule_243_output.grade_of_construction <> "B", nesc250d_required, len(model_input.pole.Stays)>0),
+          simulate_structure_fea(
+            model_input.pole.primary_pole,
+            environment: environment_grade_b,
+            wind_dirs: 8,
+            network_solve: false,
           ),
         )
         '''

@@ -41,7 +41,7 @@
       name: "processing"
       prominence: "normal"
       documentation: null
-      visibility: "module"
+      visibility: "public"
       type: "formula"
       formula:
         '''

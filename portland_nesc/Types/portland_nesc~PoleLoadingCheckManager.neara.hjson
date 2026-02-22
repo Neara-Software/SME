@@ -18,6 +18,21 @@
         '''
     }
     {
+      name: "extreme_wind_output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // PGE LD20055 Table 2: Extreme wind — PGE-specific.
+        make_immutable_record(
+          "portland_nesc~PoleLoadingExtremeWindCalculator",
+          model_input: nesc_pla_model_input,
+        ).output
+        '''
+    }
+    {
       name: "fire_wind_output"
       prominence: "normal"
       documentation: null
@@ -132,11 +147,16 @@
       type: "formula"
       formula:
         '''
-        // 250D uses base NESC processing — PGE load/strength factors are in environment templates.
+        // PGE LD20055 Table 3: Uses PGE 250D (steel/wood split, Grade B guy override).
         make_immutable_record(
           "nesc~PoleLoadingRule250dCalculator",
           model_input: nesc_pla_model_input,
           rule_243_output: rule_243_output,
+          processing: make_immutable_record(
+            "portland_nesc~PoleLoadingRule250dProcessing",
+            model_input: nesc_pla_model_input,
+            rule_243_output: rule_243_output,
+          ).output,
         ).output
         '''
     }

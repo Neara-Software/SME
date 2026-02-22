@@ -10,13 +10,9 @@
       type: "formula"
       formula:
         '''
-        // PGE LD20055 Table 4: Fire wind — select template by pole material.
+        // PGE LD20055 Table 4: Fire wind.
         let(
-          env: if(
-            is_steel_pole,
-            find(model().Environments, model().Environments[].label = "PGE_FireWind_Steel"),
-            find(model().Environments, model().Environments[].label = "PGE_FireWind_Wood"),
-          ),
+          env: find(model().Environments, model().Environments[].label = "PGE_FireWind"),
           make_environment(
             template: env,
             wind_pressure: fire_wind_pressure,
@@ -49,19 +45,8 @@
       formula:
         '''
         // PGE LD20020: Fire wind applies to all poles in High Fire Risk Zones (HFRZs).
-        // Requires dt_pge_hfrz geospatial data table to be loaded.
-        any(geo_query(model().dt_wildfireriskarea, model_input.pole.geometry, 10ft))
-        '''
-    }
-    {
-      name: "is_steel_pole"
-      prominence: "normal"
-      documentation: null
-      visibility: "module"
-      type: "formula"
-      formula:
-        '''
-        model_input.pole.type.material&"" = "steel"
+        
+        any(geo_query(model().dt_wildfireriskarea, model_input.pole.spans[].geometry, 10ft))
         '''
     }
     {
@@ -198,11 +183,14 @@
       type: "formula"
       formula:
         '''
-        simulate_structure_fea(
-          model_input.pole.primary_pole,
-          environment: environment,
-          wind_dirs: 8,
-          network_solve: false,
+        if(
+          fire_wind_required,
+          simulate_structure_fea(
+            model_input.pole.primary_pole,
+            environment: environment,
+            wind_dirs: 8,
+            network_solve: false,
+          ),
         )
         '''
     }

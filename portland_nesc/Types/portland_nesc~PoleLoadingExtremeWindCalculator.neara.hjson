@@ -1,5 +1,5 @@
 {
-  token: "portland_nesc~ct_PoleLoadingExtremeIceCalculator"
+  token: "portland_nesc~ct_PoleLoadingExtremeWindCalculator"
   is_custom_class: true
   fields: [
     {
@@ -21,11 +21,15 @@
       type: "formula"
       formula:
         '''
+        if(
+          processing.extreme_wind_required,
           {environment: processing.environment,
           worst_pole: processing.max_pole,
           worst_stay: processing.max_stay,
           worst_xarm: processing.max_xarm,
-          }
+          wind_speed: processing.wind_speed,
+          },
+        )
         '''
     }
     {
@@ -36,7 +40,7 @@
       type: "formula"
       formula:
         '''
-        make_immutable_record("portland_nesc~PoleLoadingExtremeIceProcessing", model_input: model_input).output
+        make_immutable_record("portland_nesc~PoleLoadingExtremeWindProcessing", model_input: model_input).output
         '''
     }
   ]

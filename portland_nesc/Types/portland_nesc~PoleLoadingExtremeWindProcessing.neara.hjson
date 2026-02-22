@@ -1,5 +1,5 @@
 {
-  token: "nesc~ct_PoleLoadingRule250cProcessing"
+  token: "portland_nesc~ct_PoleLoadingExtremeWindProcessing"
   is_custom_class: true
   fields: [
     {
@@ -10,13 +10,45 @@
       type: "formula"
       formula:
         '''
+        // PGE LD20055 Table 2 / LD20020: Extreme wind environment.
         let(
-          env: find(model().Environments, model().Environments[].label = "250C"),
+          env: if(
+            is_steel_pole,
+            find(model().Environments, model().Environments[].label = "PGE_ExtremeWind_Steel"),
+            find(model().Environments, model().Environments[].label = "PGE_ExtremeWind_Wood"),
+          ),
           make_environment(
             template: env,
-            wind_pressure: 0.00256 * (nesc250c_wind[0] ^ 2) * unit_value(1, "psf"),
+            wind_pressure: 0.00256 * (wind_speed ^ 2) * unit_value(1, "psf"),
           ),
         )
+        '''
+    }
+    {
+      name: "extreme_wind_required"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // PGE LD20055 Table 2: All poles <=60ft; only steel >60ft.
+        // Wood/FRP >60ft do NOT get extreme wind.
+        or(
+          model_input.pole.height <= 60ft,
+          is_steel_pole,
+        )
+        '''
+    }
+    {
+      name: "is_steel_pole"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        model_input.pole.type.material&"" = "steel"
         '''
     }
     {
@@ -61,7 +93,6 @@
       formula:
         '''
         if(
-          //and(len(pole.Stays) > 0, calc_config.stay_tension),
           len(model_input.pole.Stays) > 0,
           let(
             pmax: max_by(
@@ -69,7 +100,6 @@
               simulations[].StayCableReports[].worst[].tension[].utilization,
             ),
             {stay: pmax.stay,
-            //environment: environment,
             check_type: "Stay Tension",
             stayreport: pmax,
             simulation: find(simulations, simulations[].solve = pmax.solve),
@@ -120,58 +150,8 @@
       type: "formula"
       formula:
         '''
-        type_only("PoleLoadingModelInput")
+        type_only("nesc~PoleLoadingModelInput")
         '''
-    }
-    {
-      name: "nesc250c_required"
-      prominence: "normal"
-      documentation: null
-      visibility: "module"
-      type: "formula"
-      formula:
-        '''
-        //Only required if pole or spans is >60ft
-        //Current code is incorrect as ground clearance is lowest height above ground not max.
-        
-        
-        or(
-          model_input.pole.height > 6ft,
-          any(model_input.pole.spans[].ground_clearance > 60ft),
-        )
-        '''
-    }
-    {
-      name: "nesc250c_wind"
-      prominence: "normal"
-      documentation: null
-      visibility: "module"
-      type: "formula"
-      formula:
-        '''
-        if(
-          rule_243_output.grade_of_construction = "B",
-          geo_query(
-            model().dt_250c_grb_wind_speed,
-            model_input.pole.geometry,
-            10ft,
-          )[].wind_speed,
-          geo_query(
-            model().dt_250c_grc_wind_speed,
-            model_input.pole.geometry,
-            10ft,
-          )[].wind_speed,
-        
-        )
-        '''
-    }
-    {
-      name: "no_wind_results"
-      prominence: "normal"
-      documentation: null
-      visibility: "module"
-      type: "formula"
-      formula: "len(nesc250c_wind)"
     }
     {
       name: "output"
@@ -182,24 +162,12 @@
       formula:
         '''
         {environment: environment,
+        extreme_wind_required: extreme_wind_required,
         max_pole: max_pole,
         max_stay: max_stay,
         max_xarm: max_xarm,
-        nesc250c_required: nesc250c_required,
-        nesc250c_wind: nesc250c_wind,
-        no_wind_results: no_wind_results,
+        wind_speed: wind_speed,
         }
-        '''
-    }
-    {
-      name: "rule_243_output"
-      prominence: "normal"
-      documentation: null
-      visibility: "module"
-      type: "formula"
-      formula:
-        '''
-        type_only(make_immutable_record("PoleLoadingRule243Calculator").output)
         '''
     }
     {
@@ -211,7 +179,7 @@
       formula:
         '''
         if(
-          nesc250c_required,
+          extreme_wind_required,
           simulate_structure_fea(
             model_input.pole.primary_pole,
             environment: environment,
@@ -222,20 +190,15 @@
         '''
     }
     {
-      name: "temp"
+      name: "wind_speed"
       prominence: "normal"
       documentation: null
       visibility: "module"
       type: "formula"
       formula:
         '''
-        let(
-          top_spans: model_input.pole.span_stacks[].top_span,
-          let(
-            catenaries: filter(top_spans[].Environments, top_spans[].Environments[].label="survey"),
-            catenaries,
-          ),
-        )
+        // PGE LD20055 Table 2: <=60ft = 70 mph, >60ft = 90 mph.
+        if(model_input.pole.height <= 60ft, 70, 90)
         '''
     }
   ]

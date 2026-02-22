@@ -19,7 +19,7 @@
           ),
           make_environment(
             template: env,
-            wind_pressure: 0.00256 * (nesc250c_wind[0] ^ 2) * unit_value(1, "psf"),
+            wind_pressure: 0.00256 * (max(nesc250c_wind) ^ 2) * unit_value(1, "psf"),
           ),
         )
         '''
@@ -145,8 +145,11 @@
       type: "formula"
       formula:
         '''
-        // PGE LD20055: 250C applies to ALL structure heights (no 60ft threshold).
-        true
+        // PGE LD20055: 250C applies to poles exceeding 60ft.
+        or(
+          model_input.pole.height > 60ft,
+          any(model_input.pole.spans[].ground_clearance > 60ft),
+        )
         '''
     }
     {
@@ -210,11 +213,14 @@
       type: "formula"
       formula:
         '''
-        simulate_structure_fea(
-          model_input.pole.primary_pole,
-          environment: environment,
-          wind_dirs: 8,
-          network_solve: false,
+        if(
+          nesc250c_required,
+          simulate_structure_fea(
+            model_input.pole.primary_pole,
+            environment: environment,
+            wind_dirs: 8,
+            network_solve: false,
+          ),
         )
         '''
     }

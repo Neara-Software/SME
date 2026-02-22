@@ -11,59 +11,13 @@
       formula:
         '''
         // PGE LD20055 Table 4: Extreme ice (no wind).
-        // Select environment template by pole material and loading district.
         let(
-          template_label: if(
-            and(is_steel_pole, is_heavy),
-            "PGE_ExtremeIce_Steel_Hvy",
-            and(is_steel_pole, is_medium),
-            "PGE_ExtremeIce_Steel_Med",
-            is_heavy,
-            "PGE_ExtremeIce_Wood_Hvy",
-            "PGE_ExtremeIce_Wood_Med",
-          ),
-          let(
-            env: find(model().Environments, model().Environments[].label = template_label),
-            make_environment(
-              template: env,
-              ice_radial_thickness: ice_params[0].ice_thickness_in// * unit_value(1, "in"),
-            ),
-          ),
+          template_label: if(is_heavy, "PGE_ExtremeIce_Hvy", "PGE_ExtremeIce_Med"),
+          find(model().Environments, model().Environments[].label = template_label),
         )
-        '''
-    }
-    {
-      name: "extreme_ice_required"
-      prominence: "normal"
-      documentation: null
-      visibility: "module"
-      type: "formula"
-      formula:
-        '''
-        // PGE extreme ice applies to all poles within a loading district.
-        or(is_heavy, is_medium)
-        '''
-    }
-    {
-      name: "ice_params"
-      prominence: "normal"
-      documentation: null
-      visibility: "module"
-      type: "formula"
-      formula:
-        '''
-        // Look up ice parameters from data table by loading district.
-        if(
-          is_heavy,
-          filter(
-            model().portland_nesc~dt_extreme_ice_loading,
-            model().portland_nesc~dt_extreme_ice_loading[].loading_district = "Heavy",
-          ),
-          filter(
-            model().portland_nesc~dt_extreme_ice_loading,
-            model().portland_nesc~dt_extreme_ice_loading[].loading_district = "Medium",
-          ),
-        )
+        
+        
+        //PGE Extreme Wind_ Ground Line Strength
         '''
     }
     {
@@ -92,17 +46,6 @@
           not(is_heavy),
           any(pole_check = "Medium Loading District"),
         )
-        '''
-    }
-    {
-      name: "is_steel_pole"
-      prominence: "normal"
-      documentation: null
-      visibility: "module"
-      type: "formula"
-      formula:
-        '''
-        model_input.pole.type.material&"" = "steel"
         '''
     }
     {
@@ -216,7 +159,6 @@
       formula:
         '''
         {environment: environment,
-        extreme_ice_required: extreme_ice_required,
         max_pole: max_pole,
         max_stay: max_stay,
         max_xarm: max_xarm,
