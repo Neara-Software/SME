@@ -87,12 +87,13 @@
         '''
         // Table 235-6, Category 1: Conductor-to-conductor clearances
         // 1a = same circuit, 1b = different circuits (determined by section.circuit_name)
+        // Skip spans on the same section — same wire continuing through pole has no clearance.
         // Checks both E1 (no wind) and E2 (wind swing) environments
         flatten(list(
           // 235E1: No wind
           filter_nulls(
             broadcast(other: pole.spans,
-              if(not(other.label = span.label),
+              if(and(not(other.label = span.label), not(other.section = span.section)),
                 let(
                   dist: measure_distance(other.Environments[].Cables, e1_cables).distance,
                   if(other.section.circuit_name = cat1_circuit_name,
@@ -111,7 +112,7 @@
           if(e2_applies,
             filter_nulls(
               broadcast(other: pole.spans,
-                if(not(other.label = span.label),
+                if(and(not(other.label = span.label), not(other.section = span.section)),
                   let(
                     dist: measure_distance(other.Environments[].Cables, e2_cables).distance,
                     if(other.section.circuit_name = cat1_circuit_name,
