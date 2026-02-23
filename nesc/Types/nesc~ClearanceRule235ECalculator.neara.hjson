@@ -12,11 +12,7 @@
         '''
         {
           pass: passes,
-          debug: {
-            cat3_required_clearance: proc.cat3_required_clearance,
-            violations: proc.violations,
-            violations_debug: proc.violations_debug,
-          },
+          debug: broadcast(v: proc.violations, v.rule & " Cat" & v.category & " " & v.description & " | " & v.component & " | required=" & round(v.required / unit_value(1, "in") * 1000) / 1000 & "in actual=" & round(v.actual / unit_value(1, "in") * 1000) / 1000 & "in"),
         }
         '''
     }

@@ -416,11 +416,9 @@
       formula:
         '''
         {
-          cat3_required_clearance: cat3_required_clearance,
           has_violations: len(violations) > 0,
           num_violations: len(violations),
           violations: violations,
-          violations_debug: broadcast(v: violations, v.rule & " cat" & v.category & " " & v.component & " req=" & v.required / unit_value(1, "in") & "in act=" & v.actual / unit_value(1, "in") & "in"),
         }
         '''
     }

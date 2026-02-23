@@ -16,7 +16,7 @@ Reference: NESC Table 235-6, which defines required clearances by category and v
 | 1 | a | Conductors of the same circuit |
 | 1 | b | Conductors of different circuits |
 | 2 | — | Guys, span wires, messengers, surge-protection wires |
-| 3 | — | **Support arms, braces** (currently implemented) |
+| 3 | — | Support arms, braces |
 | 4 | a | Structure surface — ungrounded parts |
 | 4 | b | Structure surface — grounded / neutral parts |
 | 5 | a | Buildings, signs, billboards — horizontal |
@@ -28,7 +28,7 @@ Reference: NESC Table 235-6, which defines required clearances by category and v
 |---|---|
 | 1a/1b — Same/different circuit conductors | Implemented |
 | 2 — Guys, span wires, messengers | Implemented |
-| 3 — Support arms, braces | Implemented |
+| 3 — Support arms, braces | Implemented (insulator length + cross-assembly) |
 | 4 — Structure surface | Stubbed (blocked on shaft-only measurement) |
 | 5a/5b — Buildings, signs | Stubbed (no building geometry in platform) |
 
@@ -41,32 +41,36 @@ The implementation follows a **bijective** mapping to NESC rules — each sub-ru
 ```
 Pole
   u_rule235e_processing    ← broadcasts over spans, aggregates violations
-  u_rule235e_output        ← instantiates Calculator, returns pass/fail
+  u_rule235e_output        ← instantiates Calculator, returns {pass, debug}
 
 ClearanceRule235EProcessing  (per-span)
   e1_cables                ← span.Environments[].Cables (all environments, no wind)
-  e2_applies               ← true if span has suspension insulators
-  e2_cables                ← cables from "60F_6psfwind_final" environment
+  e2_applies               ← true if pole has suspension insulators
+  e2_cables                ← simulate(span, environment: model().u_environment_60f_6psf).Cables
   cat1_*                   ← Category 1 fields (conductor-to-conductor)
   cat2_*                   ← Category 2 fields (guys/stays)
-  cat3_*                   ← Category 3 fields (support arms)
+  cat3_*                   ← Category 3 fields (support arms — insulator length + cross-assembly)
   cat4_*                   ← Category 4 fields (structure surface — stubbed)
   cat5_*                   ← Category 5 fields (buildings — stubbed)
   violations               ← flatten(list(cat1, cat2, cat3, cat4, cat5))
-  output                   ← {cat3_required_clearance, has_violations, num_violations, violations}
+  output                   ← {has_violations, num_violations, violations}
 
 ClearanceRule235ECalculator
   passes                   ← ["✅"] or ["❌ N clearance violation(s)"]
-  output                   ← {pass, debug: {cat3_required_clearance, violations}}
+  output                   ← {pass, debug}
+
+Model
+  u_environment_60f_6psf   ← make_environment(60°F, 6 psf wind) for 235E2
 ```
 
 ### Files
 
 | File | Purpose |
 |---|---|
-| `nesc/Types/nesc~ClearanceRule235EProcessing.neara.hjson` | Per-span clearance logic. Checks each assembly against each conductor. |
-| `nesc/Types/nesc~ClearanceRule235ECalculator.neara.hjson` | Aggregates Processing output into pass/fail + debug info. |
+| `nesc/Types/nesc~ClearanceRule235EProcessing.neara.hjson` | Per-span clearance logic for all categories. |
+| `nesc/Types/nesc~ClearanceRule235ECalculator.neara.hjson` | Formats Processing output into pass/fail + debug info. |
 | `nesc/Types/Pole.neara.hjson` | Pole extension. `u_rule235e_processing` broadcasts over spans. `u_rule235e_output` is the final result. |
+| `nesc/Types/Model.neara.hjson` | Model extension. Defines `u_environment_60f_6psf` for 235E2 wind simulation. |
 | `nesc/DataTables/nesc~Table235_6.neara.hjson` | Encodes NESC Table 235-6 as a DataTable with all 5 categories. |
 | `nesc/Reports/nesc~NESC 235E.neara.hjson` | Report showing `u_rule235e_output` per pole. |
 
@@ -81,7 +85,15 @@ Checks clearance between each conductor and every other conductor at the pole. C
 - `cat1_circuit_name` — `span.section.circuit_name` (extracted to avoid module-prefix in let)
 - `cat1_conductor_class` — `span.section.type.conductor_class`
 - `cat1_span_voltage` — maps Comms to `-3kV` sentinel, otherwise `span.section.voltage`
-- `cat1_violations` — broadcasts over `pole.spans`, skips self (`not(other.label = span.label)`), determines subcategory from circuit match, looks up clearance per-pair, measures `measure_distance(other.Environments[].Cables, span.Environments[].Cables).distance`
+- `cat1_required_same` — Table 235-6 lookup with `nesccategory = 1, subcategory = "a"`
+- `cat1_required_diff` — Table 235-6 lookup with `nesccategory = 1, subcategory = "b"`
+- `cat1_violations` — broadcasts over `pole.spans`, filters out self and same-section spans, determines subcategory from circuit match, measures `measure_distance(other.Environments[].Cables, e1_cables).distance`
+
+### Filtering
+
+Two spans are skipped:
+- **Same span**: `other.label = span.label` — self-comparison
+- **Same section**: `other.section = span.section` — same wire continuing through the pole (no clearance to check)
 
 ### Violation Record
 
@@ -92,9 +104,8 @@ Checks clearance between each conductor and every other conductor at the pole. C
 ### Notes
 
 - **Required clearance varies per pair** — unlike cat2/cat3 which have a single `required_clearance` per span, cat1 computes the required clearance inside the broadcast because the subcategory (a vs b) depends on which other span is being compared
-- **Duplicate pair checking** — each pair is checked from both spans' perspectives (A→B and B→A). Both generate violation records if clearance is insufficient. This is expected and not deduplicated.
 - **Voltage for lookup** — uses the current span's voltage. For a mixed-voltage pair (e.g., 12kV vs 0kV), the higher-voltage span's check will use stricter clearance requirements and catch the violation even if the lower-voltage span's check does not.
-- **Circuit identification** — uses `section.circuit_name`. If this field is null or empty for both spans, they will be treated as same circuit (1a).
+- **Circuit identification** — uses `section.circuit_name`. If this field is null/empty for both spans, they will be treated as same circuit (1a).
 
 ## Category 2 Implementation Detail
 
@@ -107,7 +118,7 @@ Checks clearance from each conductor to each stay/guy wire at the pole.
 - `cat2_conductor_class` — `span.section.type.conductor_class`
 - `cat2_span_voltage` — maps Comms to `-3kV` sentinel, otherwise `span.section.voltage`
 - `cat2_required_clearance` — Table 235-6 lookup with `nesccategory = 2`
-- `cat2_violations` — broadcasts over `pole.Stays`, measures `measure_distance(stay, span.Environments[].Cables).distance`
+- `cat2_violations` — broadcasts over `pole.Stays`, measures `measure_distance(stay, e1_cables).distance`
 
 ### Violation Record
 
@@ -119,9 +130,31 @@ Checks clearance from each conductor to each stay/guy wire at the pole.
 
 - `pole.Stays` is a built-in collection — no extension needed
 - If a pole has no stays, the broadcast produces an empty list (no violations)
-- Violation records use `component` (not `stay` or `assembly`) so all categories share the same record shape for `list()`/`flatten()` compatibility
 
 ## Category 3 Implementation Detail
+
+**Support arms (crossarms), braces.**
+
+Two sub-checks:
+
+### A) Insulator Length Check
+
+Measures the insulator length as clearance from the conductor to its own assembly. Uses point-to-point measurement between `structure_endpoint` (on the crossarm) and `inline_endpoint` (at the insulator tip) for each cable attachment.
+
+`measure_distance(assembly, ConductorPiece)` returns 0 because ConductorPiece geometry starts at the `structure_endpoint` (on the assembly). Point-to-point measurement works correctly.
+
+Uses first environment only (`index(span.Environments, 0).Cables`) since insulator length is the same across all environments.
+
+### B) Cross-Assembly Check
+
+Measures clearance from this span's cables to OTHER assemblies on the pole using `measure_distance(assembly, cables)`. This returns 0 for the cable's own assembly (self-filtering) and the actual distance for other assemblies. Violations are flagged where `dist > 0 AND dist < required`.
+
+### Fields
+
+- `cat3_conductor_class` — `span.section.type.conductor_class`
+- `cat3_span_voltage` — maps Comms to `-3kV` sentinel, otherwise `span.section.voltage`
+- `cat3_required_clearance` — Table 235-6 lookup with `nesccategory = 3`
+- `cat3_violations` — insulator length check + cross-assembly check, both E1 and E2
 
 ### Clearance Formula
 
@@ -129,28 +162,12 @@ Checks clearance from each conductor to each stay/guy wire at the pole.
 required = BaseClearanceIn + AdderPerKvIn * max(0, (voltage - AdderThresholdKv) / unit_value(1, "kV"))
 ```
 
-- `BaseClearanceIn` — base clearance in inches from Table 235-6
-- `AdderPerKvIn` — additional inches per kV above threshold (unit: "in", dimensionless multiplier via `/ unit_value(1, "kV")`)
-- `AdderThresholdKv` — voltage above which adder applies
-
-### Voltage Lookup
-
-- Power conductors: uses `span.section.voltage` directly
-- Communication cables: identified by `conductor_class = "Comms"`, mapped to sentinel value `-3kV` for DataTable lookup
-
-### Violation Check
-
-For each assembly at the pole, `measure_distance(assembly, span.Environments[].Cables).distance` is compared against `cat3_required_clearance`. If actual < required, a violation record is emitted:
+### Violation Records
 
 ```
-{ rule, category: "3", description: "Support arms clearance", span, component, required, actual }
+{ rule, category: "3", description: "Support arms clearance", span, component: span.label, required, actual }
+{ rule, category: "3", description: "Cross-arm clearance", span, component: assembly.label, required, actual }
 ```
-
-### Pole-Level Aggregation
-
-The Pole extension broadcasts over all spans, collecting violations via two separate `broadcast()` calls (to avoid the dim module-prefix bug with `[]` on let variables):
-- `flatten(broadcast(s: spans, ...output.violations))`
-- `max(broadcast(s: spans, ...output.cat3_required_clearance))`
 
 ## Category 4 — Structure Surface (Stubbed)
 
@@ -167,7 +184,6 @@ Need a way to measure distance to the pole shaft only (e.g., `pole.Shaft` or a s
 - Add `cat4_span_voltage`, `cat4_required_clearance` (same pattern as cat2/cat3)
 - Use subcategory filter: `nesccategory = 4` with `subcategory = "a"` (ungrounded) or `"b"` (grounded)
 - Requires `AssemblyType.u_is_grounded` (already exists) or a pole-level grounded flag to distinguish 4a vs 4b
-- Expected clearances: 4a = 5in base, 4b = 3in base (0–8.7kV)
 
 ## Category 5 — Buildings, Signs, Billboards (Stubbed)
 
@@ -184,7 +200,6 @@ Need building/structure objects in the platform that can be passed to `measure_d
 - Add `cat5_span_voltage`, `cat5_required_clearance` (same pattern as cat2/cat3)
 - Use subcategory filter: `nesccategory = 5` with `subcategory = "a"` (horizontal) or `"b"` (vertical)
 - 5a may use `.distance`, 5b may need `.vertical_distance` from `measure_distance`
-- Expected clearances: 5a = 30in base (0–8.7kV), 5b = 12in base (0–8.7kV)
 
 ## 235E2 — Suspension Insulator Swing
 
@@ -193,28 +208,39 @@ Need building/structure objects in the platform that can be passed to `measure_d
 ### How It Works
 
 Each category's violation field checks two environments:
-1. **E1 (no wind)**: Uses `span.Environments[].Cables` — always checked for all insulator types
-2. **E2 (wind swing)**: Uses cables from a specific wind environment — only checked when `e2_applies` is true
+1. **E1 (no wind)**: Uses `e1_cables` (`span.Environments[].Cables`) — always checked for all insulator types
+2. **E2 (wind swing)**: Uses `e2_cables` from `simulate()` — only checked when `e2_applies` is true
 
 ### Applicability (`e2_applies`)
 
-235E2 only applies to spans with suspension insulators. Determined by:
+235E2 only applies when suspension insulators are present. Determined by:
 ```
 len(filter(
-  span.section.SectionAttachments[].CableAttachments,
-  span.section.SectionAttachments[].CableAttachments[].type[].component_type = "susp"
+  pole.Assemblies[].SectionAttachments[].CableAttachments,
+  pole.Assemblies[].SectionAttachments[].CableAttachments[].type[].component_type = "susp"
 )) > 0
 ```
+
+Note: `SectionAttachments` lives on Assembly, not Section — access via `pole.Assemblies`.
 
 Insulator `component_type` values: `"susp"` (suspension), `"pin"`, `"strn"` (strain/dead-end), `"post"`. Only `"susp"` triggers E2 checks.
 
 ### Wind Environment
 
-E2 requires an environment labelled `"60F_6psfwind_final"` on each span, representing 6 lb/ft² wind at 60°F with final sag conditions. If this environment is not configured on the model, `find()` will error.
+A reusable wind environment is defined once on the Model (`u_environment_60f_6psf`):
+```
+make_environment(
+  temperature: unit_value(60, "fahrenheit"),
+  wind_pressure_cond: 6 * unit("psf"),
+)
+```
 
-### Violation Records
+E2 cable positions are computed dynamically using static analysis:
+```
+simulate(span, environment: model().u_environment_60f_6psf).Cables
+```
 
-E2 violations use `rule: "235E2"` (vs `rule: "235E1"` for no-wind checks). All other fields match the standard shape.
+No pre-configured environments are required on individual spans.
 
 ### Guard Pattern
 
@@ -233,14 +259,11 @@ flatten(list(
 
 ## Known Limitations
 
-- **Grounded vs ungrounded assemblies**: `AssemblyType.u_is_grounded` field exists but is not yet used. Category 4a/4b distinction requires this.
-- **Self-attachment**: No filtering for a conductor's own crossarm — a conductor attached to a crossarm will be checked against that same crossarm.
+- **Cat4/Cat5 stubbed**: Blocked on platform capabilities (shaft-only measurement, building geometry).
 - **Joint-use comm distinction**: Comm cables use sentinel `-3kV` (general). Joint-use comm (`-2kV`) is not yet distinguished.
-- **Assembly filtering**: All assemblies are checked. Non-structural components that shouldn't be checked are not yet excluded.
-- **Cat1 duplicate violations**: Each conductor pair is checked from both perspectives. A single clearance issue produces two violation records.
 - **Cat1 circuit_name nulls**: If `section.circuit_name` is null/empty for both spans, they are treated as same circuit (1a).
-- **E2 environment required**: The `"60F_6psfwind_final"` environment must be manually configured on the model. If missing, `find()` errors. No automatic environment creation.
-- **E2 per-span check**: `e2_applies` checks the current span's insulator type. If one span has suspension insulators and another doesn't, E2 only applies to the suspension span — which is correct per NESC.
+- **Cat1 duplicate violations**: Each conductor pair is checked from both spans' perspectives (A checks B, B checks A). Both generate violation records if clearance is insufficient. Deduplication via label ordering isn't possible because dim's `<` operator doesn't work on Label types.
+- **e2_applies is conservative**: Checks all assemblies at the pole for suspension insulators, not just the current span's assembly.
 
 ## Adding New Categories
 
@@ -248,9 +271,7 @@ All 5 NESC Table 235-6 categories now have entries (cat1–cat3 implemented, cat
 
 1. **Violation record must match existing shape**: `{ rule, category, description, span, component, required, actual }` — use `component` for the measured-against element (not `assembly`, `stay`, etc.) so `list()` type-checking passes
 2. Replace the `[]` stub with real logic following the cat2/cat3 pattern
-3. Add debug fields to `output` if needed
-4. Update Pole extension aggregation to include new output fields
-5. The DataTable already contains all category rows — no data changes needed
+3. The DataTable already contains all category rows — no data changes needed
 
 ## dim Language Gotchas Encountered
 
@@ -261,3 +282,7 @@ These are specific to this implementation and may help when extending it:
 - **Unit arithmetic**: dim can't represent compound units like `in/kV`. Divide voltage difference by `unit_value(1, "kV")` to make it dimensionless, so `in * dimensionless = in`.
 - **DataTable field aliases**: Platform normalizes aliases to lowercase-no-underscores (e.g., `min_voltage_kv` becomes `minvoltagekv`). Use the normalized form in formulas.
 - **`list()` requires matching types**: All violation records passed to `list()` must have identical field names and types. Use a common field like `component` instead of category-specific names (`assembly`, `stay`). `concat()` is element-wise string concatenation, not list merging — use `flatten(list(...))` instead.
+- **`measure_distance(assembly, ConductorPiece)` returns 0 for own assembly**: ConductorPiece geometry starts at the `structure_endpoint` (on the assembly). Use point-to-point `measure_distance(structure_endpoint, inline_endpoint)` for insulator length instead.
+- **`measure_distance(assembly, point)` returns null**: This combination isn't supported. Use point-to-point or assembly-to-ConductorPiece instead.
+- **`<` operator doesn't work on Labels**: Can't compare Label types with `<` for ordering. Use `=` for equality checks only.
+- **Unit values in string concatenation**: `& unit_value` produces blank output. Divide by `unit_value(1, "unit")` to get a dimensionless number before concatenating.

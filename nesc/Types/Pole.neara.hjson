@@ -42,21 +42,10 @@
               make_immutable_record("ClearanceRule235EProcessing", pole: self, span: s).output.violations
             )
           ),
-          max_required: max(
-            broadcast(s: spans,
-              make_immutable_record("ClearanceRule235EProcessing", pole: self, span: s).output.cat3_required_clearance
-            )
-          ),
           {
-            cat3_required_clearance: max_required,
             has_violations: len(all_violations) > 0,
             num_violations: len(all_violations),
             violations: all_violations,
-            violations_debug: flatten(
-              broadcast(s: spans,
-                make_immutable_record("ClearanceRule235EProcessing", pole: self, span: s).output.violations_debug
-              )
-            ),
           }
         )
         '''

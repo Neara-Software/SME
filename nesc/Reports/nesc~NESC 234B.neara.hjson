@@ -32,7 +32,7 @@
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 350
+        width_px: 670
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -53,7 +53,7 @@
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 374
+        width_px: 715
         quicksearch: false
         search_option: "none"
         show_spatial: false
