@@ -145,11 +145,12 @@
                 stay_sims[].StayCableReports,
                 stay_sims[].StayCableReports[].worst[].tension[].utilization,
               ),
-              {stay: pmax.stay,
+              {
               check_type: "Stay Tension",
               stayreport: pmax,
               simulation: find(stay_sims, stay_sims[].solve = pmax.solve),
               utilisation: pmax.worst.tension.utilization,
+              //stay: pmax.stay,
               },
             ),
           ),
@@ -278,7 +279,15 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula: "geo_query(model().dt_nesc_loading_zones, model_input.pole.spans[].section[].geometry, 0ft)[].zonename"
+      formula:
+        '''
+        //geo_query(model().dt_nesc_loading_zones, model_input.pole.spans[].section[].geometry, 0ft)[].zonename
+        
+        let(
+          gg: geo_collection(model_input.pole.spans[].section[].geometry),
+          geo_query(model().dt_nesc_loading_zones, gg, 10ft)[].zonename
+        )
+        '''
     }
   ]
 }

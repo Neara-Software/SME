@@ -29,6 +29,14 @@
       formula: "Assemblies[].SectionAttachments[].CableAttachments[].local_offset"
     }
     {
+      name: "nesc~u_foo5"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula: "u_pla_check.rule_250b_processing"
+    }
+    {
       name: "nesc~u_pla_check"
       prominence: "normal"
       documentation: null

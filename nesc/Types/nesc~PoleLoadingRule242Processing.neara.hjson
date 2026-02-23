@@ -14,22 +14,12 @@
           len(found_adjacent_below) > 0,
           broadcast(
             sp: found_adjacent_below,
-            let(
-              sp_proc: sp.u_pla_span_checks.rule_242_output.processing,
-              let(
-                is_mutual: or(
-                  any(sp_proc.found_spans_below = model_input.span),
-                  any(sp_proc.found_adjacent_below = model_input.span),
-                  any(sp_proc.found_crossing_below = model_input.span),
-                ),
-                {span: sp,
-                voltage: sp.section.voltage,
-                type: sp.section.type.conductor_class,
-                base_grade: sp.u_pla_span_checks.rule_242_output.base_grade,
-                elevated_grade: if(is_mutual, null, sp.u_pla_span_checks.rule_242_output.elevated_grade),
-                },
-              ),
-            ),
+            {span: sp,
+            voltage: sp.section.voltage,
+            type: sp.section.type.conductor_class,
+            base_grade: sp.u_pla_span_checks.rule_242_infra.base_grade,
+            elevated_grade: sp.u_pla_span_checks.rule_242_infra.elevated_grade,
+            },
           ),
         )
         '''
@@ -59,30 +49,6 @@
       formula: "find_spans_below(model_input.span)"
     }
     {
-      name: "is_freeway_crossing"
-      prominence: "normal"
-      documentation: null
-      visibility: "module"
-      type: "formula"
-      formula: "any(geo_intersect(model().dt_esri_freewaysystem[].geometry, model_input.span.geometry))"
-    }
-    {
-      name: "is_rail_crossing"
-      prominence: "normal"
-      documentation: null
-      visibility: "module"
-      type: "formula"
-      formula: "any(geo_intersect(model().dt_or_railroads[].geometry, model_input.span.geometry))"
-    }
-    {
-      name: "is_water_crossing"
-      prominence: "normal"
-      documentation: null
-      visibility: "module"
-      type: "formula"
-      formula: " any(geo_intersect(model().dt_nhd_waterbody[].geometry, model_input.span.geometry))"
-    }
-    {
       name: "model_input"
       prominence: "normal"
       documentation: null
@@ -105,13 +71,8 @@
         found_adjacent_below: found_adjacent_below,
         found_crossing_below: found_crossing_below,
         found_spans_below: found_spans_below,
-        is_freeway_crossing: is_freeway_crossing,
-        is_rail_crossing: is_rail_crossing,
-        is_water_crossing: is_water_crossing,
         spans_below: spans_below,
-        type: type,
         unattached_crossings_below: unattached_crossings_below,
-        voltage: voltage,
         }
         '''
     }
@@ -127,37 +88,13 @@
           len(found_spans_below) > 0,
           broadcast(
             sp: found_spans_below,
-            let(
-              sp_proc: sp.u_pla_span_checks.rule_242_output.processing,
-              let(
-                is_mutual: or(
-                  any(sp_proc.found_spans_below = model_input.span),
-                  any(sp_proc.found_adjacent_below = model_input.span),
-                  any(sp_proc.found_crossing_below = model_input.span),
-                ),
-                {span: sp,
-                voltage: sp.section.voltage,
-                type: sp.section.type.conductor_class,
-                base_grade: sp.u_pla_span_checks.rule_242_output.base_grade,
-                elevated_grade: if(is_mutual, null, sp.u_pla_span_checks.rule_242_output.elevated_grade),
-                },
-              ),
-            ),
+            {span: sp,
+            voltage: sp.section.voltage,
+            type: sp.section.type.conductor_class,
+            base_grade: sp.u_pla_span_checks.rule_242_infra.base_grade,
+            elevated_grade: sp.u_pla_span_checks.rule_242_infra.elevated_grade,
+            },
           ),
-        )
-        '''
-    }
-    {
-      name: "type"
-      prominence: "normal"
-      documentation: null
-      visibility: "module"
-      type: "formula"
-      formula:
-        '''
-        let(
-          ct: model_input.span.section.type,
-          ct.conductor_class
         )
         '''
     }
@@ -173,33 +110,15 @@
           len(found_crossing_below) > 0,
           broadcast(
             sp: found_crossing_below,
-            let(
-              sp_proc: sp.u_pla_span_checks.rule_242_output.processing,
-              let(
-                is_mutual: or(
-                  any(sp_proc.found_spans_below = model_input.span),
-                  any(sp_proc.found_adjacent_below = model_input.span),
-                  any(sp_proc.found_crossing_below = model_input.span),
-                ),
-                {span: sp,
-                voltage: sp.section.voltage,
-                type: sp.section.type.conductor_class,
-                base_grade: sp.u_pla_span_checks.rule_242_output.base_grade,
-                elevated_grade: if(is_mutual, null, sp.u_pla_span_checks.rule_242_output.elevated_grade),
-                },
-              ),
-            ),
+            {span: sp,
+            voltage: sp.section.voltage,
+            type: sp.section.type.conductor_class,
+            base_grade: sp.u_pla_span_checks.rule_242_infra.base_grade,
+            elevated_grade: sp.u_pla_span_checks.rule_242_infra.elevated_grade,
+            },
           ),
         )
         '''
-    }
-    {
-      name: "voltage"
-      prominence: "normal"
-      documentation: null
-      visibility: "module"
-      type: "formula"
-      formula: "model_input.span.section.voltage"
     }
   ]
 }

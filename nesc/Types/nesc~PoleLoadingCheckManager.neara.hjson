@@ -50,10 +50,14 @@
           "nesc~PoleLoadingRule250bCalculator",
           model_input: nesc_pla_model_input,
           rule_243_output: rule_243_output,
-          processing:rule_250b_processing,
-          ).output
-          
-          
+          processing: make_immutable_record(
+            "nesc~PoleLoadingRule250bProcessing",
+            model_input: nesc_pla_model_input,
+            rule_243_output: rule_243_output,
+          ).output,
+        ).output
+        
+        
         //   make_immutable_record(
         //    "nesc~PoleLoadingRule250bProcessing",
         //    model_input: nesc_pla_model_input,
@@ -74,7 +78,7 @@
             "nesc~PoleLoadingRule250bProcessing",
             model_input: nesc_pla_model_input,
             rule_243_output: rule_243_output,
-          ).output
+          )
         '''
     }
     {

@@ -13,22 +13,22 @@
         filter_nulls(
           list(
             if(
-              processing.is_rail_crossing,
+              infra.is_rail_crossing,
               {grade: "B",
               reason: "railroad tracks crossing"},
             ),
             if(
-              processing.is_freeway_crossing,
+              infra.is_freeway_crossing,
               {grade: "B",
               reason: "limited-access highway crossing"},
             ),
             if(
-              processing.is_water_crossing,
+              infra.is_water_crossing,
               {grade: "B",
               reason: "navigable waterways crossing"},
             ),
-          ), //++ attached_crossing ++ span_below ++ unattached_crossing,
-        )// Concat crossings
+          ),
+        ) ++ filter_nulls(attached_crossing) ++ filter_nulls(span_below) ++ filter_nulls(unattached_crossing)
         '''
     }
     {
@@ -39,9 +39,6 @@
       type: "formula"
       formula:
         '''
-        //Todo: Confirm not_null approach here.
-        //For each crossing need to assess if lower conductor is higher grade
-        // or if a grade elevation is required.
         call(process_crossing_spans, lower_spans: processing.attached_crossings_below, reason: "Attached Crossing Below")
         '''
     }
@@ -51,20 +48,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula:
-        '''
-        // Change to data table, based off NESC 242-1
-        if(
-          processing.type = "COMMS",
-          "N",
-          processing.voltage <= 750V* sqrt(3),
-          "N",
-          processing.voltage > 750V * sqrt(3),
-          "C",
-          processing.voltage >= 22kV * sqrt(3),
-          "B",
-        )
-        '''
+      formula: "infra.base_grade"
     }
     {
       name: "elevated_grade"
@@ -107,30 +91,6 @@
                 reason: "No Change"},
               ),
             ),
-          ),
-        )
-        '''
-    }
-    {
-      name: "get_base_grade"
-      prominence: "normal"
-      documentation: null
-      visibility: "module"
-      type: "formula"
-      formula:
-        '''
-        lambda(
-          voltage: type_only(1kV),
-          class: type_only(model().ConductorLibrary[].conductor_class[0]),
-          if(
-            class & "" = "COMMS",
-            "N",
-            voltage <= 750V * sqrt(3),
-            "N",
-            voltage > 750V * sqrt(3),
-            "C",
-            voltage >= 22kV * sqrt(3),
-            "B",
           ),
         )
         '''
@@ -185,6 +145,17 @@
         '''
     }
     {
+      name: "infra"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only(make_immutable_record("nesc~PoleLoadingRule242InfraProcessing").output)
+        '''
+    }
+    {
       name: "model_input"
       prominence: "normal"
       documentation: null
@@ -201,7 +172,15 @@
       documentation: null
       visibility: "public"
       type: "formula"
-      formula: "{base_grade: base_grade,elevated_grade: elevated_grade.grade,elevated_reason: elevated_grade.reason,processing: processing,}"
+      formula:
+        '''
+        {base_grade: base_grade,
+        elevated_grade: elevated_grade.grade,
+        elevated_reason: elevated_grade.reason,
+        infra: infra,
+        crossing: processing,
+        }
+        '''
     }
     {
       name: "process_crossing_spans"
@@ -214,23 +193,18 @@
         lambda(
           lower_spans: type_only(processing.attached_crossings_below),
           reason: type_only(""),
-          //Todo: Confirm not_null approach here.
-          //For each crossing need to assess if lower conductor is higher grade
-          // or if a grade elevation is required.
           filter_nulls(
             if(
               //If Grade B already max
               not(base_grade = "B"),
               let(
-                upper_key: call(get_key, voltage: processing.voltage, class: processing.type),
+                upper_key: call(get_key, voltage: infra.voltage, class: infra.type),
                 upper_grade: base_grade,
                 broadcast(
                   att: lower_spans,
                   let(
                     lower_key: call(get_key, voltage: att.voltage, class: att.type),
-                    lower_grade: //if(att.elevated_grade <> null, att.elevated_grade, att.base_grade),
-                    //If circular reference problemns persist would have to drop to base_grade only.
-                    att.base_grade,
+                    lower_grade: if(att.elevated_grade <> null, att.elevated_grade, att.base_grade),
                     let(
                       crossing_grade: call(get_crossing_grade, upper_key: not_null(upper_key), lower_key: not_null(lower_key)),
                       // If crossing grade or lower grade is higher then existing grade then elevate

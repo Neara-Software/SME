@@ -1,0 +1,100 @@
+{
+  token: "nesc~ct_PoleLoadingRule242InfraProcessing"
+  is_custom_class: true
+  fields: [
+    {
+      name: "base_grade"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        if(
+          type = "COMMS",
+          "N",
+          voltage <= 750V * sqrt(3),
+          "N",
+          voltage > 750V * sqrt(3),
+          "C",
+          voltage >= 22kV * sqrt(3),
+          "B",
+        )
+        '''
+    }
+    {
+      name: "elevated_grade"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        if(
+          or(is_rail_crossing, is_freeway_crossing, is_water_crossing),
+          "B",
+          base_grade,
+        )
+        '''
+    }
+    {
+      name: "is_freeway_crossing"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "any(geo_intersect(model().dt_esri_freewaysystem[].geometry, model_input.span.geometry))"
+    }
+    {
+      name: "is_rail_crossing"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "any(geo_intersect(model().dt_or_railroads[].geometry, model_input.span.geometry))"
+    }
+    {
+      name: "is_water_crossing"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "any(geo_intersect(model().dt_nhd_waterbody[].geometry, model_input.span.geometry))"
+    }
+    {
+      name: "model_input"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("PoleLoadingModelInput")
+        '''
+    }
+    {
+      name: "output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "{base_grade: base_grade,elevated_grade: elevated_grade,is_freeway_crossing: is_freeway_crossing,is_rail_crossing: is_rail_crossing,is_water_crossing: is_water_crossing,type: type,voltage: voltage,}"
+    }
+    {
+      name: "type"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "model_input.span.section.type.conductor_class"
+    }
+    {
+      name: "voltage"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "model_input.span.section.voltage"
+    }
+  ]
+}

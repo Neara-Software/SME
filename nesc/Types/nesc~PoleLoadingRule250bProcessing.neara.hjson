@@ -3,6 +3,17 @@
   is_custom_class: true
   fields: [
     {
+      name: "debug"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        debug_trace("Pole Check", pole_check)
+        '''
+    }
+    {
       name: "environment"
       prominence: "normal"
       documentation: null
@@ -123,20 +134,21 @@
       type: "formula"
       formula:
         '''
+        
         if(
           //and(len(pole.Stays) > 0, calc_config.stay_tension),
+          //true,
           len(model_input.pole.Stays) > 0,
           let(
             pmax: max_by(
               simulations[].StayCableReports,
               simulations[].StayCableReports[].worst[].tension[].utilization,
             ),
-            {stay: pmax.stay,
-            //environment: environment,
-            check_type: "Stay Tension",
+            {check_type: "Stay Tension",
             stayreport: pmax,
             simulation: find(simulations, simulations[].solve = pmax.solve),
             utilisation: pmax.worst.tension.utilization,
+            //stay: pmax.stay,
             },
           ),
         )
@@ -245,7 +257,21 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula: "geo_query(model().dt_nesc_loading_zones, model_input.pole.spans[].section[].geometry, 0ft)[].zonename"
+      formula:
+        '''
+        
+        let(
+          gg: geo_collection(model_input.pole.spans[].section[].geometry),
+          geo_query(model().dt_nesc_loading_zones, gg, 10ft)[].zonename
+        )
+        
+        
+        //model_input.pole.spans[].section[].Spans[].pole1[].geometry
+        
+        
+        
+        //geo_query(model().dt_nesc_loading_zones, model_input.pole.spans[].section[].geometry, 10ft)[].zonename
+        '''
     }
   ]
 }

@@ -29,6 +29,20 @@
         '''
     }
     {
+      name: "rule_242_infra"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record(
+          "nesc~PoleLoadingRule242InfraProcessing",
+          model_input: model_input,
+        ).output
+        '''
+    }
+    {
       name: "rule_242_output"
       prominence: "normal"
       documentation: null
@@ -39,6 +53,7 @@
         make_immutable_record(
           "nesc~PoleLoadingRule242Calculator",
           model_input: model_input,
+          infra: rule_242_infra,
         ).output
         '''
     }

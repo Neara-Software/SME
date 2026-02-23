@@ -1,6 +1,6 @@
 {
-  id: "d61eebef5bef26c1f69dbc0"
-  title: "nesc~NESC PLA Report"
+  id: "3fd84dbf56f3e8ca17bab8c3"
+  title: "nesc~NESC PLA"
   description: null
   root: "Model"
   favorite: false
@@ -68,8 +68,8 @@
         timestamp_display_format: null
       }
       {
-        name: "nesc~u_foo"
-        title: "Foo"
+        name: "structure_number"
+        title: "Structure Number"
         unit: null
         decimal_places: 2
         null_value: ""
@@ -89,13 +89,13 @@
         timestamp_display_format: null
       }
       {
-        name: "nesc~u_foo5.max_stay"
-        title: "Foo5 Max Stay"
+        name: "nesc~u_foo5.strain_section_check"
+        title: "Foo5 Strain Section Check"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 465
+        width_px: 376
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -116,28 +116,7 @@
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 772
-        quicksearch: false
-        search_option: "none"
-        show_spatial: false
-        grouped: false
-        colored: false
-        color_map: {
-          type: "key_value_color_list"
-          key_value_color_list: {
-            list: []
-          }
-        }
-        timestamp_display_format: null
-      }
-      {
-        name: "structure_number"
-        title: "Structure Number"
-        unit: null
-        decimal_places: 2
-        null_value: ""
-        cell_title: null
-        width_px: 120
+        width_px: 500
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -845,27 +824,6 @@
         timestamp_display_format: null
       }
       {
-        name: "nesc~u_foo4"
-        title: "Foo4"
-        unit: null
-        decimal_places: 2
-        null_value: ""
-        cell_title: null
-        width_px: 151
-        quicksearch: false
-        search_option: "none"
-        show_spatial: false
-        grouped: false
-        colored: false
-        color_map: {
-          type: "key_value_color_list"
-          key_value_color_list: {
-            list: []
-          }
-        }
-        timestamp_display_format: null
-      }
-      {
         name: "standard_structure_status"
         title: "Standard Structure Status"
         unit: null
@@ -895,7 +853,7 @@
   }
   viz_config: {
     visualizing: false
-    visualizing_quick_toggle: true
+    visualizing_quick_toggle: false
     visualizing_pinned: false
     color3d_objects: false
     visualize_on_world_terrain: false
