@@ -269,14 +269,17 @@
       formula:
         '''
         // Table 235-6, Category 3: Support arms, braces
-        // Measures insulator length (structure_endpoint to inline_endpoint) as clearance.
-        // measure_distance(assembly, ConductorPiece) returns 0 because ConductorPiece geometry
-        // starts at the structure_endpoint (on the assembly). Point-to-point works correctly.
+        // Two sub-checks:
+        //   A) Insulator length: structure_endpoint to inline_endpoint as clearance from own assembly.
+        //      measure_distance(assembly, ConductorPiece) returns 0 for own assembly because
+        //      ConductorPiece geometry starts at the structure_endpoint. Point-to-point works.
+        //   B) Cross-assembly: clearance from this span's cables to other assemblies on the pole.
+        //      measure_distance(assembly, ConductorPiece) returns >0 for non-self assemblies.
+        //      dist > 0 naturally filters out the cable's own assembly.
         // Checks both E1 (no wind) and E2 (wind swing) environments.
         flatten(list(
-          // 235E1: No wind
+          // 235E1: Insulator length check (no wind)
           // Use first environment only — insulator length is the same across all environments.
-          // Using e1_cables (all environments) would produce duplicate violations.
           filter_nulls(
             broadcast(c: index(span.Environments, 0).Cables,
               let(
@@ -290,7 +293,19 @@
               )
             )
           ),
-          // 235E2: Wind swing (only for suspension insulators)
+          // 235E1: Cross-assembly check (no wind)
+          // measure_distance(assembly, cables) = 0 for own assembly, >0 for others.
+          filter_nulls(
+            broadcast(a: pole.Assemblies,
+              let(
+                dist: measure_distance(a, index(span.Environments, 0).Cables).distance,
+                if(and(dist > 0, dist < cat3_required_clearance),
+                  { rule: "235E1", category: "3", description: "Cross-arm clearance", span: span.label, component: a.label, required: cat3_required_clearance, actual: dist },
+                )
+              )
+            )
+          ),
+          // 235E2: Insulator length check (wind swing, suspension insulators only)
           if(e2_applies,
             filter_nulls(
               broadcast(c: e2_cables,
@@ -301,6 +316,20 @@
                   )),
                   if(dist < cat3_required_clearance,
                     { rule: "235E2", category: "3", description: "Support arms clearance (wind swing)", span: span.label, component: span.label, required: cat3_required_clearance, actual: dist },
+                  )
+                )
+              )
+            ),
+            [],
+          ),
+          // 235E2: Cross-assembly check (wind swing, suspension insulators only)
+          if(e2_applies,
+            filter_nulls(
+              broadcast(a: pole.Assemblies,
+                let(
+                  dist: measure_distance(a, e2_cables).distance,
+                  if(and(dist > 0, dist < cat3_required_clearance),
+                    { rule: "235E2", category: "3", description: "Cross-arm clearance (wind swing)", span: span.label, component: a.label, required: cat3_required_clearance, actual: dist },
                   )
                 )
               )
