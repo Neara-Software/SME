@@ -15,6 +15,7 @@
           debug: {
             cat3_required_clearance: proc.cat3_required_clearance,
             violations: proc.violations,
+            violations_debug: proc.violations_debug,
           },
         }
         '''

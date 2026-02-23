@@ -19,6 +19,50 @@
       formula: "span.section.type.conductor_class"
     }
     {
+      name: "cat1_required_diff"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // Table 235-6, Category 1b: Different circuit conductors
+        let(
+          row: find(model().dt_table235_6,
+            and(
+              model().dt_table235_6[].nesccategory = 1,
+              model().dt_table235_6[].subcategory = "b",
+              model().dt_table235_6[].minvoltagekv <= cat1_span_voltage,
+              model().dt_table235_6[].maxvoltagekv > cat1_span_voltage,
+            )
+          ),
+          row.baseclearancein + row.adderperkvin * max(0, (cat1_span_voltage - row.adderthresholdkv) / unit_value(1, "kV")),
+        )
+        '''
+    }
+    {
+      name: "cat1_required_same"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // Table 235-6, Category 1a: Same circuit conductors
+        let(
+          row: find(model().dt_table235_6,
+            and(
+              model().dt_table235_6[].nesccategory = 1,
+              model().dt_table235_6[].subcategory = "a",
+              model().dt_table235_6[].minvoltagekv <= cat1_span_voltage,
+              model().dt_table235_6[].maxvoltagekv > cat1_span_voltage,
+            )
+          ),
+          row.baseclearancein + row.adderperkvin * max(0, (cat1_span_voltage - row.adderthresholdkv) / unit_value(1, "kV")),
+        )
+        '''
+    }
+    {
       name: "cat1_span_voltage"
       prominence: "normal"
       documentation: null
@@ -43,41 +87,131 @@
         '''
         // Table 235-6, Category 1: Conductor-to-conductor clearances
         // 1a = same circuit, 1b = different circuits (determined by section.circuit_name)
-        // NOTE: Each pair is checked from both spans' perspectives — duplicates are expected
-        // NOTE: Uses this span's voltage for lookup. The higher-voltage span of a pair will
-        //       catch violations even if the lower-voltage span does not.
-        filter_nulls(
-          broadcast(other: pole.spans,
-            if(not(other.label = span.label),
-              let(
-                is_same_circuit: other.section.circuit_name = cat1_circuit_name,
-                sub: if(is_same_circuit, "a", "b"),
-                row: find(model().dt_table235_6,
-                  and(
-                    model().dt_table235_6[].nesccategory = 1,
-                    model().dt_table235_6[].subcategory = sub,
-                    model().dt_table235_6[].minvoltagekv <= cat1_span_voltage,
-                    model().dt_table235_6[].maxvoltagekv > cat1_span_voltage,
-                  )
+        // Checks both E1 (no wind) and E2 (wind swing) environments
+        flatten(list(
+          // 235E1: No wind
+          filter_nulls(
+            broadcast(other: pole.spans,
+              if(not(other.label = span.label),
+                let(
+                  dist: measure_distance(other.Environments[].Cables, e1_cables).distance,
+                  if(other.section.circuit_name = cat1_circuit_name,
+                    if(dist < cat1_required_same,
+                      { rule: "235E1", category: "1a", description: "Same circuit clearance", span: span.label, component: other.label, required: cat1_required_same, actual: dist },
+                    ),
+                    if(dist < cat1_required_diff,
+                      { rule: "235E1", category: "1b", description: "Different circuit clearance", span: span.label, component: other.label, required: cat1_required_diff, actual: dist },
+                    ),
+                  ),
                 ),
-                required: row.baseclearancein + row.adderperkvin * max(0, (cat1_span_voltage - row.adderthresholdkv) / unit_value(1, "kV")),
-                dist: measure_distance(other.Environments[].Cables, span.Environments[].Cables).distance,
-                if(
-                  dist < required,
-                  {
-                    rule: "235E1",
-                    category: if(is_same_circuit, "1a", "1b"),
-                    description: if(is_same_circuit, "Same circuit clearance", "Different circuit clearance"),
-                    span: span.label,
-                    component: other.label,
-                    required: required,
-                    actual: dist,
-                  },
-                ),
-              ),
+              )
             )
+          ),
+          // 235E2: Wind swing (only for suspension insulators)
+          if(e2_applies,
+            filter_nulls(
+              broadcast(other: pole.spans,
+                if(not(other.label = span.label),
+                  let(
+                    dist: measure_distance(other.Environments[].Cables, e2_cables).distance,
+                    if(other.section.circuit_name = cat1_circuit_name,
+                      if(dist < cat1_required_same,
+                        { rule: "235E2", category: "1a", description: "Same circuit clearance (wind swing)", span: span.label, component: other.label, required: cat1_required_same, actual: dist },
+                      ),
+                      if(dist < cat1_required_diff,
+                        { rule: "235E2", category: "1b", description: "Different circuit clearance (wind swing)", span: span.label, component: other.label, required: cat1_required_diff, actual: dist },
+                      ),
+                    ),
+                  ),
+                )
+              )
+            ),
+            [],
           )
+        ))
+        '''
+    }
+    {
+      name: "cat2_conductor_class"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "span.section.type.conductor_class"
+    }
+    {
+      name: "cat2_required_clearance"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // Table 235-6, Category 2: Guys, span wires, messengers
+        let(
+          row: find(model().dt_table235_6,
+            and(
+              model().dt_table235_6[].nesccategory = 2,
+              model().dt_table235_6[].minvoltagekv <= cat2_span_voltage,
+              model().dt_table235_6[].maxvoltagekv > cat2_span_voltage,
+            )
+          ),
+          row.baseclearancein + row.adderperkvin * max(0, (cat2_span_voltage - row.adderthresholdkv) / unit_value(1, "kV")),
         )
+        '''
+    }
+    {
+      name: "cat2_span_voltage"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        if(
+          cat2_conductor_class = "Comms",
+          -3kV,
+          span.section.voltage,
+        )
+        '''
+    }
+    {
+      name: "cat2_violations"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // Table 235-6, Category 2: Guys, span wires, messengers
+        // Checks both E1 (no wind) and E2 (wind swing) environments
+        flatten(list(
+          // 235E1: No wind
+          filter_nulls(
+            broadcast(st: pole.Stays,
+              let(
+                dist: measure_distance(st, e1_cables).distance,
+                if(dist < cat2_required_clearance,
+                  { rule: "235E1", category: "2", description: "Guy/stay clearance", span: span.label, component: st.label, required: cat2_required_clearance, actual: dist },
+                )
+              )
+            )
+          ),
+          // 235E2: Wind swing (only for suspension insulators)
+          if(e2_applies,
+            filter_nulls(
+              broadcast(st: pole.Stays,
+                let(
+                  dist: measure_distance(st, e2_cables).distance,
+                  if(dist < cat2_required_clearance,
+                    { rule: "235E2", category: "2", description: "Guy/stay clearance (wind swing)", span: span.label, component: st.label, required: cat2_required_clearance, actual: dist },
+                  )
+                )
+              )
+            ),
+            [],
+          )
+        ))
         '''
     }
     {
@@ -135,101 +269,45 @@
       formula:
         '''
         // Table 235-6, Category 3: Support arms, braces
-        // For each assembly at the pole, check clearance from conductor to assembly
-        filter_nulls(
-          broadcast(a: pole.Assemblies,
-            let(
-              dist: measure_distance(a, span.Environments[].Cables).distance,
-              if(
-                dist < cat3_required_clearance,
-                {
-                  rule: "235E1",
-                  category: "3",
-                  description: "Support arms clearance",
-                  span: span.label,
-                  component: a.label,
-                  required: cat3_required_clearance,
-                  actual: dist,
-                },
+        // Measures insulator length (structure_endpoint to inline_endpoint) as clearance.
+        // measure_distance(assembly, ConductorPiece) returns 0 because ConductorPiece geometry
+        // starts at the structure_endpoint (on the assembly). Point-to-point works correctly.
+        // Checks both E1 (no wind) and E2 (wind swing) environments.
+        flatten(list(
+          // 235E1: No wind
+          // Use first environment only — insulator length is the same across all environments.
+          // Using e1_cables (all environments) would produce duplicate violations.
+          filter_nulls(
+            broadcast(c: index(span.Environments, 0).Cables,
+              let(
+                dist: min(list(
+                  measure_distance(c.attachment1.structure_endpoint, c.attachment1.inline_endpoint).distance,
+                  measure_distance(c.attachment2.structure_endpoint, c.attachment2.inline_endpoint).distance,
+                )),
+                if(dist < cat3_required_clearance,
+                  { rule: "235E1", category: "3", description: "Support arms clearance", span: span.label, component: span.label, required: cat3_required_clearance, actual: dist },
+                )
               )
-            )
-          )
-        )
-        '''
-    }
-    {
-      name: "cat2_conductor_class"
-      prominence: "normal"
-      documentation: null
-      visibility: "module"
-      type: "formula"
-      formula: "span.section.type.conductor_class"
-    }
-    {
-      name: "cat2_required_clearance"
-      prominence: "normal"
-      documentation: null
-      visibility: "module"
-      type: "formula"
-      formula:
-        '''
-        // Table 235-6, Category 2: Guys, span wires, messengers
-        let(
-          row: find(model().dt_table235_6,
-            and(
-              model().dt_table235_6[].nesccategory = 2,
-              model().dt_table235_6[].minvoltagekv <= cat2_span_voltage,
-              model().dt_table235_6[].maxvoltagekv > cat2_span_voltage,
             )
           ),
-          row.baseclearancein + row.adderperkvin * max(0, (cat2_span_voltage - row.adderthresholdkv) / unit_value(1, "kV")),
-        )
-        '''
-    }
-    {
-      name: "cat2_span_voltage"
-      prominence: "normal"
-      documentation: null
-      visibility: "module"
-      type: "formula"
-      formula:
-        '''
-        if(
-          cat2_conductor_class = "Comms",
-          -3kV,
-          span.section.voltage,
-        )
-        '''
-    }
-    {
-      name: "cat2_violations"
-      prominence: "normal"
-      documentation: null
-      visibility: "module"
-      type: "formula"
-      formula:
-        '''
-        // Table 235-6, Category 2: Guys, span wires, messengers
-        // For each stay at the pole, check clearance from conductor to stay
-        filter_nulls(
-          broadcast(st: pole.Stays,
-            let(
-              dist: measure_distance(st, span.Environments[].Cables).distance,
-              if(
-                dist < cat2_required_clearance,
-                {
-                  rule: "235E1",
-                  category: "2",
-                  description: "Guy/stay clearance",
-                  span: span.label,
-                  component: st.label,
-                  required: cat2_required_clearance,
-                  actual: dist,
-                },
+          // 235E2: Wind swing (only for suspension insulators)
+          if(e2_applies,
+            filter_nulls(
+              broadcast(c: e2_cables,
+                let(
+                  dist: min(list(
+                    measure_distance(c.attachment1.structure_endpoint, c.attachment1.inline_endpoint).distance,
+                    measure_distance(c.attachment2.structure_endpoint, c.attachment2.inline_endpoint).distance,
+                  )),
+                  if(dist < cat3_required_clearance,
+                    { rule: "235E2", category: "3", description: "Support arms clearance (wind swing)", span: span.label, component: span.label, required: cat3_required_clearance, actual: dist },
+                  )
+                )
               )
-            )
+            ),
+            [],
           )
-        )
+        ))
         '''
     }
     {
@@ -261,6 +339,45 @@
         '''
     }
     {
+      name: "e1_cables"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "span.Environments[].Cables"
+    }
+    {
+      name: "e2_applies"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // 235E2 only applies to spans with suspension insulators.
+        // Pin, strain, and post insulators are restrained from movement.
+        // SectionAttachments lives on Assembly, not Section — access via pole.Assemblies.
+        // Conservative: checks all assemblies at pole, not just this span's assembly.
+        len(filter(
+          pole.Assemblies[].SectionAttachments[].CableAttachments,
+          pole.Assemblies[].SectionAttachments[].CableAttachments[].type[].component_type = "susp"
+        )) > 0
+        '''
+    }
+    {
+      name: "e2_cables"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // 235E2: Suspension insulator swing check — 6 lb/ft² wind at 60°F.
+        // Uses simulate() with the module-level environment to compute cable positions on the fly.
+        simulate(span, environment: model().u_environment_60f_6psf).Cables
+        '''
+    }
+    {
       name: "output"
       prominence: "normal"
       documentation: null
@@ -273,6 +390,7 @@
           has_violations: len(violations) > 0,
           num_violations: len(violations),
           violations: violations,
+          violations_debug: broadcast(v: violations, v.rule & " cat" & v.category & " " & v.component & " req=" & v.required / unit_value(1, "in") & "in act=" & v.actual / unit_value(1, "in") & "in"),
         }
         '''
     }

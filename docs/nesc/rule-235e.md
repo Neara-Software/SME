@@ -2,7 +2,10 @@
 
 ## What This Rule Checks
 
-NESC Rule 235E1 specifies minimum clearances at fixed supports — between conductors and structural parts (crossarms, braces, pole surface), between conductors and guys/stays, and between conductors of the same or different circuits.
+NESC Rule 235E specifies minimum clearances at fixed supports — between conductors and structural parts (crossarms, braces, pole surface), between conductors and guys/stays, and between conductors of the same or different circuits.
+
+- **235E1**: Base clearances at fixed supports (applies to all insulator types)
+- **235E2**: Additional clearance check under wind-displaced conductor positions (6 lb/ft² wind at 60°F). Only applies to **suspension insulators** that are not restrained from movement. Pin, strain, and post insulators are restrained and exempt.
 
 Reference: NESC Table 235-6, which defines required clearances by category and voltage.
 
@@ -41,6 +44,9 @@ Pole
   u_rule235e_output        ← instantiates Calculator, returns pass/fail
 
 ClearanceRule235EProcessing  (per-span)
+  e1_cables                ← span.Environments[].Cables (all environments, no wind)
+  e2_applies               ← true if span has suspension insulators
+  e2_cables                ← cables from "60F_6psfwind_final" environment
   cat1_*                   ← Category 1 fields (conductor-to-conductor)
   cat2_*                   ← Category 2 fields (guys/stays)
   cat3_*                   ← Category 3 fields (support arms)
@@ -180,6 +186,51 @@ Need building/structure objects in the platform that can be passed to `measure_d
 - 5a may use `.distance`, 5b may need `.vertical_distance` from `measure_distance`
 - Expected clearances: 5a = 30in base (0–8.7kV), 5b = 12in base (0–8.7kV)
 
+## 235E2 — Suspension Insulator Swing
+
+**Rule 235E2 requires that 235E1 clearances be maintained even when suspension insulators swing under wind load.**
+
+### How It Works
+
+Each category's violation field checks two environments:
+1. **E1 (no wind)**: Uses `span.Environments[].Cables` — always checked for all insulator types
+2. **E2 (wind swing)**: Uses cables from a specific wind environment — only checked when `e2_applies` is true
+
+### Applicability (`e2_applies`)
+
+235E2 only applies to spans with suspension insulators. Determined by:
+```
+len(filter(
+  span.section.SectionAttachments[].CableAttachments,
+  span.section.SectionAttachments[].CableAttachments[].type[].component_type = "susp"
+)) > 0
+```
+
+Insulator `component_type` values: `"susp"` (suspension), `"pin"`, `"strn"` (strain/dead-end), `"post"`. Only `"susp"` triggers E2 checks.
+
+### Wind Environment
+
+E2 requires an environment labelled `"60F_6psfwind_final"` on each span, representing 6 lb/ft² wind at 60°F with final sag conditions. If this environment is not configured on the model, `find()` will error.
+
+### Violation Records
+
+E2 violations use `rule: "235E2"` (vs `rule: "235E1"` for no-wind checks). All other fields match the standard shape.
+
+### Guard Pattern
+
+Each category's violation field uses:
+```
+flatten(list(
+  // 235E1: Always checked
+  filter_nulls(broadcast(...measure_distance(..., e1_cables)...)),
+  // 235E2: Only for suspension insulators
+  if(e2_applies,
+    filter_nulls(broadcast(...measure_distance(..., e2_cables)...)),
+    [],
+  )
+))
+```
+
 ## Known Limitations
 
 - **Grounded vs ungrounded assemblies**: `AssemblyType.u_is_grounded` field exists but is not yet used. Category 4a/4b distinction requires this.
@@ -188,6 +239,8 @@ Need building/structure objects in the platform that can be passed to `measure_d
 - **Assembly filtering**: All assemblies are checked. Non-structural components that shouldn't be checked are not yet excluded.
 - **Cat1 duplicate violations**: Each conductor pair is checked from both perspectives. A single clearance issue produces two violation records.
 - **Cat1 circuit_name nulls**: If `section.circuit_name` is null/empty for both spans, they are treated as same circuit (1a).
+- **E2 environment required**: The `"60F_6psfwind_final"` environment must be manually configured on the model. If missing, `find()` errors. No automatic environment creation.
+- **E2 per-span check**: `e2_applies` checks the current span's insulator type. If one span has suspension insulators and another doesn't, E2 only applies to the suspension span — which is correct per NESC.
 
 ## Adding New Categories
 
