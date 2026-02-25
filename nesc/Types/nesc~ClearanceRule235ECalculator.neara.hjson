@@ -1,0 +1,57 @@
+{
+  token: "nesc~ct_ClearanceRule235ECalculator"
+  is_custom_class: true
+  fields: [
+    {
+      name: "output"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        {
+          pass: passes,
+          debug: broadcast(v: proc.violations, v.rule & " Cat" & v.category & " " & v.description & " | " & v.component & " | required=" & round(v.required / unit_value(1, "in") * 1000) / 1000 & "in actual=" & round(v.actual / unit_value(1, "in") * 1000) / 1000 & "in"),
+        }
+        '''
+    }
+    {
+      name: "passes"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        [
+          if(proc.has_violations,
+            "❌ " & proc.num_violations & " clearance violation(s)",
+            "✅")
+        ]
+        '''
+    }
+    {
+      name: "pole"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("~Pole")
+        '''
+    }
+    {
+      name: "proc"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("ClearanceRule235EProcessing").output
+        '''
+    }
+  ]
+}

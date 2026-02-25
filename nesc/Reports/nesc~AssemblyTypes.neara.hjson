@@ -1,6 +1,6 @@
 {
-  id: "f8fdda9841caec99741f71"
-  title: "nesc~Spans"
+  id: "2e9d1b8bf4ff3c1a1c97d4"
+  title: "nesc~AssemblyTypes"
   description: null
   root: "Model"
   favorite: false
@@ -10,7 +10,7 @@
     query: {
       queries: [
         {
-          collection: "Spans"
+          collection: "AssemblyLibrary"
           filter: {
             conditions: []
             bounds_filter: "none"
@@ -26,13 +26,13 @@
     }
     fields: [
       {
-        name: "self"
-        title: "Self"
+        name: "cable_counts"
+        title: "Cable Counts"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 120
+        width_px: 100
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -47,13 +47,13 @@
         timestamp_display_format: null
       }
       {
-        name: "section"
-        title: "Section"
+        name: "nesc~u_is_streetlight"
+        title: "Is Streetlight"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 120
+        width_px: 100
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -68,13 +68,13 @@
         timestamp_display_format: null
       }
       {
-        name: "label"
-        title: "Label"
+        name: "usage_labels"
+        title: "Usage Labels"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 120
+        width_px: 100
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -89,13 +89,13 @@
         timestamp_display_format: null
       }
       {
-        name: "pole1"
-        title: "Pole1"
+        name: "behavior_description"
+        title: "Behavior Description"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 120
+        width_px: 100
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -110,13 +110,13 @@
         timestamp_display_format: null
       }
       {
-        name: "pole2"
-        title: "Pole2"
+        name: "default_distance_from_top"
+        title: "Default Distance From Top"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 120
+        width_px: 100
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -131,13 +131,13 @@
         timestamp_display_format: null
       }
       {
-        name: "nesc~u_pla_span_checks"
-        title: "Pla Span Checks"
+        name: "key"
+        title: "Key"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 120
+        width_px: 100
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -152,13 +152,13 @@
         timestamp_display_format: null
       }
       {
-        name: "nesc~u_foo"
-        title: "Foo"
+        name: "notes"
+        title: "Notes"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 120
+        width_px: 100
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -173,13 +173,13 @@
         timestamp_display_format: null
       }
       {
-        name: "nesc~u_foo2"
-        title: "Foo2"
+        name: "intended_usage"
+        title: "Intended Usage"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 120
+        width_px: 100
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -194,13 +194,13 @@
         timestamp_display_format: null
       }
       {
-        name: "stringing_temperature"
-        title: "Stringing Temperature"
+        name: "min_voltage"
+        title: "Min Voltage"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 120
+        width_px: 100
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -215,13 +215,13 @@
         timestamp_display_format: null
       }
       {
-        name: "survey_temperature"
-        title: "Survey Temperature"
+        name: "max_voltage"
+        title: "Max Voltage"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 120
+        width_px: 100
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -236,13 +236,13 @@
         timestamp_display_format: null
       }
       {
-        name: "min_possible_survey_temperature"
-        title: "Min Possible Survey Temperature"
+        name: "min_deviation_angle"
+        title: "Min Deviation Angle"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 120
+        width_px: 100
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -257,202 +257,13 @@
         timestamp_display_format: null
       }
       {
-        name: "max_possible_survey_temperature"
-        title: "Max Possible Survey Temperature"
+        name: "max_deviation_angle"
+        title: "Max Deviation Angle"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 120
-        quicksearch: false
-        search_option: "none"
-        show_spatial: false
-        grouped: false
-        colored: false
-        color_map: {
-          type: "key_value_color_list"
-          key_value_color_list: {
-            list: []
-          }
-        }
-        timestamp_display_format: null
-      }
-      {
-        name: "mzcat_terrain_category"
-        title: "Mz,cat Terrain Category"
-        unit: null
-        decimal_places: 2
-        null_value: ""
-        cell_title: null
-        width_px: 120
-        quicksearch: false
-        search_option: "none"
-        show_spatial: false
-        grouped: false
-        colored: false
-        color_map: {
-          type: "key_value_color_list"
-          key_value_color_list: {
-            list: []
-          }
-        }
-        timestamp_display_format: null
-      }
-      {
-        name: "assembly1"
-        title: "Assembly1"
-        unit: null
-        decimal_places: 2
-        null_value: ""
-        cell_title: null
-        width_px: 120
-        quicksearch: false
-        search_option: "none"
-        show_spatial: false
-        grouped: false
-        colored: false
-        color_map: {
-          type: "key_value_color_list"
-          key_value_color_list: {
-            list: []
-          }
-        }
-        timestamp_display_format: null
-      }
-      {
-        name: "assembly2"
-        title: "Assembly2"
-        unit: null
-        decimal_places: 2
-        null_value: ""
-        cell_title: null
-        width_px: 120
-        quicksearch: false
-        search_option: "none"
-        show_spatial: false
-        grouped: false
-        colored: false
-        color_map: {
-          type: "key_value_color_list"
-          key_value_color_list: {
-            list: []
-          }
-        }
-        timestamp_display_format: null
-      }
-      {
-        name: "length"
-        title: "Length"
-        unit: null
-        decimal_places: 2
-        null_value: ""
-        cell_title: null
-        width_px: 120
-        quicksearch: false
-        search_option: "none"
-        show_spatial: false
-        grouped: false
-        colored: false
-        color_map: {
-          type: "key_value_color_list"
-          key_value_color_list: {
-            list: []
-          }
-        }
-        timestamp_display_format: null
-      }
-      {
-        name: "stack"
-        title: "Stack"
-        unit: null
-        decimal_places: 2
-        null_value: ""
-        cell_title: null
-        width_px: 120
-        quicksearch: false
-        search_option: "none"
-        show_spatial: false
-        grouped: false
-        colored: false
-        color_map: {
-          type: "key_value_color_list"
-          key_value_color_list: {
-            list: []
-          }
-        }
-        timestamp_display_format: null
-      }
-      {
-        name: "scan_time"
-        title: "Scan Time"
-        unit: null
-        decimal_places: 2
-        null_value: ""
-        cell_title: null
-        width_px: 120
-        quicksearch: false
-        search_option: "none"
-        show_spatial: false
-        grouped: false
-        colored: false
-        color_map: {
-          type: "key_value_color_list"
-          key_value_color_list: {
-            list: []
-          }
-        }
-        timestamp_display_format: null
-      }
-      {
-        name: "approximate_midpoint.x"
-        title: "Approximate Midpoint X"
-        unit: null
-        decimal_places: 2
-        null_value: ""
-        cell_title: null
-        width_px: 120
-        quicksearch: false
-        search_option: "none"
-        show_spatial: false
-        grouped: false
-        colored: false
-        color_map: {
-          type: "key_value_color_list"
-          key_value_color_list: {
-            list: []
-          }
-        }
-        timestamp_display_format: null
-      }
-      {
-        name: "approximate_midpoint.y"
-        title: "Approximate Midpoint Y"
-        unit: null
-        decimal_places: 2
-        null_value: ""
-        cell_title: null
-        width_px: 120
-        quicksearch: false
-        search_option: "none"
-        show_spatial: false
-        grouped: false
-        colored: false
-        color_map: {
-          type: "key_value_color_list"
-          key_value_color_list: {
-            list: []
-          }
-        }
-        timestamp_display_format: null
-      }
-      {
-        name: "approximate_midpoint.z"
-        title: "Approximate Midpoint Z"
-        unit: null
-        decimal_places: 2
-        null_value: ""
-        cell_title: null
-        width_px: 120
+        width_px: 100
         quicksearch: false
         search_option: "none"
         show_spatial: false

@@ -1,5 +1,5 @@
 {
-  id: "31d9d7378ee7c1837e784a2"
+  id: "477333c92a2f2ede89a58887"
   organization_module_ref: null
   title: "NESC"
   key: "nesc"
@@ -7,6 +7,7 @@
   lock: "unlocked"
   language_enhancement_config: {
     language_enhancements: [
+      "eval-err"
       "nac"
     ]
   }

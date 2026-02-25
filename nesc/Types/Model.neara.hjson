@@ -1,0 +1,22 @@
+{
+  token: "Model"
+  is_custom_class: false
+  fields: [
+    {
+      name: "nesc~u_environment_60f_6psf"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        // NESC standard environment: 60°F, 6 lb/ft² wind pressure.
+        // Used by 235E2 (suspension insulator swing) and potentially other NESC checks.
+        make_environment(
+          temperature: unit_value(60, "fahrenheit"),
+          wind_pressure_cond: 6 * unit("psf"),
+        )
+        '''
+    }
+  ]
+}
