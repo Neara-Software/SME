@@ -1,0 +1,107 @@
+{
+  token: "nesc~ct_PoleLoadingRule250CBayHeightCheck"
+  is_custom_class: true
+  fields: [
+    {
+      name: "bay"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("~SpanStack")
+        '''
+    }
+    {
+      name: "catenaries"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        simulate(top_span, environment: environment).Cables[].catenary
+        '''
+    }
+    {
+      name: "environment"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        make_environment(
+          temperature: unit_value(59, "fahrenheit")
+          )
+        '''
+    }
+    {
+      name: "foo"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        viz(
+          "style",
+          "solid Red width:0.5",
+          list(
+            sliced_catenaries[0],
+          ),
+        )
+        '''
+    }
+    {
+      name: "height"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        broadcast(
+          point: sliced_catenaries[].min,
+          let(
+            ground: get_terrain_height(point),
+            point.z - ground,
+          ),
+        )
+        '''
+    }
+    {
+      name: "max_height"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula: "max(height)"
+    }
+    {
+      name: "min"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "sliced_catenaries[0].min"
+    }
+    {
+      name: "sliced_catenaries"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "slice_catenaries(catenaries, start_ratio:0.05, end_ratio: 0.95, num_slices: 10)"
+    }
+    {
+      name: "top_span"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "bay.top_span"
+    }
+  ]
+}

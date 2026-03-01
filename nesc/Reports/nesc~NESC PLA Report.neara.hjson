@@ -89,6 +89,48 @@
         timestamp_display_format: null
       }
       {
+        name: "nesc~u_foo6"
+        title: "Foo6"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 549
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+        timestamp_display_format: null
+      }
+      {
+        name: "is_section_anchor"
+        title: "Is Section Anchor"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 120
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+        timestamp_display_format: null
+      }
+      {
         name: "nesc~u_foo5.max_stay"
         title: "Foo5 Max Stay"
         unit: null
@@ -110,8 +152,8 @@
         timestamp_display_format: null
       }
       {
-        name: "nesc~u_pla_check.rule_250b_output.worst_stay"
-        title: "Pla Check Rule 250b Output Worst Stay"
+        name: "nesc~u_pla_check.rule_250b_output.worst_pole.simulation"
+        title: "Pla Check Rule 250b Output Worst Pole Simulation"
         unit: null
         decimal_places: 2
         null_value: ""

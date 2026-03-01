@@ -1,6 +1,6 @@
 {
-  id: "3fd84dbf56f3e8ca17bab8c3"
-  title: "nesc~NESC PLA"
+  id: "8835ccbb8d4ddcf95ff44a4f"
+  title: "nesc~SpanStacks"
   description: null
   root: "Model"
   favorite: false
@@ -10,7 +10,7 @@
     query: {
       queries: [
         {
-          collection: "Poles"
+          collection: "SpanStacks"
           filter: {
             conditions: []
             bounds_filter: "none"
@@ -32,7 +32,7 @@
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 245
+        width_px: 123
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -47,13 +47,13 @@
         timestamp_display_format: null
       }
       {
-        name: "label"
-        title: "Label"
+        name: "clearance_area"
+        title: "Clearance Area"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 245
+        width_px: 123
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -68,13 +68,13 @@
         timestamp_display_format: null
       }
       {
-        name: "structure_number"
-        title: "Structure Number"
+        name: "geometry"
+        title: "Geometry"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 245
+        width_px: 106
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -89,13 +89,55 @@
         timestamp_display_format: null
       }
       {
-        name: "nesc~u_pla_check.rule_250b_output.worst_pole.utilisation"
-        title: "250B Pole Uitlisation"
+        name: "nesc~u_ground_points2.base_geometry"
+        title: "Ground Points2 Base Geometry"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 218
+        width_px: 106
+        quicksearch: false
+        search_option: "none"
+        show_spatial: true
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+        timestamp_display_format: null
+      }
+      {
+        name: "nesc~u_foo"
+        title: "Foo"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 177
+        quicksearch: false
+        search_option: "none"
+        show_spatial: true
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+        timestamp_display_format: null
+      }
+      {
+        name: "nesc~u_ground_points2.base_points"
+        title: "Ground Points2 Base Points"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 172
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -110,13 +152,13 @@
         timestamp_display_format: null
       }
       {
-        name: "nesc~u_pla_check.rule_250c_output.worst_pole.utilisation"
-        title: "250C Pole Uitilisation"
+        name: "nesc~u_ground_clearance_points"
+        title: "Ground Clearance Points"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 142
+        width_px: 146
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -131,13 +173,13 @@
         timestamp_display_format: null
       }
       {
-        name: "nesc~u_pla_check.rule_250d_output.worst_pole.utilisation"
-        title: "250D Pole Utilisation"
+        name: "nesc~u_span_height"
+        title: "Span Height"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 145
+        width_px: 169
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -152,13 +194,13 @@
         timestamp_display_format: null
       }
       {
-        name: "type"
-        title: "Type"
+        name: "nesc~u_span_height.foo"
+        title: "Span Height Foo"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 245
+        width_px: 103
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -173,13 +215,13 @@
         timestamp_display_format: null
       }
       {
-        name: "status"
-        title: "Status"
+        name: "top_span"
+        title: "Top Span"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 245
+        width_px: 123
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -194,13 +236,76 @@
         timestamp_display_format: null
       }
       {
-        name: "notes"
-        title: "Notes"
+        name: "pole1"
+        title: "Pole1"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 245
+        width_px: 123
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+        timestamp_display_format: null
+      }
+      {
+        name: "pole2"
+        title: "Pole2"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 123
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+        timestamp_display_format: null
+      }
+      {
+        name: "length"
+        title: "Length"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 123
+        quicksearch: false
+        search_option: "none"
+        show_spatial: false
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+        timestamp_display_format: null
+      }
+      {
+        name: "num_spans"
+        title: "Num Spans"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 123
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -223,7 +328,7 @@
   }
   viz_config: {
     visualizing: false
-    visualizing_quick_toggle: false
+    visualizing_quick_toggle: true
     visualizing_pinned: false
     color3d_objects: false
     visualize_on_world_terrain: false

@@ -1,0 +1,280 @@
+{
+  token: "nesc~ct_GroundClearanceRule232GroundPoints"
+  is_custom_class: true
+  fields: [
+    {
+      name: "auto_areas"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        broadcast(
+          cat: model().nesc~dt_232_1_ground_clearance[].description,
+          let(
+            geo: call(get_auto_area, category: cat),
+            geo,
+          ),
+        )
+        '''
+    }
+    {
+      name: "auto_volume"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        broadcast(
+          cat: model().nesc~dt_232_1_ground_clearance[].description,
+          let(
+            geo: call(get_auto_volume, category: cat),
+            geo,
+          ),
+        )
+        '''
+    }
+    {
+      name: "base_geometry"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        geo_polygon(
+          let(
+            p1: bay.pole1.location,
+            p2: bay.pole2.location,
+            length: bay.length,
+            d: 5m,
+            let(
+              normal: vec2( - (p2.y - p1.y) / length, (p2.x - p1.x) / length),
+              list(
+                list(
+                  p1 + d * normal,
+                  p1 - d * normal,
+                  p2 - d * normal,
+                  p2 + d * normal,
+                  p1 + d * normal,
+                ),
+              ),
+            ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "base_points"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        categorize_volume(polygon_to_volume(base_geometry, false, 50ft, 50ft), "base", "ground")
+        '''
+    }
+    {
+      name: "bay"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        type_only("~SpanStack")
+        '''
+    }
+    {
+      name: "combined_volume"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        filter_nulls(
+          broadcast(
+            cat: model().nesc~dt_232_1_ground_clearance[].description,
+            let(
+              auto: call(get_auto_volume, category: cat),
+              man: call(get_manual_volume, category: cat),
+              let(
+                combined: combine_volume(list(auto, man)),
+                if(
+                  combined <> null,
+                  let(
+                    points: categorize_volume(combined, cat, "ground"),
+                    {category: cat,
+                    volume: combined,
+                    points: intersect_points(base_points, points, cat),
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "default"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        //type_only("")
+        
+        "Other areas traversed by vehicles"&""
+        '''
+    }
+    {
+      name: "default_ground_points"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        if(
+          non_default_points <> null,
+          exclude_points(base_points, non_default_points, default),
+          base_points,
+        )
+        '''
+    }
+    {
+      name: "get_auto_area"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        lambda(
+          category: type_only(""),
+          if(
+            category = "Track of railroad",
+            let(
+              geom: geo_query(model().dt_or_railroads, bay.geometry, 2ft),
+              geo_collection(geom[].geometry),
+            ),
+            category = "Roads and other areas subject to truck traffic",
+            let(
+              geom: geo_query(model().dt_oregon_public_roads, bay.geometry, 2ft),
+              geo_collection(geom[].geometry),
+            ),
+            null,
+          ),
+        )
+        '''
+    }
+    {
+      name: "get_auto_volume"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        lambda(
+          category: type_only(""),
+          if(
+            category = "Track of railroad",
+            let(
+              geom: geo_query(model().dt_or_railroads, bay.geometry, 15ft),
+              linestring_to_volume(geo_collection(geom[].geometry),0ft, 12ft, 20ft),
+            ),
+            category = "Roads and other areas subject to truck traffic",
+            let(
+              geom: geo_query(model().dt_oregon_public_roads, bay.geometry, 15ft),
+              linestring_to_volume(geo_collection(geom[].geometry),0ft, 12ft, 20ft),
+            ),
+            null,
+          ),
+        )
+        '''
+    }
+    {
+      name: "get_manual_area"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        lambda(
+          category: type_only(""),
+          let(
+            polygons: filter(model().nesc~terrain_categories, model().nesc~terrain_categories[].category = category),
+             geo_collection(geo_query(polygons, bay.geometry, 2ft)[].save_geom),  
+          ), 
+        )
+        '''
+    }
+    {
+      name: "get_manual_volume"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        lambda(
+          category: type_only(""),
+          let(
+            polygons: filter(model().nesc~terrain_categories, model().nesc~terrain_categories[].category = category),
+             polygon_to_volume(geo_collection(geo_query(polygons, bay.geometry, 2ft)[].save_geom), false, 20ft, 20ft),  
+          ), 
+        )
+        '''
+    }
+    {
+      name: "manual_area"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        filter_nulls(
+          broadcast(
+            cat: model().nesc~dt_232_1_ground_clearance[].description,
+            let(
+              geo: call(get_manual_area, category: cat),
+              geo,
+            ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "non_default_points"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        combine_points(filter(combined_volume, combined_volume[].category <> default)[].points, "non_default")
+        '''
+    }
+    {
+      name: "points"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        broadcast(cv: combined_volume, {category: cv.category, points: cv.points})
+          ++ list({category: default, points: default_ground_points})
+        '''
+    }
+  ]
+}

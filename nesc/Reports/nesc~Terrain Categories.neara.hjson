@@ -1,6 +1,6 @@
 {
-  id: "3fd84dbf56f3e8ca17bab8c3"
-  title: "nesc~NESC PLA"
+  id: "50c0554371f5e79bef1669f3"
+  title: "nesc~Terrain Categories"
   description: null
   root: "Model"
   favorite: false
@@ -10,7 +10,7 @@
     query: {
       queries: [
         {
-          collection: "Poles"
+          collection: "nesc~terrain_categories"
           filter: {
             conditions: []
             bounds_filter: "none"
@@ -26,13 +26,13 @@
     }
     fields: [
       {
-        name: "self"
-        title: "Self"
+        name: "choose_polygon"
+        title: "Choose Polygon"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 245
+        width_px: 308
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -47,13 +47,13 @@
         timestamp_display_format: null
       }
       {
-        name: "label"
-        title: "Label"
+        name: "save_polygon"
+        title: "Save Polygon"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 245
+        width_px: 308
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -68,13 +68,34 @@
         timestamp_display_format: null
       }
       {
-        name: "structure_number"
-        title: "Structure Number"
+        name: "category"
+        title: "Category"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 245
+        width_px: 297
+        quicksearch: false
+        search_option: "none"
+        show_spatial: true
+        grouped: false
+        colored: false
+        color_map: {
+          type: "key_value_color_list"
+          key_value_color_list: {
+            list: []
+          }
+        }
+        timestamp_display_format: null
+      }
+      {
+        name: "latlon_text"
+        title: "Latlon Text"
+        unit: null
+        decimal_places: 2
+        null_value: ""
+        cell_title: null
+        width_px: 308
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -89,13 +110,13 @@
         timestamp_display_format: null
       }
       {
-        name: "nesc~u_pla_check.rule_250b_output.worst_pole.utilisation"
-        title: "250B Pole Uitlisation"
+        name: "vertices_text"
+        title: "Vertices Text"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 218
+        width_px: 308
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -110,13 +131,13 @@
         timestamp_display_format: null
       }
       {
-        name: "nesc~u_pla_check.rule_250c_output.worst_pole.utilisation"
-        title: "250C Pole Uitilisation"
+        name: "save_geom"
+        title: "Save Geom"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 142
+        width_px: 156
         quicksearch: false
         search_option: "none"
         show_spatial: false
@@ -131,79 +152,16 @@
         timestamp_display_format: null
       }
       {
-        name: "nesc~u_pla_check.rule_250d_output.worst_pole.utilisation"
-        title: "250D Pole Utilisation"
+        name: "viz"
+        title: "Viz"
         unit: null
         decimal_places: 2
         null_value: ""
         cell_title: null
-        width_px: 145
+        width_px: 158
         quicksearch: false
         search_option: "none"
-        show_spatial: false
-        grouped: false
-        colored: false
-        color_map: {
-          type: "key_value_color_list"
-          key_value_color_list: {
-            list: []
-          }
-        }
-        timestamp_display_format: null
-      }
-      {
-        name: "type"
-        title: "Type"
-        unit: null
-        decimal_places: 2
-        null_value: ""
-        cell_title: null
-        width_px: 245
-        quicksearch: false
-        search_option: "none"
-        show_spatial: false
-        grouped: false
-        colored: false
-        color_map: {
-          type: "key_value_color_list"
-          key_value_color_list: {
-            list: []
-          }
-        }
-        timestamp_display_format: null
-      }
-      {
-        name: "status"
-        title: "Status"
-        unit: null
-        decimal_places: 2
-        null_value: ""
-        cell_title: null
-        width_px: 245
-        quicksearch: false
-        search_option: "none"
-        show_spatial: false
-        grouped: false
-        colored: false
-        color_map: {
-          type: "key_value_color_list"
-          key_value_color_list: {
-            list: []
-          }
-        }
-        timestamp_display_format: null
-      }
-      {
-        name: "notes"
-        title: "Notes"
-        unit: null
-        decimal_places: 2
-        null_value: ""
-        cell_title: null
-        width_px: 245
-        quicksearch: false
-        search_option: "none"
-        show_spatial: false
+        show_spatial: true
         grouped: false
         colored: false
         color_map: {
@@ -223,7 +181,7 @@
   }
   viz_config: {
     visualizing: false
-    visualizing_quick_toggle: false
+    visualizing_quick_toggle: true
     visualizing_pinned: false
     color3d_objects: false
     visualize_on_world_terrain: false

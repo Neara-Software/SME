@@ -151,7 +151,8 @@
         // Only required if pole or spans is >60ft.
         or(
           model_input.pole.height > 60ft,
-          any(model_input.pole.spans[].ground_clearance > 60ft),
+          //any(model_input.pole.spans[].ground_clearance > 60ft),
+          any(model_input.pole.span_stacks[].u_span_height[].max_height > 60ft),
         )
         '''
     }

@@ -37,6 +37,19 @@
       formula: "u_pla_check.rule_250b_processing"
     }
     {
+      name: "nesc~u_foo6"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        Assemblies[].SectionAttachments[].CableAttachments[].type[].component_type
+        
+        //is_section_anchor
+        '''
+    }
+    {
       name: "nesc~u_pla_check"
       prominence: "normal"
       documentation: null

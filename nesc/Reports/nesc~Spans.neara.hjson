@@ -622,7 +622,7 @@
   }
   viz_config: {
     visualizing: false
-    visualizing_quick_toggle: true
+    visualizing_quick_toggle: false
     visualizing_pinned: false
     color3d_objects: false
     visualize_on_world_terrain: false

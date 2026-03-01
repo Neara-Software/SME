@@ -12,18 +12,16 @@
       unit: ""
     }
     {
-      name: "nesc~u_ground_clearance_points"
+      name: "nesc~u_ground_points2"
       prominence: "normal"
       documentation: null
       visibility: "public"
       type: "formula"
       formula:
         '''
-        make_immutable_record("nesc~GroundClearanceRule232PointsProcessing",
+        make_immutable_record(
+          "nesc~GroundClearanceRule232GroundPoints",
           bay: self,
-          default_corridor_width: u_default_corridor_width,
-          railroad_corridor_width: u_railroad_corridor_width,
-          road_corridor_width: u_road_corridor_width,
         )
         '''
     }
@@ -44,6 +42,20 @@
       type: "property"
       kind: "real"
       unit: ""
+    }
+    {
+      name: "nesc~u_span_height"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record("nesc~PoleLoadingRule250CBayHeightCheck",
+          bay: self,
+        
+        )
+        '''
     }
   ]
 }

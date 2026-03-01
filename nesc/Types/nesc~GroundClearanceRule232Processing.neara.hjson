@@ -147,7 +147,7 @@
       documentation: null
       visibility: "module"
       type: "formula"
-      formula: "model_input.span.stack.u_ground_clearance_points.points"
+      formula: "model_input.span.stack.u_ground_points2.points"
     }
     {
       name: "pole_check"

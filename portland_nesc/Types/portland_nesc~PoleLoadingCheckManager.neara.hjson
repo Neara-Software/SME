@@ -119,6 +119,21 @@
         '''
     }
     {
+      name: "rule_250b_processing"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record(
+            "portland_nesc~PoleLoadingRule250bProcessing",
+            model_input: nesc_pla_model_input,
+            rule_243_output: rule_243_output,
+          )
+        '''
+    }
+    {
       name: "rule_250c_output"
       prominence: "normal"
       documentation: null
@@ -140,6 +155,21 @@
         '''
     }
     {
+      name: "rule_250c_processing"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record(
+            "portland_nesc~PoleLoadingRule250cProcessing",
+            model_input: nesc_pla_model_input,
+            rule_243_output: rule_243_output,
+          )
+        '''
+    }
+    {
       name: "rule_250d_output"
       prominence: "normal"
       documentation: null
@@ -158,6 +188,21 @@
             rule_243_output: rule_243_output,
           ).output,
         ).output
+        '''
+    }
+    {
+      name: "rule_250d_processing"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record(
+            "portland_nesc~PoleLoadingRule250dProcessing",
+            model_input: nesc_pla_model_input,
+            rule_243_output: rule_243_output,
+          )
         '''
     }
     {

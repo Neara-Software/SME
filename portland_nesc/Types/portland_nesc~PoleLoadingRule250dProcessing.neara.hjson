@@ -198,7 +198,8 @@
         // PGE LD20055 Table 3: 250D applies to poles exceeding 60ft.
         or(
           model_input.pole.height > 60ft,
-          any(model_input.pole.spans[].ground_clearance > 60ft),
+          //any(model_input.pole.spans[].ground_clearance > 60ft),
+          any(model_input.pole.span_stacks[].nesc~u_span_height[].max_height > 60ft),
         )
         '''
     }

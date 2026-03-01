@@ -1,0 +1,134 @@
+{
+  token: "nesc~ct_GroundClearanceRule232ManualTerrainCategories"
+  is_custom_class: true
+  fields: [
+    {
+      name: "category"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "property"
+      kind: "text"
+    }
+    {
+      name: "choose_polygon"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        ui_button(
+          "Define Polygon",
+          do(make_field_mutation(editor().tools.geometry_tool, active: true)),
+        )
+        '''
+    }
+    {
+      name: "latlon_text"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "property"
+      kind: "text"
+    }
+    {
+      name: "save_geom"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "geo_polygon(list(vertices))"
+    }
+    {
+      name: "save_polygon"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        let(
+          geom: editor().tools.geometry_tool.geometry,
+          if(
+            get_geometry_type(geom) = "Polygon",
+            ui_button(
+              "Save Polygon",
+              do(
+                let(
+                  verts: geo_to_string(geom, precision: 3),
+                  make_field_mutation(self, vertices_text: not_null(verts)),
+                ),
+                let(
+                  ll: geo_to_string(reproject(geom), precision: 5),
+                  make_field_mutation(self, latlon_text: if(ll = null, "reproject failed", not_null(ll))),
+                ),
+                if(
+                  editor().tools.geometry_tool.active,
+                  make_field_mutation(editor().tools.geometry_tool, active: false),
+                ),
+                make_field_mutation(editor().tools.geometry_tool, geometry: null),
+              ),
+            ),
+          ),
+        )
+        '''
+    }
+    {
+      name: "spatial_anchor_plz"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula: "if(save_geom <> null, make_spatial_anchor(not_null(save_geom)))"
+    }
+    {
+      name: "vertices"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        let(
+          remove_list: substring(vertices_text, 2, len(vertices_text) - 2),
+          broadcast(
+            r: text_split(remove_list, "), "),
+           // vec2(origin()+
+            vec2(
+            parse_num(text_split(substring(r,1,len(r)-2), ",")[0],-1)*1m+origin().x,
+            parse_num(text_split(substring(r,1,len(r)-2), ",")[1], -1)*1m+origin().y,
+            ),//),
+          ),
+        )
+        '''
+    }
+    {
+      name: "vertices_text"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "property"
+      kind: "text"
+    }
+    {
+      name: "viz"
+      prominence: "normal"
+      documentation: null
+      visibility: "module"
+      type: "formula"
+      formula:
+        '''
+        if(
+          editor().tools.geometry_tool.active,
+          null,
+          viz(
+            "style",
+            "solid red width:1.0",
+            list(save_geom),
+          ),
+        )
+        '''
+    }
+  ]
+}

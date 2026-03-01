@@ -1,0 +1,21 @@
+{
+  token: "Pole"
+  is_custom_class: false
+  fields: [
+    {
+      name: "portland_nesc~u_portland_pla"
+      prominence: "normal"
+      documentation: null
+      visibility: "public"
+      type: "formula"
+      formula:
+        '''
+        make_immutable_record(
+          "PoleLoadingCheckManager",
+          pole: self,
+        
+        )
+        '''
+    }
+  ]
+}
